@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reuse the same CSS variables and base styles */
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --tag-hot: #ff4757;
+            --tag-new: #2ed573;
+            --rating-star: #ffd700;
+            --price-green: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: auto;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn i {
+            transition: transform 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* About Us Page Specific Styles */
+        .about-container {
+            padding: 6rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            color: var(--pure-white);
+        }
+
+        .about-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--pure-white);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .about-container h2 {
+            font-size: 2rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent-red);
+            text-align: center;
+        }
+
+        .about-container p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: var(--pure-white);
+            text-align: center;
+        }
+
+        /* Boxed Text for Mission and Team */
+        .boxed-text {
+            background: var(--box-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .boxed-text:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-red);
+        }
+
+        .boxed-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .boxed-text p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .team-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            background: var(--box-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .team-member:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            border-color: var(--accent-red);
+        }
+
+        .team-member img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            object-fit: cover;
+            border: 3px solid var(--primary-blue);
+        }
+
+        .team-member h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+        }
+
+        .team-member p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .about-container {
+                padding: 6rem 1rem 2rem;
+            }
+
+            .about-container h1 {
+                font-size: 2rem;
+            }
+
+            .about-container h2 {
+                font-size: 1.6rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            }
+
+            .team-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="eduspark-animation">
+        <i class="fas fa-book-open logo-icon"></i>
+        <h2 class="brand-name">EduSpark</h2>
+    </div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <button class="nav-btn">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-info-circle"></i>
+                About
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-envelope"></i>
+                Contact
+            </button>
+        </nav>
+    </header>
+
+    <main class="about-container">
+        <h1>About Us</h1>
+        <p>
+            Welcome to <strong>EduSpark</strong>, your gateway to modern and interactive learning. We are dedicated to providing high-quality education to students worldwide, empowering them to achieve their academic and career goals.
+        </p>
+
+        <h2>Our Mission</h2>
+        <div class="boxed-text">
+            <h3>Mission</h3>
+            <p>
+                Our mission is to make education accessible, engaging, and effective for everyone. We strive to create a platform where students can learn at their own pace and achieve excellence.
+            </p>
+        </div>
+
+        <h2>Our Team</h2>
+        <div class="team-section">
+            <div class="team-member">
+                <img src="https://i.postimg.cc/8P4Wb8YK/history-course.jpg" alt="Team Member 1">
+                <h3>John Doe</h3>
+                <p>Co-Founder & CEO</p>
+            </div>
+            <div class="team-member">
+                <img src="https://i.postimg.cc/NFX1n5Sd/science-course.jpg" alt="Team Member 2">
+                <h3>Jane Smith</h3>
+                <p>Head of Education</p>
+            </div>
+            <div class="team-member">
+                <img src="https://i.postimg.cc/brbZQjjN/538903229246-aarambh-banner-app.jpg" alt="Team Member 3">
+                <h3>Alice Johnson</h3>
+                <p>Lead Instructor</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Menu Toggle
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Smooth Scroll
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

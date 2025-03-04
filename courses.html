@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Class - EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Lemon Milk Font -->
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <!-- Add INTEGRALCF Font -->
+    <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
+    <!-- Add Oswald Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --tag-hot: #ff4757;
+            --tag-new: #2ed573;
+            --rating-star: #ffd700;
+            --price-green: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
+            background-size: 400% 400%;
+            animation: gradientFlow 10s ease infinite;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn i {
+            transition: transform 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        .class-selection {
+            padding: 6rem 2rem 2rem; /* Adjusted for header */
+            text-align: center;
+        }
+
+        .class-selection h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--pure-white);
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .class-card {
+            background: var(--box-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .class-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .class-card button {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .class-card button:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <button class="nav-btn" onclick="location.href='index.html'">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn" onclick="location.href='courses.html'">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn" onclick="location.href='about.html'">
+                <i class="fas fa-info-circle"></i>
+                About
+            </button>
+            <button class="nav-btn" onclick="location.href='contact.html'">
+                <i class="fas fa-envelope"></i>
+                Contact
+            </button>
+        </nav>
+    </header>
+
+    <!-- Class Selection Section -->
+    <section class="class-selection">
+        <h1>Choose Your Class</h1>
+        <div class="class-grid">
+            <!-- Class 10th -->
+             <div class="class-card">
+                <h2>Class 9th</h2>
+                <button onclick="location.href='class9.html'">Select Class</button>
+            </div>
+            
+            <div class="class-card">
+                <h2>Class 10th</h2>
+                <button onclick="location.href='class10.html'">Select Class</button>
+            </div>
+            <!-- Class 11th -->
+            <div class="class-card">
+                <h2>Class 11th</h2>
+                <button onclick="location.href='class11.html'">Select Class</button>
+            </div>
+            <!-- Class 12th -->
+            <div class="class-card">
+                <h2>Class 12th</h2>
+                <button onclick="location.href='class12.html'">Select Class</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Toggle Navigation Menu
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
