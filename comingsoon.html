@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choose Your Subject - EduSpark</title>
+    <title>Coming Soon - EduSpark</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Add Lemon Milk Font -->
     <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
@@ -38,6 +38,10 @@
             animation: gradientFlow 10s ease infinite;
             overflow-x: hidden;
             touch-action: manipulation;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         @keyframes gradientFlow {
@@ -159,103 +163,61 @@
             transform: rotate(360deg);
         }
 
-        /* Image Section */
-        .image-section {
-            width: 100%;
-            margin-top: 70px; /* Adjusted for fixed header */
-        }
-
-        .image-section img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        /* Live Classes Button Section */
-        .live-classes-section {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .live-classes-button {
-            padding: 1.2rem 2.5rem;
-            background: var(--primary-blue); /* Changed to blue */
-            color: var(--pure-white);
-            border: none;
-            border-radius: 12px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 24px rgba(0, 0, 139, 0.3); /* Adjusted shadow */
-        }
-
-        .live-classes-button:hover {
-            background: var(--accent-red); /* Changed to red on hover */
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(255, 0, 0, 0.3); /* Adjusted shadow */
-        }
-
-        /* Subject Selection Section */
-        .subject-selection {
-            padding: 2rem 0; /* Reduced padding */
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
+        .coming-soon-container {
+            background: var(--box-bg);
+            padding: 3rem;
             border-radius: 16px;
-            margin: 2rem auto;
-            max-width: 100%; /* Full width */
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeIn 1.5s ease-in-out;
         }
 
-        .subject-selection h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--pure-white);
+        .coming-soon-container h1 {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-family: 'Lemon Milk', sans-serif;
             text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .subject-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* Vertical layout */
-            gap: 1rem;
-            padding: 0; /* Remove padding to touch edges */
+        .coming-soon-container p {
+            font-size: 1.2rem;
+            color: var(--dark-bg);
+            margin-bottom: 2rem;
+            font-family: 'Oswald', sans-serif;
         }
 
-        .subject-card {
-            background: var(--box-bg);
-            padding: 2rem; /* Increased padding */
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin: 0 1rem; /* Add margin to sides for spacing */
+        .coming-soon-container .icon {
+            font-size: 4rem;
+            color: var(--accent-red);
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
         }
 
-        .subject-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .subject-card h2 {
-            font-size: 1.5rem; /* Larger font size */
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .subject-card button {
-            padding: 0.8rem 1.5rem; /* Increased padding */
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem; /* Larger font size */
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .coming-soon-container {
+                padding: 2rem;
+            }
 
-        .subject-card button:hover {
-            background: var(--accent-red);
-            transform: translateY(-3px);
+            .coming-soon-container h1 {
+                font-size: 2.5rem;
+            }
+
+            .coming-soon-container p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -292,59 +254,13 @@
             </button>
         </nav>
     </header>
-    <p></p>
-    <spam></spam>
-    <button></button>
-    <button></button>
 
-    <!-- Image Section -->
-    <div class="image-section">
-        <img src="https://i.postimg.cc/brbZQjjN/538903229246-aarambh-banner-app.jpg" alt="EduSpark Banner">
+    <!-- Coming Soon Section -->
+    <div class="coming-soon-container">
+        <i class="fas fa-hourglass-start icon"></i>
+        <h1>Coming Soon!</h1>
+        <p>This batch is not started yet. Please wait sometime to start.</p>
     </div>
-
-    <!-- Live Classes Button Section -->
-    <section class="live-classes-section">
-        <button class="live-classes-button" onclick="location.href='live-classes.html'">
-            Join Live Classes
-        </button>
-    </section>
-
-    <!-- Subject Selection Section -->
-    <section class="subject-selection">
-        <h1>Choose Your Subject</h1>
-        <div class="subject-grid">
-            
-            <div class="subject-card">
-                <h2>Notice</h2>
-                <button onclick="location.href='notice.html'">Select</button>
-            </div>
-            <!-- Science -->
-            <div class="subject-card">
-                <h2>Science</h2>
-                <button onclick="location.href='comingsoon.html'">Select</button>
-            </div>
-            <!-- Social Science -->
-            <div class="subject-card">
-                <h2>Social Science</h2>
-                <button onclick="location.href='comingsoon.html'">Select</button>
-            </div>
-            <!-- Maths -->
-            <div class="subject-card">
-                <h2>Maths</h2>
-                <button onclick="location.href='comingsoon.html'">Select</button>
-            </div>
-            <!-- English -->
-            <div class="subject-card">
-                <h2>English</h2>
-                <button onclick="location.href='comimgsoon.html'">Select</button>
-            </div>
-            <!-- Hindi -->
-            <div class="subject-card">
-                <h2>Hindi</h2>
-                <button onclick="location.href='comingsoon.html'">Select</button>
-            </div>
-        </div>
-    </section>
 
     <script>
         // Toggle Navigation Menu
