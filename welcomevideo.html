@@ -35,7 +35,7 @@
 </head>
 <body>
     <section class="live-section">
-        <h1>Live Classes</h1>
+        <h1>WELCOME VIDEO OF AARAMBH</h1>
         <div class="video-container">
             <video id="player" playsinline controls></video>
         </div>
@@ -73,7 +73,7 @@
                     hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
                         var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span");
                         if (hls.autoLevelEnabled) {
-                            span.innerHTML = AUTO (${hls.levels[data.level].height});
+                            span.innerHTML = `AUTO (${hls.levels[data.level].height})`;
                         } else {
                             span.innerHTML = 'AUTO';
                         }
@@ -88,3 +88,20 @@
                 video.src = source;
                 const player = new Plyr(video, defaultOptions);
             }
+
+            function updateQuality(newQuality) {
+                if (newQuality === 0) {
+                    window.hls.currentLevel = -1;
+                } else {
+                    window.hls.levels.forEach((level, levelIndex) => {
+                        if (level.height === newQuality) {
+                            console.log("Found quality match with " + newQuality);
+                            window.hls.currentLevel = levelIndex;
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
