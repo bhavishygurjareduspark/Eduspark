@@ -31,13 +31,54 @@
             padding: 2rem;
             border-radius: 16px;
         }
+        .welcome-box {
+            background-color: #00008B; /* Blue background */
+            padding: 1rem; /* Add some padding */
+            border-radius: 8px; /* Rounded corners */
+            display: inline-block; /* Make the box fit the content */
+            margin-bottom: 2rem; /* Add some space below the box */
+        }
+        .welcome-box h1 {
+            color: #FFFFFF; /* White text */
+            margin: 0; /* Remove default margin */
+            font-size: 2rem; /* Adjust font size */
+            font-family: 'Lemon Milk', sans-serif; /* Use the Lemon Milk font */
+        }
+        .back-button-container {
+            text-align: center;
+            margin-top: 2rem; /* Add some space above the button */
+        }
+        .back-button {
+            background-color: #00008B; /* Blue background */
+            color: #FFFFFF; /* White text */
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .back-button:hover {
+            background-color: #ff0000; /* Red background on hover */
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
     <section class="live-section">
-        <h1>WELCOME VIDEO OF AARAMBH</h1>
+        <div class="welcome-box">
+            <h1>WELCOME VIDEO OF AARAMBH</h1>
+        </div>
         <div class="video-container">
             <video id="player" playsinline controls></video>
+        </div>
+        <div class="back-button-container">
+            <button class="back-button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
         </div>
     </section>
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
