@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon - EduSpark</title>
+    <title>Batch Not Started - EduSpark</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Add Lemon Milk Font -->
     <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
@@ -49,123 +49,21 @@
             50% { background-position: 100% 50%; }
         }
 
-        header {
-            padding: 1rem 2rem;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        .batch-not-started-section {
+            padding: 6rem 2rem 2rem; /* Adjusted for header */
+            text-align: center;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
+        .batch-not-started-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
             color: var(--pure-white);
-            gap: 0.8rem;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
-        }
-
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 12px;
-            z-index: 1001;
-            transition: transform 0.3s;
-        }
-
-        .menu-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .menu-btn span {
-            display: block;
-            width: 28px;
-            height: 3px;
-            background: var(--pure-white);
-            margin: 5px 0;
-            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: rotate(-45deg) translate(-6px, 7px);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        .menu-btn.active span:last-child {
-            transform: rotate(45deg) translate(-6px, -7px);
-        }
-
-        .nav-menu {
-            position: fixed;
-            top: 70px;
-            right: -300px;
-            width: 300px;
-            height: calc(100vh - 70px);
-            background: rgba(0, 0, 0, 0.98);
-            padding: 2rem;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            z-index: 999;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-menu.active {
-            transform: translateX(-300px);
-        }
-
-        .nav-btn {
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease-out;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .nav-btn i {
-            transition: transform 0.3s;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent-red);
-            transform: translateX(10px);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(360deg);
-        }
-
-        .coming-soon-container {
+        .batch-not-started-content {
             background: var(--box-bg);
-            padding: 3rem;
+            padding: 2rem;
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             max-width: 600px;
@@ -173,26 +71,41 @@
             animation: fadeIn 1.5s ease-in-out;
         }
 
-        .coming-soon-container h1 {
-            font-size: 3rem;
+        .batch-not-started-content h2 {
+            font-size: 2rem;
             color: var(--primary-blue);
             margin-bottom: 1rem;
             font-family: 'Lemon Milk', sans-serif;
-            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .coming-soon-container p {
+        .batch-not-started-content p {
             font-size: 1.2rem;
             color: var(--dark-bg);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-family: 'Oswald', sans-serif;
         }
 
-        .coming-soon-container .icon {
+        .batch-not-started-content .icon {
             font-size: 4rem;
             color: var(--accent-red);
             margin-bottom: 1.5rem;
             animation: pulse 2s infinite;
+        }
+
+        .batch-not-started-content a {
+            display: inline-block;
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .batch-not-started-content a:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
         }
 
         @keyframes fadeIn {
@@ -207,78 +120,35 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .coming-soon-container {
-                padding: 2rem;
+            .batch-not-started-section {
+                padding: 6rem 1rem 1rem;
             }
 
-            .coming-soon-container h1 {
-                font-size: 2.5rem;
+            .batch-not-started-content {
+                padding: 1.5rem;
             }
 
-            .coming-soon-container p {
+            .batch-not-started-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .batch-not-started-content p {
                 font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
+    <!-- Batch Not Started Section -->
+    <section class="batch-not-started-section">
+        <div class="batch-not-started-content">
+            <i class="fas fa-calendar-times icon"></i>
+            <h2>Batch Not Started</h2>
+            <p>The batch has not started officially. Please wait or contact our Telegram channel for more information.</p>
+            <a href="https://t.me/EduSparkk" target="_blank">
+                <i class="fab fa-telegram"></i> Join Telegram Channel
+            </a>
         </div>
-        <!-- Hamburger Menu Button -->
-        <button class="menu-btn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <!-- Navigation Menu -->
-        <nav class="nav-menu">
-            <button class="nav-btn" onclick="location.href='index.html'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='courses.html'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='about.html'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='contact.html'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
-        </nav>
-    </header>
-
-    <!-- Coming Soon Section -->
-    <div class="coming-soon-container">
-        <i class="fas fa-hourglass-start icon"></i>
-        <h1>Coming Soon!</h1>
-        <p>This batch is not started yet. Please wait sometime to start.</p>
-    </div>
-
-    <script>
-        // Toggle Navigation Menu
-        const menuBtn = document.querySelector('.menu-btn');
-        const navMenu = document.querySelector('.nav-menu');
-
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
-                menuBtn.classList.remove('active');
-                navMenu.classList.remove('active');
-            }
-        });
-    </script>
+    </section>
 </body>
 </html>
