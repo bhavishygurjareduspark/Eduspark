@@ -11,7 +11,6 @@
     <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
     <!-- Add Oswald Font -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --primary-blue: #00008b;
@@ -246,18 +245,18 @@
         }
 
         .cta-button {
-            font-family: 'IntegralCF', sans-serif;
-            padding: 1rem 2.5rem;
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            text-align: centre;
-        }
+    font-family: 'IntegralCF', sans-serif;
+    padding: 1rem 2.5rem;
+    background: var(--primary-blue);
+    color: var(--pure-white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    margin-top: 20px;
+}
 
         .cta-button:hover {
             background: var(--accent-red);
@@ -581,12 +580,6 @@
                 swipeMessage.style.display = 'none'; // Hide the message after 3 seconds
             }, 3000);
         });
-        
-        if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("sw.js").then(() => {
-        console.log("Service Worker Registered");
-        });
-        }
     </script>
 </body>
 </html>
