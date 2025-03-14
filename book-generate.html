@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Key</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">    
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --tag-hot: #ff4757;
+            --tag-new: #2ed573;
+            --rating-star: #ffd700;
+            --price-green: #2ed573;
+        }
+    /* General Styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #8b0000, #000000); /* Red & Black Gradient */
+      overflow: hidden;
+      color: #000; /* Black Text */
+    }
+       
+       header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn i {
+            transition: transform 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+    /* Container Box */
+    .container {
+      background: #ffffff; /* White Box */
+      border-radius: 15px;
+      padding: 30px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #000000; /* Black Title */
+    }
+
+    .duration-box {
+      background: #ffcc00;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* Buttons */
+    .button {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 8px 0;
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: 0.3s;
+    }
+
+    .button:hover {
+      opacity: 0.8;
+    }
+
+    /* Server Buttons */
+    #server02, #server03Url {
+      background: #002366; /* Dark Blue */
+    }
+
+    /* Server 3 - HOT */
+    #recommendServer {
+      background: #ffcc00; /* Yellow */
+      color: #000;
+      font-weight: bold;
+      position: relative;
+    }
+
+    #recommendServer::after {
+      content: "HOT 🔥";
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: red;
+      font-weight: bold;
+    }
+
+    /* Tutorial Button */
+    #watchVideo {
+      background: #002366; /* Dark Blue */
+    }
+
+    /* Loading Message */
+    .loading {
+      font-size: 13px;
+      color: #ff0000;
+      margin-top: 10px;
+      display: none;
+      animation: flicker 1.5s infinite alternate;
+    }
+
+    @keyframes flicker {
+      from {
+        opacity: 0.6;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+       
+       <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSparK</h1>
+        </div>
+        <!-- Hamburger Menu Button -->
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <button class="nav-btn" onclick="location.href='index.html'">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn" onclick="location.href='courses.html'">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn" onclick="location.href='about.html'">
+                <i class="fas fa-info-circle"></i>
+                About
+            </button>
+            <button class="nav-btn" onclick="location.href='contact.html'">
+                <i class="fas fa-envelope"></i>
+                Contact
+            </button>
+        </nav>
+    </header>
+       
+  <div class="container">
+    <h2>Generate Key For Books</h2>
+    <br>
+    <div class="duration-box">Duration: 48 Hours</div>
+    <p>Generate key to use our premium materials and resources.</p>
+    
+    <button id="server02" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 01 ✅</button>
+    <button id="server03Url" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 02 ✅</button><br>
+    <button id="recommendServer" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 03 ✅</button><br>
+    <button id="watchVideo" class="button">TUTORIAL VIDEO</button>
+    
+    <p class="loading" id="loadingMessage">Generating URL, please wait...</p>
+  </div>
+
+  <script>
+       const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+       
+    /* JavaScript Logic */
+    const urls = {
+      server02: 'https://techvjlink.site/server-3',
+      server03: 'https://Seturl.in/server-2',
+      recommendServer: 'https://modijiurl.com/server-3',
+      tutorialVideo: 'https://t.me/EduSparkk/444'
+    };
+
+    function setTemporaryCookieAndRedirect(cookieName, url) {
+      if (!url) return alert('Invalid URL!');
+      document.getElementById("loadingMessage").style.display = "block";
+      setTimeout(() => {
+        document.cookie = `${cookieName}=true; path=/; max-age=${48 * 60 * 60}`; // 48 hours (172800 seconds)
+        window.location.href = url;
+      }, 2000);
+    }
+
+    document.getElementById('server02').addEventListener('click', () => setTemporaryCookieAndRedirect('server02KeyGenerated', urls.server02));
+    document.getElementById('server03Url').addEventListener('click', () => setTemporaryCookieAndRedirect('server03KeyGenerated', urls.server03));
+    document.getElementById('recommendServer').addEventListener('click', () => setTemporaryCookieAndRedirect('recommendServerKeyGenerated', urls.recommendServer));
+    document.getElementById('watchVideo').addEventListener('click', () => window.open(urls.tutorialVideo, '_blank'));
+    
+    // Function to check if a specific cookie exists
+function getCookie(name) {
+  return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+}
+
+// Check if any success cookie exists
+if (getCookie('server1_success') || getCookie('server2_success') || getCookie('server3_success')) {
+  // Redirect to the books page
+  window.location.href = "https://eduspark.netlify.app/books-opened";
+}
+  </script>
+</body>
+</html>

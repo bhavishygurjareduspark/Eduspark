@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checking Key - EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Lemon Milk Font -->
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <!-- Add INTEGRALCF Font -->
+    <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
+    <!-- Add Oswald Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --tag-hot: #ff4757;
+            --tag-new: #2ed573;
+            --rating-star: #ffd700;
+            --price-green: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
+            background-size: 400% 400%;
+            animation: gradientFlow 10s ease infinite;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            padding-top: 70px; /* Prevent content from hiding under header */
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* HEADER */
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* MENU BUTTON */
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s;
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        /* NAV MENU */
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.4s;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+        }
+
+        /* CHECKING CONTAINER */
+        .checking-container {
+            background: var(--box-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+            margin-top: 40px;
+        }
+
+        .checking-container h1 {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-family: 'Lemon Milk', sans-serif;
+        }
+
+        .checking-container p {
+            font-size: 1.2rem;
+            color: var(--dark-bg);
+            margin-bottom: 2rem;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .checking-container .icon {
+            font-size: 4rem;
+            color: var(--accent-red);
+            margin-bottom: 1.5rem;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .checking-container {
+                padding: 2rem;
+            }
+
+            .checking-container h1 {
+                font-size: 2rem;
+            }
+
+            .checking-container p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <button class="menu-btn"><span></span><span></span><span></span></button>
+    </header>
+
+    <!-- CHECKING SECTION -->
+    <div class="checking-container">
+        <i class="fas fa-sync-alt icon"></i>
+        <h1>Checking Your Key</h1>
+        <p>Wait a second to confirm our server.</p>
+    </div>
+
+    <script>
+        // Navigation Menu Toggle
+        document.querySelector('.menu-btn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Function to check if a specific cookie exists
+function getCookie(name) {
+  return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+}
+
+// Function to delete a specific cookie
+function deleteCookie(name) {
+  document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+}
+
+// Function to set a new success cookie for 48 hours
+function setSuccessCookie(name) {
+  document.cookie = name + "=true; path=/; max-age=" + (48 * 60 * 60); // 48 hours
+}
+
+
+// Add a 2-second delay before proceeding
+setTimeout(() => {
+  // Check if the user has any of the key-generated cookies
+  if (getCookie('server02KeyGenerated')) {
+    deleteCookie('server02KeyGenerated');
+    setSuccessCookie('server1_success');
+    window.location.href = "https://eduspark.netlify.app/books-opened";
+  } else if (getCookie('server03KeyGenerated')) {
+    deleteCookie('server03KeyGenerated');
+    setSuccessCookie('server2_success');
+    window.location.href = "https://eduspark.netlify.app/books-opened";
+  } else if (getCookie('recommendServerKeyGenerated')) {
+    deleteCookie('recommendServerKeyGenerated');
+    setSuccessCookie('server3_success');
+    window.location.href = "https://eduspark.netlify.app/books-opened";
+  } else {
+    // If the user does not have any key-generated cookie, redirect to book-generate.html
+    window.location.href = "book-generate.html";
+  }
+}, 2000); // 2-second delay
+
+    </script>
+
+</body>
+</html>
