@@ -323,13 +323,13 @@
     };
 
     function setTemporaryCookieAndRedirect(cookieName, url) {
-      if (!url) return alert('Invalid URL!');
-      document.getElementById("loadingMessage").style.display = "block";
-      setTimeout(() => {
-        document.cookie = `${cookieName}=true; path=/; max-age=${48 * 60 * 60}`; // 48 hours (172800 seconds)
-        window.location.href = url;
-      }, 2000);
-    }
+    if (!url) return alert('Invalid URL!');
+    document.getElementById("loadingMessage").style.display = "block";
+    setTimeout(() => {
+      document.cookie = `${cookieName}=true; path=/; max-age=${48 * 60 * 60}`; // 48 hours (172800 seconds)
+      window.open(url, '_blank'); // Open in new tab
+    }, 2000);
+  }
 
     document.getElementById('server02').addEventListener('click', () => setTemporaryCookieAndRedirect('server02KeyGenerated', urls.server02));
     document.getElementById('server03Url').addEventListener('click', () => setTemporaryCookieAndRedirect('server03KeyGenerated', urls.server03));
