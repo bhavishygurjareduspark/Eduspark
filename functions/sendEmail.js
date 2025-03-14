@@ -5,27 +5,34 @@ exports.handler = async (event) => {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { name, username, user_id, email_or_phone } = JSON.parse(event.body);
-
-    const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-            user: "edusparkkofficial@gmail.com", 
-            pass: "YOUR_EMAIL_PASSWORD" // Use App Password if needed
-        }
-    });
-
-    const mailOptions = {
-        from: "edusparkkofficial@gmail.com",
-        to: "edusparkkofficial@gmail.com",
-        subject: "New Tournament Registration",
-        text: `NAME: ${name}\nUSERNAME: ${username}\nUSER ID: ${user_id}\nEMAIL OR PHONE: ${email_or_phone}`
-    };
-
     try {
+        const { name, username, userid, email } = JSON.parse(event.body);
+
+        let transporter = nodemailer.createTransport({
+            service: "Gmail",
+            auth: {
+                user: "edusparkkofficial@gmail.com", 
+                pass: "your-email-password", 
+            },
+        });
+
+        let mailOptions = {
+            from: "edusparkkofficial@gmail.com",
+            to: "edusparkkofficial@gmail.com",
+            subject: "New Free Fire Tournament Registration",
+            text: `New Registration:\n\nName: ${name}\nUsername: ${username}\nUser ID: ${userid}\nEmail/Phone: ${email}`,
+        };
+
         await transporter.sendMail(mailOptions);
-        return { statusCode: 200, body: "Email Sent Successfully!" };
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Registration Successful" }),
+        };
     } catch (error) {
-        return { statusCode: 500, body: `Error: ${error.message}` };
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Error sending email" }),
+        };
     }
 };
