@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure PDF Viewer - EduSparK</title>
+    <style>
+        body {
+            background: #121212;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            margin: auto;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>EduSparK Secure PDF Viewer</h1>
+    <div id="pdf-viewer"></div>
+
+    <script type="module">
+        import { getDocument } from './pdf.mjs';  // Load the PDF module
+
+        // 🔹 Your Secure PDF URL
+        const url = "https://drive.google.com/file/d/1tNZ8yIRGHV1mGP9xAjZoaGUxTEb2xWpv/view?usp=sharing"; 
+
+        const pdfContainer = document.getElementById("pdf-viewer");
+
+        async function renderPDF() {
+            const pdf = await getDocument(url).promise;
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale });
+
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                pdfContainer.appendChild(canvas);
+                await page.render({ canvasContext: context, viewport }).promise;
+            }
+        }
+
+        renderPDF();
+    </script>
+
+</body>
+</html>
