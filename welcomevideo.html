@@ -396,7 +396,7 @@ let hasReacted = false;
             });
         }
 function updateReaction(type) {
-    fetch("/.netlify/functions/update-likes", {
+    fetch("/functions/update-likes", {
         method: "POST",
         body: JSON.stringify({ type }),
     })
