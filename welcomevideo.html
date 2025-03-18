@@ -9,6 +9,7 @@
     <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         :root {
             --primary-blue: #00008b;
@@ -20,7 +21,7 @@
             --tag-new: #2ed573;
             --rating-star: #ffd700;
             --price-green: #2ed573;
-              --like-color: #2ed573;
+            --like-color: #2ed573;
             --dislike-color: #ff4757;
             --share-color: #3498db;
             --bg-dark: #0a0a0a;
@@ -174,7 +175,7 @@
             margin: auto; /* Centers the player */
             border-radius: 0px;
         }
-     .reaction-container {
+    .reaction-container {
             width: 95%;
             max-width: 600px;
             margin: 15px auto;
@@ -273,7 +274,7 @@
     <section class="live-section">
         <video id="player" playsinline controls></video>
     </section>
-      <div class="reaction-container">
+    <div class="reaction-container">
             <div class="reaction-btn like-btn" onclick="chooseReaction('like')">
                 <i class="fas fa-thumbs-up"></i>
                 <span id="like-count">0</span>
@@ -369,44 +370,58 @@
                 }
             }
         });
-let hasReacted = false;
 
-        function chooseReaction(type) {
-            if (hasReacted) return;
+    // Initialize Supabase
+    const SUPABASE_URL = 'https://xgxtjcyvweenvtvbqtpr.supabase.co';  // Replace with your Supabase project URL
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhneHRqY3l2d2VlbnZ0dmJxdHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIyODkyNzUsImV4cCI6MjA1Nzg2NTI3NX0.kjQP-JxriQIvoh6Vs6WmIU3aBInaTThxTnnP5zrWnd8';  // Replace with your Supabase API key
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            let likeCount = document.getElementById('like-count');
-            let dislikeCount = document.getElementById('dislike-count');
+    // Fetch likes and dislikes from Supabase
+    async function fetchReactions() {
+        const { data, error } = await supabase.from('likes_dislikes').select('*').eq('id', 1).single();
+        if (error) {
+            console.error('Error fetching reactions:', error);
+            return;
+        }
+        document.getElementById('like-count').textContent = data.likes;
+        document.getElementById('dislike-count').textContent = data.dislikes;
+    }
 
-            if (type === 'like') {
-                likeCount.innerText = parseInt(likeCount.innerText) + 1;
-            } else if (type === 'dislike') {
-                dislikeCount.innerText = parseInt(dislikeCount.innerText) + 1;
-            }
+    // Update likes or dislikes
+    async function updateReaction(type) {
+        const likeCountElem = document.getElementById('like-count');
+        const dislikeCountElem = document.getElementById('dislike-count');
 
-            // Disable both buttons after one selection
-            document.querySelector('.like-btn').classList.add('disabled');
-            document.querySelector('.dislike-btn').classList.add('disabled');
+        let currentLikes = parseInt(likeCountElem.textContent);
+        let currentDislikes = parseInt(dislikeCountElem.textContent);
 
-            hasReacted = true;
+        if (type === 'like') {
+            currentLikes += 1;
+        } else if (type === 'dislike') {
+            currentDislikes += 1;
         }
 
-        function shareVideo() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                alert('Video link copied to clipboard!');
-            });
-        }
-function updateReaction(type) {
-    fetch("/functions/update-likes", {
-        method: "POST",
-        body: JSON.stringify({ type }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("like-count").innerText = data.likes;
-        document.getElementById("dislike-count").innerText = data.dislikes;
-    });
-}
+        // Update Supabase
+        const { error } = await supabase
+            .from('likes_dislikes')
+            .update({ likes: currentLikes, dislikes: currentDislikes })
+            .eq('id', 1);
 
+        if (error) {
+            console.error('Error updating reaction:', error);
+        } else {
+            likeCountElem.textContent = currentLikes;
+            dislikeCountElem.textContent = currentDislikes;
+        }
+    }
+
+    // Function called when user clicks Like/Dislike
+    function chooseReaction(type) {
+        updateReaction(type);
+    }
+
+    // Fetch initial reactions on page load
+    document.addEventListener('DOMContentLoaded', fetchReactions);
     </script>
 </body>
 </html>
