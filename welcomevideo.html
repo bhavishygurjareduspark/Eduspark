@@ -20,6 +20,12 @@
             --tag-new: #2ed573;
             --rating-star: #ffd700;
             --price-green: #2ed573;
+              --like-color: #2ed573;
+            --dislike-color: #ff4757;
+            --share-color: #3498db;
+            --bg-dark: #0a0a0a;
+            --text-light: #ffffff;
+            --button-bg: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -168,6 +174,65 @@
             margin: auto; /* Centers the player */
             border-radius: 0px;
         }
+     .reaction-container {
+            width: 95%;
+            max-width: 600px;
+            margin: 15px auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #000000;
+            padding: 10px 15px;
+            border-radius: 12px;
+        }
+
+        .reaction-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-light);
+        }
+
+        .reaction-btn i {
+            margin-right: 5px;
+        }
+
+        /* Like Button */
+        .like-btn:hover {
+            color: var(--like-color);
+            transform: scale(1.1);
+        }
+
+        /* Dislike Button */
+        .dislike-btn:hover {
+            color: var(--dislike-color);
+            transform: scale(1.1);
+        }
+
+        /* Share Button */
+        .share-btn:hover {
+            color: var(--share-color);
+            transform: scale(1.1);
+        }
+
+        /* Disable Buttons After Selection */
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .reaction-container {
+                justify-content: space-between;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -208,6 +273,21 @@
     <section class="live-section">
         <video id="player" playsinline controls></video>
     </section>
+      <div class="reaction-container">
+            <div class="reaction-btn like-btn" onclick="chooseReaction('like')">
+                <i class="fas fa-thumbs-up"></i>
+                <span id="like-count">0</span>
+            </div>
+            <div class="reaction-btn dislike-btn" onclick="chooseReaction('dislike')">
+                <i class="fas fa-thumbs-down"></i>
+                <span id="dislike-count">0</span>
+            </div>
+            <div class="reaction-btn share-btn" onclick="shareVideo()">
+                <i class="fas fa-share"></i> Share
+            </div>
+        </div>
+    </section>
+
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
@@ -289,6 +369,44 @@
                 }
             }
         });
+let hasReacted = false;
+
+        function chooseReaction(type) {
+            if (hasReacted) return;
+
+            let likeCount = document.getElementById('like-count');
+            let dislikeCount = document.getElementById('dislike-count');
+
+            if (type === 'like') {
+                likeCount.innerText = parseInt(likeCount.innerText) + 1;
+            } else if (type === 'dislike') {
+                dislikeCount.innerText = parseInt(dislikeCount.innerText) + 1;
+            }
+
+            // Disable both buttons after one selection
+            document.querySelector('.like-btn').classList.add('disabled');
+            document.querySelector('.dislike-btn').classList.add('disabled');
+
+            hasReacted = true;
+        }
+
+        function shareVideo() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Video link copied to clipboard!');
+            });
+        }
+function updateReaction(type) {
+    fetch("/.netlify/functions/update-likes", {
+        method: "POST",
+        body: JSON.stringify({ type }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("like-count").innerText = data.likes;
+        document.getElementById("dislike-count").innerText = data.dislikes;
+    });
+}
+
     </script>
 </body>
 </html>
