@@ -10,85 +10,231 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --tag-hot: #ff4757;
+            --tag-new: #2ed573;
+            --rating-star: #ffd700;
+            --price-green: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(-45deg, #0a0a0a, #ff0000, #0a0a0a, #ff0000);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
             background-size: 400% 400%;
             animation: gradientFlow 10s ease infinite;
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
+
         @keyframes gradientFlow {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-        .live-section {
-            text-align: center;
-            padding: 6rem 2rem 2rem;
+
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
-        .video-container {
-            max-width: 1280px;
-            margin: auto;
-            background: rgba(255, 255, 255, 0.95);
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
             padding: 2rem;
-            border-radius: 16px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
         }
-        .welcome-box {
-            background-color: #00008B; /* Blue background */
-            padding: 1rem; /* Add some padding */
-            border-radius: 8px; /* Rounded corners */
-            display: inline-block; /* Make the box fit the content */
-            margin-bottom: 2rem; /* Add some space below the box */
+
+        .nav-menu.active {
+            transform: translateX(-300px);
         }
-        .welcome-box h1 {
-            color: #FFFFFF; /* White text */
-            margin: 0; /* Remove default margin */
-            font-size: 2rem; /* Adjust font size */
-            font-family: 'Lemon Milk', sans-serif; /* Use the Lemon Milk font */
-        }
-        .back-button-container {
-            text-align: center;
-            margin-top: 2rem; /* Add some space above the button */
-        }
-        .back-button {
-            background-color: #00008B; /* Blue background */
-            color: #FFFFFF; /* White text */
-            padding: 0.8rem 1.5rem;
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
+            transition: all 0.3s ease-out;
+            font-size: 1.1rem;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
-        .back-button:hover {
-            background-color: #ff0000; /* Red background on hover */
-            transform: translateY(-2px);
+
+        .nav-btn i {
+            transition: transform 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+        .live-section {
+            text-align: center;
+            padding-top: 0.3rem; /* 0.5-line gap below the header */
+        }
+        video {
+            width: 95%; /* Slightly reduced width */
+            max-width: 1200px; /* Prevents it from being too large on big screens */
+            height: 250px; /* Adjusted height */
+            display: block;
+            margin: auto; /* Centers the player */
+            border-radius: 0px;
         }
     </style>
 </head>
 <body>
-    <section class="live-section">
-        <div class="welcome-box">
-            <h1>WELCOME VIDEO OF AARAMBH</h1>
+       <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
         </div>
-        <div class="video-container">
-            <video id="player" playsinline controls></video>
-        </div>
-        <div class="back-button-container">
-            <button class="back-button" onclick="window.history.back()">
-                <i class="fas fa-arrow-left"></i> Back
+        <!-- Hamburger Menu Button -->
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <button class="nav-btn" onclick="location.href='index.html'">
+                <i class="fas fa-home"></i>
+                Home
             </button>
-        </div>
+            <button class="nav-btn" onclick="location.href='courses.html'">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn" onclick="location.href='about.html'">
+                <i class="fas fa-info-circle"></i>
+                About
+            </button>
+            <button class="nav-btn" onclick="location.href='contact.html'">
+                <i class="fas fa-envelope"></i>
+                Contact
+            </button>
+        </nav>
+    </header>
+    <h1>‎ </h1>
+    <h1>‎ </h1>
+    <h1>‎ </h1>
+    <section class="live-section">
+        <video id="player" playsinline controls></video>
     </section>
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
+       // Toggle Navigation Menu
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    
         document.addEventListener('DOMContentLoaded', () => {
-            const source = 'https://d3cx6qbbd4cbso.cloudfront.net/file_library/videos/vod_non_drm_ios/4312904/1740491033_1089325762901906/sunny/1740490966781_94603654451027820_video_VOD.m3u8';
+            const source = 'https://madxapi-d0cbf6ac738c.herokuapp.com/9d45f54a-1de2-49e7-82ef-d4f649c56b7f/master.m3u8?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDI4ODg0NTIuNjkxLCJkYXRhIjp7Il9pZCI6IjY3ODMzYzI2YjcwNGVmNDU5MWY4ZWU0NyIsInVzZXJuYW1lIjoiNjI2Mzk2OTIxNCIsImZpcnN0TmFtZSI6IkJnIGJoIiwibGFzdE5hbWUiOiIiLCJvcmdhbml6YXRpb24iOnsiX2lkIjoiNWViMzkzZWU5NWZhYjc0NjhhNzlkMTg5Iiwid2Vic2l0ZSI6InBoeXNpY3N3YWxsYWguY29tIiwibmFtZSI6IlBoeXNpY3N3YWxsYWgifSwicm9sZXMiOlsiNWIyN2JkOTY1ODQyZjk1MGE3NzhjNmVmIl0sImNvdW50cnlHcm91cCI6IklOIiwidHlwZSI6IlVTRVIifSwiaWF0IjoxNzQyMjgzNjUyfQ.gy0ZdwYZrIhMLlJzPPp0_JG_BzAjTk5iAEJYy80mc5A';
             const video = document.querySelector('video');
 
-            const defaultOptions = {};
+            const defaultOptions = {
+                controls: ['play', 'progress', 'current-time', 'fullscreen', 'pip', 'settings'], // PiP is enabled
+            };
 
             if (Hls.isSupported()) {
                 const hls = new Hls();
