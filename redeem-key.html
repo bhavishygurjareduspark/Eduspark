@@ -284,10 +284,10 @@
     </header>
        
   <div class="container">
-    <h2>Generate Key For Giveaway</h2>
+    <h2>Generate Key For GIiveaway</h2>
     <br>
-    <div class="duration-box">500RS Redeem code</div>
-    <p>Generate key to participate in giveaway.</p>
+    <div class="duration-box">500RS redeem code</div>
+    <p>Generate key to Participate in giveaway.</p>
     
     <button id="server02" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 01 ✅</button>
     <button id="server03Url" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 02 ✅</button><br>
@@ -322,11 +322,24 @@
       tutorialVideo: 'https://t.me/EduSparkk/444'
     };
 
+    function setTemporaryCookieAndRedirect(cookieName, url) {
+    if (!url) return alert('Invalid URL!');
+    document.getElementById("loadingMessage").style.display = "block";
+    setTimeout(() => {
+      document.cookie = `${cookieName}=true; path=/; max-age=${48 * 60 * 60}`; // 48 hours (172800 seconds)
+      window.open(url, '_blank'); // Open in new tab
+    }, 2000);
+  }
 
     document.getElementById('server02').addEventListener('click', () => setTemporaryCookieAndRedirect('server02KeyGenerated', urls.server02));
     document.getElementById('server03Url').addEventListener('click', () => setTemporaryCookieAndRedirect('server03KeyGenerated', urls.server03));
     document.getElementById('recommendServer').addEventListener('click', () => setTemporaryCookieAndRedirect('recommendServerKeyGenerated', urls.recommendServer));
     document.getElementById('watchVideo').addEventListener('click', () => window.open(urls.tutorialVideo, '_blank'));
+    
+    // Function to check if a specific cookie exists
+function getCookie(name) {
+  return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+}
 
   </script>
 </body>
