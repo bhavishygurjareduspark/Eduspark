@@ -259,19 +259,19 @@ setTimeout(() => {
   // Check if the user has any of the key-generated cookies
   if (getCookie('server02KeyGenerated')) {
     deleteCookie('server02KeyGenerated');
-    setSuccessCookie('server_one_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
+    setSuccessCookie('server_1_success');
+    window.location.href = "https://edusparkk.netlify.app/redeem";
   } else if (getCookie('server03KeyGenerated')) {
     deleteCookie('server03KeyGenerated');
-    setSuccessCookie('server_two_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
+    setSuccessCookie('server_2_success');
+    window.location.href = "https://edusparkk.netlify.app/redeem";
   } else if (getCookie('recommendServerKeyGenerated')) {
     deleteCookie('recommendServerKeyGenerated');
-    setSuccessCookie('server_three_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
+    setSuccessCookie('server_3_success');
+    window.location.href = "https://edusparkk.netlify.app/redeem";
   } else {
     // If the user does not have any key-generated cookie, redirect to book-generate.html
-    window.location.href = "https://edusparkk.netlify.app/book-generate";
+    window.location.href = "https://edusparkk.netlify.app/redeem-key";
   }
 }, 2000); // 2-second delay
 
