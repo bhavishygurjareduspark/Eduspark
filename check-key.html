@@ -232,50 +232,47 @@
     </div>
 
     <script>
-        // Navigation Menu Toggle
-        document.querySelector('.menu-btn').addEventListener('click', function() {
-            this.classList.toggle('active');
-            document.querySelector('.nav-menu').classList.toggle('active');
-        });
+    // Navigation Menu Toggle
+    document.querySelector('.menu-btn').addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.querySelector('.nav-menu').classList.toggle('active');
+    });
 
-        // Function to check if a specific cookie exists
-function getCookie(name) {
-  return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
-}
+    // Function to check if a specific cookie exists
+    function getCookie(name) {
+        return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+    }
 
-// Function to delete a specific cookie
-function deleteCookie(name) {
-  document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-}
+    // Function to delete a specific cookie
+    function deleteCookie(name) {
+        document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    }
 
-// Function to set a new success cookie for 48 hours
-function setSuccessCookie(name) {
-  document.cookie = name + "=true; path=/; max-age=" + (48 * 60 * 60); // 48 hours
-}
+    // Function to set a new success cookie with different expiration times
+    function setSuccessCookie(name, hours) {
+        document.cookie = name + "=true; path=/; max-age=" + (hours * 60 * 60); // Convert hours to seconds
+    }
 
+    // Add a 2-second delay before proceeding
+    setTimeout(() => {
+        if (getCookie('server02KeyGenerated')) {
+            deleteCookie('server02KeyGenerated');
+            setSuccessCookie('server_1_success', 24); // 24 hours
+            window.location.href = "https://edusparkk.netlify.app/books-opened";
+        } else if (getCookie('server03KeyGenerated')) {
+            deleteCookie('server03KeyGenerated');
+            setSuccessCookie('server_2_success', 48); // 48 hours
+            window.location.href = "https://edusparkk.netlify.app/books-opened";
+        } else if (getCookie('recommendServerKeyGenerated')) {
+            deleteCookie('recommendServerKeyGenerated');
+            setSuccessCookie('server_3_success', 72); // 72 hours
+            window.location.href = "https://edusparkk.netlify.app/books-opened";
+        } else {
+            window.location.href = "https://edusparkk.netlify.app/book-generate";
+        }
+    }, 2000); // 2-second delay
+</script>
 
-// Add a 2-second delay before proceeding
-setTimeout(() => {
-  // Check if the user has any of the key-generated cookies
-  if (getCookie('server02KeyGenerated')) {
-    deleteCookie('server02KeyGenerated');
-    setSuccessCookie('server_one_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
-  } else if (getCookie('server03KeyGenerated')) {
-    deleteCookie('server03KeyGenerated');
-    setSuccessCookie('server_two_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
-  } else if (getCookie('recommendServerKeyGenerated')) {
-    deleteCookie('recommendServerKeyGenerated');
-    setSuccessCookie('server_three_success');
-    window.location.href = "https://edusparkk.netlify.app/books-opened";
-  } else {
-    // If the user does not have any key-generated cookie, redirect to book-generate.html
-    window.location.href = "https://edusparkk.netlify.app/book-generate";
-  }
-}, 2000); // 2-second delay
-
-    </script>
 
 </body>
 </html>

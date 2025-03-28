@@ -287,12 +287,12 @@
   <div class="container">
     <h2>Generate Key For Books</h2>
     <br>
-    <div class="duration-box">Duration: 48 Hours</div>
+    <div class="duration-box">Duration: Your Choise</div>
     <p>Generate key to use our premium materials and resources.</p>
     
-    <button id="server02" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 01 ✅</button>
-    <button id="server03Url" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 02 ✅</button><br>
-    <button id="recommendServer" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 03 ✅</button><br>
+    <button id="server02" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 01 (24 Hours)</button>
+    <button id="server03Url" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 02 (48 Hours)</button><br>
+    <button id="recommendServer" class="button">𝚂𝙴𝚁𝚅𝙴𝚁 03 (72 Hours)</button><br>
     <button id="watchVideo" class="button">TUTORIAL VIDEO</button>
     
     <p class="loading" id="loadingMessage">Generating URL, please wait...</p>
@@ -343,7 +343,7 @@ function getCookie(name) {
 }
 
 // Check if any success cookie exists
-if (getCookie('server_one_success') || getCookie('server_two_success') || getCookie('server_three_success')) {
+if (getCookie('server_1_success') || getCookie('server_2_success') || getCookie('server_3_success')) {
   // Redirect to the books page
   window.location.href = "https://edusparkk.netlify.app/books-opened";
 }
