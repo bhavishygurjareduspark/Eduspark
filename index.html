@@ -403,6 +403,81 @@
             .section-title {
                 font-size: 2rem;
             }
+
+            * Cookie Consent Styles */
+        .cookie-consent-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--box-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 9999;
+            transform: translateY(120%);
+            animation: cookieSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            border: 1px solid rgba(0, 0, 139, 0.1);
+        }
+
+        @keyframes cookieSlideUp {
+            to { transform: translateY(0); }
+        }
+
+        .cookie-icon {
+            font-size: 28px;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+        }
+
+        .cookie-message {
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .cookie-btn {
+            padding: 10px 24px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cookie-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+        }
+
+        .cookie-btn i {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .cookie-consent-box {
+                left: 15px;
+                right: 15px;
+                padding: 16px;
+            }
+            
+            .cookie-message {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -544,6 +619,19 @@
         <i class="fab fa-telegram-plane"></i>
     </a>
 
+     <div class="cookie-consent-box" id="cookieConsent">
+        <div class="cookie-icon">
+            <i class="fas fa-cookie-bite"></i>
+        </div>
+        <p class="cookie-message">
+            We use cookies to enhance your experience on EduSpark. By continuing to browse, 
+            you agree to our use of cookies.
+        </p>
+        <button class="cookie-btn" id="acceptCookies">
+            <i class="fas fa-check"></i> Accept
+        </button>
+     </div>
+
     <script>
         // Preloader
         window.addEventListener('load', () => {
@@ -579,6 +667,41 @@
             setTimeout(() => {
                 swipeMessage.style.display = 'none'; // Hide the message after 3 seconds
             }, 3000);
+        });
+
+        // Cookie Consent Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieConsent = document.getElementById('cookieConsent');
+            const acceptBtn = document.getElementById('acceptCookies');
+            
+            // Check if consent was already given
+            if (!getCookie('eduspark_cookies_accepted')) {
+                setTimeout(() => {
+                    cookieConsent.style.display = 'flex';
+                }, 2000);
+            }
+            
+            // Accept cookies
+            acceptBtn.addEventListener('click', function() {
+                setCookie('eduspark_cookies_accepted', 'true', 365);
+                cookieConsent.style.animation = 'cookieSlideUp 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) reverse forwards';
+                setTimeout(() => {
+                    cookieConsent.style.display = 'none';
+                }, 400);
+            });
+            
+            // Cookie functions
+            function setCookie(name, value, days) {
+                const d = new Date();
+                d.setTime(d.getTime() + (days*24*60*60*1000));
+                document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
+            }
+            
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
         });
     </script>
 </body>
