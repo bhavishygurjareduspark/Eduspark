@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choose Your Class - EduSpark</title>
+    <title>Class 12th Maintenance - EduSpark</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Add Lemon Milk Font -->
     <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
@@ -38,6 +38,10 @@
             animation: gradientFlow 10s ease infinite;
             overflow-x: hidden;
             touch-action: manipulation;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         @keyframes gradientFlow {
@@ -159,61 +163,123 @@
             transform: rotate(360deg);
         }
 
-        .class-selection {
-            padding: 6rem 2rem 2rem; /* Adjusted for header */
-            text-align: center;
+        .maintenance-container {
+            background: var(--box-bg);
+            padding: 3rem;
+            margin: 100px auto 0;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeIn 1.5s ease-in-out;
         }
 
-        .class-selection h1 {
+        .maintenance-container h1 {
             font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: var(--pure-white);
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-family: 'Lemon Milk', sans-serif;
             text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .class-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
+        .maintenance-container p {
+            font-size: 1.2rem;
+            color: var(--dark-bg);
+            margin-bottom: 1.5rem;
+            font-family: 'Oswald', sans-serif;
+            line-height: 1.6;
         }
 
-        .class-card {
-            background: var(--box-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+        .maintenance-container .icon {
+            font-size: 4rem;
+            color: var(--accent-red);
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
         }
 
-        .class-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
         }
 
-        .class-card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
-        }
-
-        .class-card button {
-            padding: 0.8rem 1.5rem;
+        .countdown-item {
             background: var(--primary-blue);
-            color: var(--pure-white);
-            border: none;
+            color: white;
+            padding: 1rem;
             border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
+            min-width: 80px;
+            font-family: 'Lemon Milk', sans-serif;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .class-card button:hover {
-            background: var(--accent-red);
+        .countdown-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .countdown-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .telegram-btn {
+            background: #0088cc;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .telegram-btn:hover {
+            background: #0077b5;
             transform: translateY(-3px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 2rem;
+            }
+
+            .maintenance-container h1 {
+                font-size: 2rem;
+            }
+
+            .maintenance-container p {
+                font-size: 1rem;
+            }
+            
+            .countdown {
+                gap: 0.5rem;
+            }
+            
+            .countdown-item {
+                min-width: 60px;
+                padding: 0.8rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -251,37 +317,35 @@
         </nav>
     </header>
 
-    <!-- Class Selection Section -->
-    <section class="class-selection">
-        <h1>Choose Your Class</h1>
-        <div class="class-grid">
-            <!-- Class 10th -->
-             <div class="class-card">
-                <h2>Books - all class</h2>
-                <button onclick="location.href='/error'">Select Books</button>
+    <!-- Maintenance Section -->
+    <div class="maintenance-container">
+        <i class="fas fa-tools icon"></i>
+        <h1>Under Maintenance</h1>
+        
+        <p>We are making important updates to provide you with better content and features. Thank you for your patience!</p>
+        
+        <div class="countdown">
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">00</div>
+                <div class="countdown-label">Hours</div>
             </div>
-            
-            <div class="class-card">
-                <h2>Class 9th</h2>
-                <button onclick="location.href='/error'">Select Class</button>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">00</div>
+                <div class="countdown-label">Minutes</div>
             </div>
-            
-            <div class="class-card">
-                <h2>Class 10th</h2>
-                <button onclick="location.href='/error'">Select Class</button>
-            </div>
-            <!-- Class 11th -->
-            <div class="class-card">
-                <h2>Class 11th</h2>
-                <button onclick="location.href='/error'">Select Class</button>
-            </div>
-            <!-- Class 12th -->
-            <div class="class-card">
-                <h2>Class 12th</h2>
-                <button onclick="location.href='/error'">Select Class</button>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">00</div>
+                <div class="countdown-label">Seconds</div>
             </div>
         </div>
-    </section>
+        
+        <p>Expected completion by today at 4:00 PM</p>
+        
+        <a href="https://t.me/EdusparkKOfficial" class="telegram-btn" target="_blank">
+            <i class="fab fa-telegram"></i>
+            Join for Updates
+        </a>
+    </div>
 
     <script>
         // Toggle Navigation Menu
@@ -300,6 +364,44 @@
                 navMenu.classList.remove('active');
             }
         });
+
+        // Countdown Timer
+        function updateCountdown() {
+            // Set the target time to today at 4 PM
+            const now = new Date();
+            const target = new Date();
+            
+            // If it's already past 4 PM today, set for 4 PM tomorrow
+            if (now.getHours() >= 16) {
+                target.setDate(target.getDate() + 1);
+            }
+            
+            target.setHours(16, 0, 0, 0); // 4 PM
+            
+            const diff = target - now;
+            
+            if (diff <= 0) {
+                // Maintenance completed
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                return;
+            }
+            
+            // Calculate hours, minutes, seconds
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Display the values
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
