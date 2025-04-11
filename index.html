@@ -212,7 +212,7 @@
             color: var(--pure-white);
             position: relative;
             overflow: hidden;
-            margin-top: 80px; /* Add 1-line gap between header and image */
+            margin-top: 80px;
         }
 
         .hero-content {
@@ -235,7 +235,7 @@
             font-size: 3.5rem;
             margin-bottom: 1rem;
             text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            font-weight: bold; /* Ensure it uses the bold version */
+            font-weight: bold;
         }
 
         .hero-subtitle {
@@ -245,18 +245,18 @@
         }
 
         .cta-button {
-    font-family: 'IntegralCF', sans-serif;
-    padding: 1rem 2.5rem;
-    background: var(--primary-blue);
-    color: var(--pure-white);
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-align: center;
-    margin-top: 20px;
-}
+            font-family: 'IntegralCF', sans-serif;
+            padding: 1rem 2.5rem;
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            margin-top: 20px;
+        }
 
         .cta-button:hover {
             background: var(--accent-red);
@@ -309,49 +309,239 @@
             font-size: 1.1rem;
             line-height: 1.8;
             text-align: center;
-            font-family: 'Oswald', sans-serif; /* Apply Oswald font */
+            font-family: 'Oswald', sans-serif;
         }
 
-        .batch-section {
-            padding: 4rem 2rem;
-            background: var(--pure-white);
-        }
-
+           .batch-section {
+        padding: 5rem 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .batch-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://i.postimg.cc/9F3pzJ0H/dots-bg.png') repeat;
+        opacity: 0.05;
+        pointer-events: none;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .section-title {
+        font-family: 'Lemon Milk', sans-serif;
+        font-size: 2.8rem;
+        color: var(--primary-blue);
+        margin-bottom: 0.5rem;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-red);
+        border-radius: 2px;
+    }
+    
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: #555;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .batch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .batch-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .batch-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    .batch-card-header {
+        position: relative;
+        height: 220px; /* Increased height for rectangular images */
+        overflow: hidden;
+    }
+    
+    .rectangular-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .batch-card:hover .rectangular-img {
+        transform: scale(1.05);
+    }
+    
+    .batch-tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: white;
+        z-index: 2;
+    }
+    
+    .new-tag {
+        background: var(--tag-new);
+    }
+    
+    .popular-tag {
+        background: var(--primary-blue);
+    }
+    
+    .hot-tag {
+        background: var(--tag-hot);
+    }
+    
+    .batch-card-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .batch-card h3 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
+    }
+    
+    .batch-features {
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #555;
+    }
+    
+    .feature i {
+        margin-right: 10px;
+        color: var(--primary-blue);
+        width: 20px;
+        text-align: center;
+    }
+    
+    .batch-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .batch-card-footer {
+        padding: 0 1.5rem 1.5rem;
+    }
+    
+    .enroll-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(to right, var(--primary-blue), #0000aa);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .enroll-btn:hover {
+        background: linear-gradient(to right, var(--accent-red), #ff3333);
+        transform: translateY(-2px);
+    }
+    
+    .enroll-btn i {
+        transition: transform 0.3s ease;
+    }
+    
+    .enroll-btn:hover i {
+        transform: translateX(3px);
+    }
+    
+    .view-all-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+    
+    .view-all-btn {
+        padding: 12px 30px;
+        background: transparent;
+        color: var(--primary-blue);
+        border: 2px solid var(--primary-blue);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .view-all-btn:hover {
+        background: var(--primary-blue);
+        color: white;
+    }
+    
+    .view-all-btn i {
+        transition: transform 0.3s ease;
+    }
+    
+    .view-all-btn:hover i {
+        transform: translateX(5px);
+    }
+    
+    @media (max-width: 768px) {
         .batch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: 1fr;
         }
-
-        .batch-card {
-            background: var(--box-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        
+        .section-title {
+            font-size: 2.2rem;
         }
-
-        .batch-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
+        
+        .batch-card-header {
+            height: 200px; /* Slightly smaller on mobile */
         }
-
-        .batch-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
-        }
-
-        .batch-card p {
-            font-size: 1rem;
-            color: #555;
-            line-height: 1.6;
-        }
+  
 
         footer {
             padding: 2rem;
@@ -391,19 +581,6 @@
             100% { transform: translateX(0); }
         }
 
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-            
         /* Cookie Consent Styles */
         .cookie-consent-box {
             position: fixed;
@@ -416,7 +593,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            display: flex;
+            display: none; /* Hidden by default */
             flex-direction: column;
             align-items: center;
             text-align: center;
@@ -469,6 +646,18 @@
         }
 
         @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+            
             .cookie-consent-box {
                 left: 15px;
                 right: 15px;
@@ -501,23 +690,27 @@
             <span></span>
         </button>
         <nav class="nav-menu">
-            <button class="nav-btn" onclick="location.href='index.html'">
+            <button class="nav-btn" onclick="location.href='/'">
                 <i class="fas fa-home"></i>
                 Home
             </button>
-            <button class="nav-btn" onclick="location.href='courses.html'">
+            <button class="nav-btn" onclick="location.href='/courses'">
                 <i class="fas fa-graduation-cap"></i>
                 Courses
             </button>
-            <button class="nav-btn" onclick="location.href='about.html'">
+<button class="nav-btn" onclick="location.href='/enrolled'">
+    <i class="fas fa-user-graduate"></i>
+    My Courses
+</button>
+            <button class="nav-btn" onclick="location.href='/about'">
                 <i class="fas fa-info-circle"></i>
                 About
             </button>
-            <button class="nav-btn" onclick="location.href='contact.html'">
+            <button class="nav-btn" onclick="location.href='/contact'">
                 <i class="fas fa-envelope"></i>
                 Contact
             </button>
-            <button class="nav-btn get-started-btn" onclick="location.href='courses.html'">
+            <button class="nav-btn get-started-btn" onclick="location.href='/courses'">
                 <i class="fas fa-rocket"></i>
                 Get Started
             </button>
@@ -564,7 +757,6 @@
             <h1 class="hero-title">Welcome to EduSpark</h1>
             <p class="hero-subtitle">Your gateway to modern, interactive, and effective learning.</p>
             <button class="cta-button" onclick="location.href='courses.html'">
-                <p></p>
                 <i class="fas fa-rocket"></i> Get Started
             </button>
         </div>
@@ -573,6 +765,7 @@
     <!-- About Section -->
     <section id="about" class="about-section">
         <h2 class="section-title">Why Choose EduSpark?</h2>
+       <br>
         <div class="about-content">
             <p>
                 EduSpark is a next-generation learning platform designed to help students achieve academic excellence. 
@@ -589,25 +782,111 @@
 
     <!-- Batch Section -->
     <section class="batch-section">
-        <h2 class="section-title">Our Batches</h2>
-        <div class="batch-grid">
-            <div class="batch-card">
-                <img src="https://i.postimg.cc/brbZQjjN/538903229246-aarambh-banner-app.jpg" alt="Mathematics">
-                <h3>AARAMBH BATCH 10TH</h3>
-                <p>
-                </p>
-            </div>
-            <div class="batch-card">
-                <img src="https://i.postimg.cc/256M3k4v/707679428609-11th-prarambh-sci-app-with-eng.jpg" alt="Science">
-                <h3>PRARAMBH CLASS 11TH</h3>
-            </div>
-            <div class="batch-card">
-                <img src="https://i.postimg.cc/JhSDtQyL/images-2.jpg" alt="History">
-                <h3>AARAMBH CLASS 9TH</h3>
+    <div class="section-header">
+        <h2 class="section-title">Our Premium Batches</h2>
+        
+    </div>
     
+    <div class="batch-grid">
+        <!-- Batch Card 1 -->
+        <div class="batch-card">
+            <div class="batch-card-header">
+                <div class="batch-tag new-tag">NEW</div>
+                <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/538903229246_aarambh%20banner%20app.jpg" alt="Aarambh Batch" class="rectangular-img">
             </div>
+            <div class="batch-card-body">
+                <h3>AARAMBH BATCH 10TH</h3>
+                <div class="batch-features">
+                    <div class="feature">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Starts: April 12, 2025</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>Duration: 12 Months</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Expert Instructors</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="batch-card-footer">
+    <button class="enroll-btn" onclick="window.location.href='/nt/10th'">
+        Enroll Now <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
         </div>
-    </section>
+        
+        <!-- Batch Card 2 -->
+        <div class="batch-card">
+            <div class="batch-card-header">
+                <div class="batch-tag popular-tag">POPULAR</div>
+                <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/499760128609_11th%20prarambh%20sci%20app%20final%203499.jpg" alt="Prarambh Batch" class="rectangular-img">
+            </div>
+            <div class="batch-card-body">
+                <h3>PRARAMBH CLASS 12TH</h3>
+                <div class="batch-features">
+                    <div class="feature">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Starts: April 12, 2025</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>Duration: 12 Months</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Expert Instructors</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="batch-card-footer">
+    <button class="enroll-btn" onclick="window.location.href='/courses'">
+        Enroll Now <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
+        
+        <!-- Batch Card 3 -->
+        <div class="batch-card">
+            <div class="batch-card-header">
+                <div class="batch-tag hot-tag">HOT</div>
+                <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/401500133113_aarambh%20class%209th%20banner%20app.png" alt="Aarambh 9th Batch" class="rectangular-img">
+            </div>
+            <div class="batch-card-body">
+                <h3>AARAMBH CLASS 9TH</h3>
+                <div class="batch-features">
+                    <div class="feature">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Starts: April 15, 2025</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>Duration: 12 Months</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Expert Instructors</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="batch-card-footer">
+    <button class="enroll-btn" onclick="window.location.href='/nt/9th'">
+        Enroll Now <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
+        </div>
+    </div>
+    
+  <div class="view-all-container">
+    <button class="view-all-btn" onclick="window.location.href='/courses'">
+        View All Batches <i class="fas fa-chevron-right"></i>
+    </button>
+</div>
+</section>
 
     <!-- Footer -->
     <footer>
@@ -619,7 +898,8 @@
         <i class="fab fa-telegram-plane"></i>
     </a>
 
-     <div class="cookie-consent-box" id="cookieConsent">
+    <!-- Cookie Consent Box -->
+    <div class="cookie-consent-box" id="cookieConsent">
         <div class="cookie-icon">
             <i class="fas fa-cookie-bite"></i>
         </div>
@@ -630,7 +910,7 @@
         <button class="cookie-btn" id="acceptCookies">
             <i class="fas fa-check"></i> Accept
         </button>
-     </div>
+    </div>
 
     <script>
         // Preloader
@@ -638,7 +918,7 @@
             const preloader = document.querySelector('.preloader');
             setTimeout(() => {
                 preloader.classList.add('hide');
-            }, 1500); // Adjust time as needed
+            }, 1500);
         });
 
         // Menu Toggle
@@ -658,50 +938,49 @@
             }
         });
 
-        // Show Swipe Right Message on Telegram Button Click
-        const telegramBtn = document.getElementById('telegramBtn');
-        const swipeMessage = document.getElementById('swipeMessage');
-
-        telegramBtn.addEventListener('click', () => {
-            swipeMessage.style.display = 'block'; // Show the message
-            setTimeout(() => {
-                swipeMessage.style.display = 'none'; // Hide the message after 3 seconds
-            }, 3000);
-        });
-
         // Cookie Consent Functionality
         document.addEventListener('DOMContentLoaded', function() {
             const cookieConsent = document.getElementById('cookieConsent');
             const acceptBtn = document.getElementById('acceptCookies');
             
-            // Check if consent was already given
-            if (!getCookie('eduspark_cookies_accepted')) {
-                setTimeout(() => {
-                    cookieConsent.style.display = 'flex';
-                }, 2000);
-            }
-            
-            // Accept cookies
-            acceptBtn.addEventListener('click', function() {
-                setCookie('eduspark_cookies_accepted', 'true', 365);
-                cookieConsent.style.animation = 'cookieSlideUp 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) reverse forwards';
-                setTimeout(() => {
-                    cookieConsent.style.display = 'none';
-                }, 400);
-            });
-            
-            // Cookie functions
-            function setCookie(name, value, days) {
-                const d = new Date();
-                d.setTime(d.getTime() + (days*24*60*60*1000));
-                document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`;
-            }
-            
+            // Function to get cookie value
             function getCookie(name) {
                 const value = `; ${document.cookie}`;
                 const parts = value.split(`; ${name}=`);
                 if (parts.length === 2) return parts.pop().split(';').shift();
             }
+            
+            // Function to set cookie
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+            }
+            
+            // Check if cookie consent was already given
+            if (!getCookie('cookieConsent')) {
+                // Show the cookie consent box after a delay
+                setTimeout(() => {
+                    cookieConsent.style.display = 'flex';
+                    setTimeout(() => {
+                        cookieConsent.style.animation = 'cookieSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards';
+                    }, 50);
+                }, 2000);
+            }
+            
+            // Accept cookies button
+            acceptBtn.addEventListener('click', function() {
+                // Set cookie for 30 days
+                setCookie('cookieConsent', 'accepted', 30);
+                
+                // Hide the cookie consent box with animation
+                cookieConsent.style.animation = 'cookieSlideUp 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) reverse forwards';
+                
+                // Remove the element after animation completes
+                setTimeout(() => {
+                    cookieConsent.style.display = 'none';
+                }, 400);
+            });
         });
     </script>
 </body>
