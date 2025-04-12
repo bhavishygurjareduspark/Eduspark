@@ -1,11 +1,899 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Class 10th Page</title>
-  <link rel="stylesheet" href="../style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects | EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --science-color: #2ecc71;
+            --social-color: #9b59b6;
+            --it-color: #3498db;
+            --notice-color: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: white;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .nav-btn i {
+            transition: transform 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+        .subjects-container {
+            padding: 8rem 2rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Lemon Milk', sans-serif;
+            font-size: 2.2rem;
+            color: var(--pure-white);
+            margin: 3rem 0 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--accent-red);
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .subject-card {
+            background: var(--box-bg);
+            border-radius: 8px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Color coding for categories */
+        .core { border-left-color: var(--primary-blue); }
+        .language { border-left-color: #e74c3c; }
+        .social-science { border-left-color: var(--social-color); }
+        .it-ai { border-left-color: var(--it-color); }
+        .notices { border-left-color: var(--notice-color); }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .subject-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .subject-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.2rem;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Icon colors by category */
+        .core .subject-icon { background: var(--primary-blue); }
+        .language .subject-icon { background: #e74c3c; }
+        .social-science .subject-icon { background: var(--social-color); }
+        .it-ai .subject-icon { background: var(--it-color); }
+        .notices .subject-icon { background: var(--notice-color); }
+
+        .subject-card:hover .subject-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .subject-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .subject-card:hover .subject-title {
+            color: var(--accent-red);
+        }
+
+        .subject-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .subject-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .stat-item {
+            background: #f5f5f5;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+        .stat-label {
+            color: #777;
+            font-size: 0.75rem;
+        }
+
+        .subject-btn {
+            display: block;
+            text-align: center;
+            padding: 0.8rem;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .subject-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .subjects-container {
+                padding: 7rem 1rem 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+                margin: 2rem 0 1rem;
+            }
+            
+            .subject-row {
+                grid-template-columns: 1fr;
+            }
+            
+               .batch-info-container {
+        background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(10,10,10,0.9) 100%);
+        padding: 1.8rem 2.5rem;
+        margin: 6.5rem auto 2rem;
+        max-width: 1200px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .batch-info-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-red), var(--primary-blue));
+    }
+
+    /* Batch Name Styles */
+    .batch-name {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .batch-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .batch-name h2 {
+        font-family: 'Lemon Milk', sans-serif;
+        color: var(--pure-white);
+        font-size: 1.8rem;
+        letter-spacing: 0.5px;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .highlight {
+        color: var(--accent-red);
+        text-transform: uppercase;
+        position: relative;
+    }
+
+    .highlight::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--accent-red);
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.3s ease;
+    }
+
+    .batch-name:hover .highlight::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { text-shadow: 0 0 0 rgba(255,0,0,0.7); }
+        70% { text-shadow: 0 0 10px rgba(255,0,0,0); }
+        100% { text-shadow: 0 0 0 rgba(255,0,0,0); }
+    }
+
+    /* Star Rating Styles */
+    .star-rating {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .stars-wrapper {
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    .star-rating i {
+        color: var(--accent-red);
+        font-size: 1.4rem;
+        text-shadow: 0 0 8px rgba(255,0,0,0.3);
+        transition: transform 0.3s;
+    }
+
+    .star-rating i:hover {
+        transform: scale(1.2);
+    }
+
+    .rating-text {
+        color: var(--pure-white);
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .glow {
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 2px rgba(255,255,255,0.5); }
+        to { text-shadow: 0 0 5px rgba(255,255,255,0.8); }
+    }
+
+    .review-count {
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+
+    /* Progress Bar Styles */
+    .batch-progress {
+        width: 200px;
+    }
+
+    .progress-text {
+        color: white;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .progress-text span {
+        font-weight: bold;
+        color: var(--accent-red);
+    }
+
+    .progress-bar {
+        height: 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 2%;
+        background: linear-gradient(90deg, var(--accent-red), #ff6b6b);
+        border-radius: 4px;
+        position: relative;
+        animation: progress-animate 1.5s ease-out;
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+                        transparent, 
+                        rgba(255,255,255,0.3), 
+                        transparent);
+        animation: shine 2s infinite;
+    }
+
+    @keyframes progress-animate {
+        from { width: 0; }
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .batch-info-container {
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            margin-top: 5.5rem;
+            text-align: center;
+        }
+        
+        .batch-name {
+            flex-direction: column;
+        }
+        
+        .batch-progress {
+            width: 100%;
+        }
+        
+        .study-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.4s;
+            position: relative;
+        }
+
+        .study-image:hover {
+            transform: scale(1.02);
+        }
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to Class 10th Page</h1>
-  <a href="/">Back to Home</a>
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <button class="nav-btn">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn" style="background: var(--accent-red);">
+                <i class="fas fa-graduation-cap"></i>
+                Subjects
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-bookmark"></i>
+                My Courses
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-envelope"></i>
+                Contact
+            </button>
+        </nav>
+    </header>
+    
+       
+    
+    <div class="batch-info-container">
+    <div class="batch-name">
+        <div class="batch-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h2>Batch: <span class="highlight pulse">AARAMBH 2025-26</span></h2>
+    </div>
+    <div class="star-rating">
+        <div class="stars-wrapper">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+        </div>
+        <span class="rating-text glow">4.6/5 <span class="review-count">(136 Reviews)</span></span>
+    </div>
+    <div class="batch-progress">
+        <div class="progress-text">Progress: <span>2% Complete</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+</div>
+
+    <div class="subjects-container">
+        
+        <h1 class="section-title">Notices & Announcements</h1>
+        <div class="subject-row">
+            <div class="subject-card notices">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3 class="subject-title">Lecture Schedule</h3>
+                </div>
+                <p class="subject-description">
+                    Updated examination timetable and important guidelines for upcoming term tests.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">New</div>
+                        <div class="stat-label">Update</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Subjects</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-notice" class="subject-btn">View Details</a>
+            </div>
+
+            <div class="subject-card notices">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="subject-title">Events</h3>
+                </div>
+                <p class="subject-description">
+                    School events, competitions, and extracurricular activity schedules.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">8+</div>
+                        <div class="stat-label">Events</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Weeks</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-event" class="subject-btn">View Calendar</a>
+            </div>
+            
+        <!-- CORE SUBJECTS -->
+        <h1 class="section-title">Core Subjects</h1>
+        <div class="subject-row">
+            <div class="subject-card core">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-square-root-alt"></i>
+                    </div>
+                    <h3 class="subject-title">Mathematics</h3>
+                </div>
+                <p class="subject-description">
+                    Master algebra, geometry, calculus, and statistics with structured lessons and real-world applications.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">18+</div>
+                        <div class="stat-label">Lessons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-maths" class="subject-btn">Explore</a>
+            </div>
+
+            <div class="subject-card core">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h3 class="subject-title">Science</h3>
+                </div>
+                <p class="subject-description">
+                    Physics, Chemistry, Biology with interactive experiments and 3D models for practical learning.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">15+</div>
+                        <div class="stat-label">Modules</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-science" class="subject-btn">Explore</a>
+            </div>
+        </div>
+
+        <!-- LANGUAGE SUBJECTS -->
+        <h1 class="section-title">Language Subjects</h1>
+        <div class="subject-row">
+            <div class="subject-card language">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="subject-title">English</h3>
+                </div>
+                <p class="subject-description">
+                    Comprehensive English program covering literature, grammar, and creative writing skills.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">20+</div>
+                        <div class="stat-label">Lessons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-english" class="subject-btn">Explore</a>
+            </div>
+
+            <div class="subject-card language">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3 class="subject-title">Hindi</h3>
+                </div>
+                <p class="subject-description">
+                    Master Hindi language with grammar, composition, and literature from basic to advanced levels.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">15+</div>
+                        <div class="stat-label">Lessons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-hindi" class="subject-btn">Explore</a>
+            </div>
+        </div>
+
+        <!-- SOCIAL SCIENCE -->
+        <h1 class="section-title">Social Science</h1>
+        <div class="subject-row">
+            <div class="subject-card social-science">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-globe-asia"></i>
+                    </div>
+                    <h3 class="subject-title">History</h3>
+                </div>
+                <p class="subject-description">
+                    Explore world civilizations, Indian history, and historical events through interactive timelines.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">25+</div>
+                        <div class="stat-label">Lessons</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-sst" class="subject-btn">Explore</a>
+            </div>
+
+            <div class="subject-card social-science">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <h3 class="subject-title">Civics</h3>
+                </div>
+                <p class="subject-description">
+                    Understand political systems, constitution, and governance with case studies and debates.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">7+</div>
+                        <div class="stat-label">Modules</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-civics" class="subject-btn">Explore</a>
+            </div>
+            
+            <div class="subject-card social-science">
+    <div class="subject-header">
+        <div class="subject-icon">
+            <i class="fas fa-globe-asia"></i>
+        </div>
+        <h3 class="subject-title">Geography</h3>
+    </div>
+    <p class="subject-description">
+        Explore physical landscapes, climate systems, and human-environment interactions with interactive maps and case studies.
+    </p>
+    <div class="subject-stats">
+        <div class="stat-item">
+            <div class="stat-value">7+</div>
+            <div class="stat-label">Lessons</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">1</div>
+            <div class="stat-label">Teacher</div>
+        </div>
+    </div>
+    <a href="nt/10th/Aarambh-geo" class="subject-btn">Explore</a>
+</div>
+        </div>
+
+        <!-- IT & AI -->
+        <h1 class="section-title">IT & Artificial Intelligence</h1>
+        <div class="subject-row">
+            <div class="subject-card it-ai">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="subject-title">Computer Science</h3>
+                </div>
+                <p class="subject-description">
+                    Learn programming, algorithms, and computer fundamentals with hands-on coding exercises.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">10+</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Teacher</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-it" class="subject-btn">Explore</a>
+            </div>
+
+            <div class="subject-card it-ai">
+                <div class="subject-header">
+                    <div class="subject-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="subject-title">AI Basics</h3>
+                </div>
+                <p class="subject-description">
+                    Introduction to Artificial Intelligence, machine learning, and their real-world applications.
+                </p>
+                <div class="subject-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">6+</div>
+                        <div class="stat-label">Labs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">Experts</div>
+                    </div>
+                </div>
+                <a href="nt/10th/Aarambh-ai" class="subject-btn">Explore</a>
+            </div>
+        </div>
+
+        <!-- NOTICES -->
+        
+        </div>
+    </div>
+
+    <script>
+        // Menu Toggle
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
