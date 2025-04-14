@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentals of Physics | EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.97);
+            --highlight: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Header */
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Container for all buttons */
+.navigation-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+/* Back button styling to match action buttons */
+.back-btn {
+    background: #f0f0f0;
+    color: var(--primary-blue);
+    padding: 1rem 2rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+.back-btn:hover {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 139, 0.2);
+}
+
+.back-btn i {
+    transition: transform 0.3s;
+}
+
+.back-btn:hover i {
+    transform: translateX(-5px);
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .navigation-buttons {
+        gap: 0.8rem;
+    }
+    
+    .back-btn,
+    .btn-download,
+    .btn-save {
+        padding: 0.8rem 1rem;
+    }
+
+        /* Main Content */
+        .book-detail-container {
+            max-width: 1200px;
+            margin: 6rem auto 3rem;
+            padding: 0 1.5rem;
+        }
+
+        /* Book Main Section */
+        .book-main {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            background: var(--box-bg);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-red), var(--primary-blue));
+        }
+
+        /* Book Cover */
+        .book-cover-container {
+            position: relative;
+            align-self: center;
+            perspective: 1000px;
+        }
+
+        .book-cover-main {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .book-cover-container:hover .book-cover-main {
+            transform: rotateY(10deg) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Book Info */
+        .book-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--primary-blue);
+            font-size: 2.3rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            position: relative;
+            display: inline-block;
+        }
+
+        .book-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-red);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .book-info:hover .book-title::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .book-author {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .book-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .meta-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .meta-content h4 {
+            color: #555;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .meta-content p {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .book-description {
+            color: #444;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .book-features {
+            margin-bottom: 2rem;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-item i {
+            color: var(--accent-red);
+            margin-top: 0.2rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: auto;
+        }
+
+        .btn-download {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex: 1;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 139, 0.3);
+        }
+
+        .btn-download:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-save {
+            background: white;
+            color: var(--primary-blue);
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary-blue);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-save:hover {
+            background: #f8f9fa;
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        /* Screenshots Section */
+        .screenshots-section {
+            background: var(--box-bg);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--accent-red);
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .screenshot {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+            height: 160px;
+            position: relative;
+            border: 1px solid #eee;
+        }
+
+        .screenshot:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-blue);
+        }
+
+        .screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .screenshot:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Table of Contents */
+        .toc-section {
+            background: var(--box-bg);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .toc-list {
+            columns: 2;
+            column-gap: 2rem;
+        }
+
+        .toc-item {
+            break-inside: avoid;
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .toc-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-red);
+            border-radius: 50%;
+        }
+
+        .toc-item a {
+            color: #444;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: block;
+            padding: 0.2rem 0;
+        }
+
+        .toc-item a:hover {
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .book-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .toc-list {
+                columns: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .book-detail-container {
+                padding: 0 1rem;
+                margin-top: 5rem;
+            }
+            
+            .book-title {
+                font-size: 1.8rem;
+            }
+            
+            .book-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .screenshots-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .book-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+            }
+            
+              .gallery-container {
+            position: relative;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        .gallery-viewport {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .gallery-slides {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 400px;
+        }
+
+        .gallery-slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .gallery-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f5f5f5;
+        }
+
+        .gallery-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+            gap: 0.8rem;
+        }
+
+        .gallery-thumbnail {
+            width: 60px;
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            opacity: 0.7;
+        }
+
+        .gallery-thumbnail:hover,
+        .gallery-thumbnail.active {
+            opacity: 1;
+            border-color: var(--accent-red);
+            transform: translateY(-5px);
+        }
+
+        .gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .gallery-arrow:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .gallery-arrow.prev {
+            left: 20px;
+        }
+
+        .gallery-arrow.next {
+            right: 20px;
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .gallery-slides {
+                height: 300px;
+            }
+            
+            .gallery-thumbnail {
+                width: 40px;
+                height: 60px;
+            }
+            
+            .gallery-arrow {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-slides {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>          
+           
+        </div>
+    </header>
+
+    <main class="book-detail-container">
+        <!-- Book Main Info Section -->
+        <section class="book-main">
+            <div class="book-cover-container">
+                <span class="book-badge">Bestseller</span>
+                <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png" alt="Fundamentals of Physics" class="book-cover-main">
+            </div>
+            
+            <div class="book-info">
+                <h1 class="book-title" id="naam">Arjuna JEE Module</h1>
+                <p class="book-author">Arjuna For JEE Main & Advanced Class 11 Physics, Chemistry and Mathematics Modules with Solutions Combo Set of 15 Books (2025 Edition).
+
+
+
+</p>
+                
+                <!-- Book Metadata -->
+                <div class="book-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="meta-content">
+                            <h4>Class</h4>
+                            <p>11th</p>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="meta-content">
+                            <h4>Format</h4>
+                            <p>PDF</p>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="meta-content">
+                            <h4>Size</h4>
+                            <p>45 MB</p>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="meta-content">
+                            <h4>Edition</h4>
+                            <p>2025</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Book Description -->
+                <div class="book-description">
+                    <p>Provided By x EduSparK</p>
+                </div>
+                
+                <!-- Key Features -->
+               
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-download">
+                        <i class="fas fa-download"></i>
+                        Download Now
+                    </button>
+                    <button class="btn-save">
+                        <i class="fas fa-bookmark"></i>
+                        Save for Later
+                    </button>
+                    <button class="back-btn" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Back to Library
+    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Screenshots Section -->
+        <section class="screenshots-section">
+        <h2 class="section-title">Book Preview</h2>
+        <div class="gallery-container">
+            <div class="gallery-viewport">
+                <div class="gallery-slides">
+                    <div class="gallery-slide">
+                        <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/662230e8-f881-4652-8b9c-5007924db9c7.png" alt="Mechanics Chapter" class="gallery-image">
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/176a6b60-0550-4331-9eee-587c43ded290.png" alt="Thermodynamics Chapter">
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/1b0bfec1-66ce-4328-ae8f-b0cadde257ea.png" alt="Electromagnetism Chapter">
+                    </div>
+                    <div class="gallery-slide">
+                        <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/7d13f324-cefb-4350-b46d-0652a9168e80.png" alt="Modern Physics Chapter">
+                    </div>
+                   
+                </div>
+                <div class="gallery-arrow prev"><i class="fas fa-chevron-left"></i></div>
+                <div class="gallery-arrow next"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            <div class="gallery-nav">
+                <div class="gallery-thumbnail active" data-index="0">
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/662230e8-f881-4652-8b9c-5007924db9c7.png" alt="Thumbnail 1">
+                </div>
+                <div class="gallery-thumbnail" data-index="1">
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/a2e0d1df-fe86-4c41-901d-99f7862ed6b0.png" alt="Thumbnail 2">
+                </div>
+                <div class="gallery-thumbnail" data-index="2">
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/dadf271b-1c1f-4409-8f85-ff142104101c.png" alt="Thumbnail 3">
+                </div>
+                <div class="gallery-thumbnail" data-index="3">
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/3560607f-4635-49ee-a23f-35dfc533912b.png" alt="Thumbnail 4">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close"><i class="fas fa-times"></i></span>
+        <img src="" alt="Book Preview" class="lightbox-content" id="lightbox-content">
+    </div>
+    
+    
+    </main>
+
+    <script>
+        // Download button functionality
+        document.querySelector('.btn-download').addEventListener('click', function() {
+            // In real implementation, this would trigger file download
+            console.log('Download initiated: Fundamentals of Physics');
+            
+            // Visual feedback
+            const btn = this;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            btn.style.backgroundColor = '#2ed573';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-download"></i> Download Now';
+                    btn.style.backgroundColor = 'var(--primary-blue)';
+                }, 2000);
+            }, 1500);
+        });
+
+        // Save for later functionality
+        document.querySelector('.btn-save').addEventListener('click', function() {
+            const btn = this;
+            btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+            btn.style.color = 'white';
+            btn.style.backgroundColor = '#2ed573';
+            btn.style.borderColor = '#2ed573';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+            }, 2000);
+        });
+        
+      
+     document.querySelector('.btn-save').addEventListener('click', function() {
+         const book = {
+             title: 'naam',
+             author: 'book-description',
+             image: 'book-cover-main',
+             class: '11th',
+             format: 'PDF',
+             // Add any other relevant info
+         };
+         
+         let savedBooks = JSON.parse(localStorage.getItem('savedBooks')) || [];
+         
+         // Check if already saved
+         if (!savedBooks.some(b => b.id === book.id)) {
+             savedBooks.push(book);
+             localStorage.setItem('savedBooks', JSON.stringify(savedBooks));
+             
+             // Visual feedback
+             const btn = this;
+             btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+             btn.style.color = 'white';
+             btn.style.backgroundColor = '#2ed573';
+             btn.style.borderColor = '#2ed573';
+         }
+     });
+
+        // Book cover 3D effect
+        const bookCover = document.querySelector('.book-cover-main');
+        bookCover.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            bookCover.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg) scale(1.02)`;
+        });
+
+        bookCover.addEventListener('mouseleave', () => {
+            bookCover.style.transform = 'rotateY(0) rotateX(0)';
+        });
+        
+        const gallerySlides = document.querySelector('.gallery-slides');
+        const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+        const prevBtn = document.querySelector('.gallery-arrow.prev');
+        const nextBtn = document.querySelector('.gallery-arrow.next');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxContent = document.getElementById('lightbox-content');
+        const lightboxClose = document.querySelector('.lightbox-close');
+        const galleryImages = document.querySelectorAll('.gallery-image');
+        
+        let currentIndex = 0;
+        const totalSlides = document.querySelectorAll('.gallery-slide').length;
+
+        // Update gallery position
+        function updateGallery() {
+            gallerySlides.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update active thumbnail
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        // Thumbnail click handler
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                currentIndex = parseInt(thumb.dataset.index);
+                updateGallery();
+            });
+        });
+
+        // Arrow click handlers
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
+            updateGallery();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
+            updateGallery();
+        });
+
+        // Lightbox functionality
+        galleryImages.forEach(img => {
+            img.addEventListener('click', () => {
+                lightboxContent.src = img.src;
+                lightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        lightboxClose.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'Escape') {
+                    lightbox.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (e.key === 'ArrowLeft') {
+                    currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
+                    lightboxContent.src = document.querySelector(`.gallery-slide:nth-child(${currentIndex + 1}) img`).src;
+                }
+                if (e.key === 'ArrowRight') {
+                    currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
+                    lightboxContent.src = document.querySelector(`.gallery-slide:nth-child(${currentIndex + 1}) img`).src;
+                }
+            }
+        });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        gallerySlides.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        gallerySlides.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Swipe left
+                currentIndex = (currentIndex < totalSlides - 1) ? currentIndex + 1 : 0;
+                updateGallery();
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Swipe right
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : totalSlides - 1;
+                updateGallery();
+            }
+        }
+    </script>
+</body>
+</html>
