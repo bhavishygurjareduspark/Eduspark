@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Books | EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Header with Glass Morphism */
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        header.scrolled {
+            padding: 0.7rem 2rem;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(90deg, #fff, #ff0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: -200%; }
+            100% { background-position: 200%; }
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+            background: var(--accent-red);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+            background: var(--accent-red);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--glass-border);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn i {
+            transition: transform 0.4s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* Search Bar with Glass Morphism */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: fixed;
+            top: 70px;
+            width: 100%;
+            z-index: 999;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
+        }
+
+        .search-container.scrolled {
+            top: 60px;
+            padding: 0.8rem;
+        }
+
+        .search-bar {
+            display: flex;
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.4s;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 25px 0 0 25px;
+            font-size: 1rem;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            background: white;
+            box-shadow: 0 0 0 2px var(--accent-red);
+        }
+
+        .search-btn {
+            padding: 0 1.5rem;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .search-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        .search-btn:hover {
+            background: #cc0000;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        /* Saved Books Section */
+        .saved-books-container {
+            padding: 8rem 2rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .saved-books-title {
+            font-family: 'Lemon Milk', sans-serif;
+            font-size: 2rem;
+            color: var(--pure-white);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            padding-left: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .saved-books-title i {
+            color: var(--accent-red);
+            font-size: 1.8rem;
+        }
+
+        .saved-books-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--accent-red);
+            border-radius: 5px;
+        }
+
+        .saved-books-slider {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 2rem;
+        }
+
+        .saved-books-slider::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .saved-books-slider::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .saved-books-slider::-webkit-scrollbar-thumb {
+            background: var(--accent-red);
+            border-radius: 10px;
+        }
+
+        .saved-book-card {
+            scroll-snap-align: start;
+            flex: 0 0 180px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            transform: translateY(0);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .saved-book-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .saved-book-cover {
+            height: 220px;
+            width: 100%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saved-book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .saved-book-card:hover .saved-book-cover img {
+            transform: scale(1.05);
+        }
+
+        .saved-book-details {
+            padding: 1rem;
+        }
+
+        .saved-book-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-book-author {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .saved-book-view-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saved-book-view-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .saved-book-view-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        .saved-book-view-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .saved-book-view-btn i {
+            margin-right: 0.3rem;
+        }
+
+        .saved-book-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+        }
+
+        .saved-book-progress-bar {
+            height: 100%;
+            background: var(--accent-red);
+            width: 65%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .saved-book-meta {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .saved-book-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Books Library Container */
+        .library-container {
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        .section-title {
+            font-family: 'Lemon Milk', sans-serif;
+            font-size: 2.5rem;
+            color: var(--pure-white);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            padding-left: 1.2rem;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--accent-red);
+            border-radius: 5px;
+            animation: grow 0.8s ease-out;
+        }
+
+        @keyframes grow {
+            from { height: 0; }
+            to { height: 100%; }
+        }
+
+        /* Square Book Cards */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .book-card {
+            background: var(--box-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+            animation-delay: calc(var(--order) * 0.1s);
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            z-index: 5;
+        }
+
+        /* Modified for vertical rectangular covers */
+        .book-cover {
+            height: 450px;
+            width: 100%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover i {
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card:hover .book-cover img {
+            transform: scale(1.05);
+        }
+
+        .book-details {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            color: #777;
+            font-size: 0.8rem;
+        }
+
+        .download-btn {
+            display: block;
+            text-align: center;
+            padding: 0.7rem;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.4s;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .download-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        .download-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .book-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .saved-books-container {
+                padding: 7rem 1rem 1rem;
+            }
+            
+            .library-container {
+                padding: 2rem 1rem;
+            }
+            
+            .section-title, .saved-books-title {
+                font-size: 1.8rem;
+            }
+            
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .book-cover {
+                height: 350px;
+            }
+
+            .saved-book-card {
+                flex: 0 0 150px;
+            }
+
+            .saved-book-cover {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .saved-books-title, .section-title {
+                font-size: 1.5rem;
+            }
+
+            .fab {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <button class="menu-btn" aria-label="Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-menu">
+            <button class="nav-btn">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-book"></i>
+                Books
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn">
+                <i class="fas fa-user"></i>
+                Profile
+            </button>
+        </nav>
+    </header>
+  
+    <br><br>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search books...">
+            <button class="search-btn">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
+    </div>
+<br><br><br>
+    <!-- Saved Books Section -->
+    <section class="saved-books-container">
+        <h1 class="saved-books-title">
+            <i class="fas fa-bookmark"></i>
+            Popular Books
+        </h1>
+        
+        <div class="saved-books-slider">
+            <!-- Saved Book 1 -->
+            <div class="saved-book-card">
+                <div class="saved-book-cover">
+                    <span class="saved-book-category">2025</span>
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/6a705ddf-a9fc-4bc1-bd77-827f022fbf2c.png" alt="Physics Textbook">
+                </div>
+                <div class="saved-book-details">
+                    <h3 class="saved-book-title">Arjuna Neet</h3>
+                    <p class="saved-book-author">Physics Wallah</p>
+                    <div class="saved-book-progress">
+                       <div class="saved-book-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="saved-book-meta">
+                        <span>EduSparK</span>
+                        <span>Page 500+</span>
+                    </div>
+                    <a href="/books/arjuna-neet" class="saved-book-view-btn">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Saved Book 2 -->
+            <div class="saved-book-card">
+                <div class="saved-book-cover">
+                    <span class="saved-book-category">2025</span>
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png" alt="Chemistry Textbook">
+                </div>
+                <div class="saved-book-details">
+                    <h3 class="saved-book-title">Arjuna JEE </h3>
+                    <p class="saved-book-author">Physics Wallah</p>
+                    <div class="saved-book-progress">
+                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="saved-book-meta">
+                        <span>EduSparK</span>
+                        <span>Page 450+</span>
+                    </div>
+                    <a href="/books/Arjuna-JEE" class="saved-book-view-btn">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Saved Book 3 -->
+            <div class="saved-book-card">
+                <div class="saved-book-cover">
+                    <span class="saved-book-category">2025</span>
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/0b863a9b-e783-4eda-8549-539ca43eb937.png" alt="Mathematics Textbook">
+                </div>
+                <div class="saved-book-details">
+                    <h3 class="saved-book-title">Lakchay Neet</h3>
+                    <p class="saved-book-author">Physics Wallah</p>
+                    <div class="saved-book-progress">
+                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="saved-book-meta">
+                        <span>EduSparK</span>
+                        <span>Page 550+</span>
+                    </div>
+                    <a href="/books/Lakchay-NEET" class="saved-book-view-btn">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Saved Book 4 -->
+            <div class="saved-book-card">
+                <div class="saved-book-cover">
+                    <span class="saved-book-category">2025</span>
+                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/94e47ae5-37e2-4e11-989a-d8dea1bf8881.png" alt="Biology Textbook">
+                </div>
+                <div class="saved-book-details">
+                    <h3 class="saved-book-title">Lakchay JEE</h3>
+                    <p class="saved-book-author">Physics Wallah</p>
+                    <div class="saved-book-progress">
+                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="saved-book-meta">
+                        <span>EduSparK</span>
+                        <span>Page 210+</span>
+                    </div>
+                    <a href="/books/Lakchay-JEE" class="saved-book-view-btn">
+                        <i class="fas fa-eye"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Library -->
+    <main class="library-container">
+        <h1 class="section-title">All Books</h1>
+        
+        <div class="books-grid">
+            <!-- Book 1 -->
+            <div class="book-card" style="--order: 1;">
+                <div class="book-cover">
+                    <span class="book-category">JEE</span>
+                    <img src="https://m.media-amazon.com/images/I/71TwNgz1CHL._AC_SL1500_.jpg" alt="Physics Textbook">
+                </div>
+                <div class="book-details">
+                    <h3 class="book-title">Arihant JEE PYQ's 20 Years</h3>
+                    <p class="book-author">Arihant</p>
+                    <div class="book-meta">
+                        <span>Grade: 11th</span>
+                        <span>PDF</span>
+                    </div>
+                    <a href="/books/arjuna-neet" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Book 2 -->
+            <div class="book-card" style="--order: 2;">
+                <div class="book-cover">
+                    <span class="book-category">Class 11th</span>
+                    <img src="https://m.media-amazon.com/images/I/71PvmXosgCL._AC_UF1000,1000_QL80_FMwebp_.jpg" alt="Physics Textbook">
+                </div>
+                <div class="book-details">
+                    <h3 class="book-title">Rd Sharma Class 11th</h3>
+                    <p class="book-author">Rd Sharma</p>
+                    <div class="book-meta">
+                        <span>Grade: 11th</span>
+                        <span>PDF</span>
+                    </div>
+                    <a href="/books/concepts-physics" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Book 3 -->
+            <div class="book-card" style="--order: 3;">
+                <div class="book-cover">
+                    <span class="book-category">IIT - JEE</span>
+                    <img src="https://m.media-amazon.com/images/I/61V8OaIMjWL._AC_UF1000,1000_QL80_FMwebp_.jpg" alt="Chemistry Textbook">
+                </div>
+                <div class="book-details">
+                    <h3 class="book-title">Arihant 43 Years Pyq's</h3>
+                    <p class="book-author">Morrison & Boyd</p>
+                    <div class="book-meta">
+                        <span>Grade: 12th</span>
+                        <span>PDF</span>
+                    </div>
+                    <a href="/books/organic-chemistry" class="download-btn">
+                        <i class="fas fa-download"></i>
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fab">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <script>
+        // Menu Toggle
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+                menuBtn.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const books = document.querySelectorAll('.book-card, .saved-book-card');
+            
+            books.forEach(book => {
+                const title = book.querySelector('.book-title, .saved-book-title').textContent.toLowerCase();
+                const author = book.querySelector('.book-author, .saved-book-author').textContent.toLowerCase();
+                const category = book.querySelector('.book-category, .saved-book-category')?.textContent.toLowerCase() || '';
+                
+                if (title.includes(searchTerm) || author.includes(searchTerm) || category.includes(searchTerm)) {
+                    book.style.display = 'flex';
+                } else {
+                    book.style.display = 'none';
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            const searchContainer = document.querySelector('.search-container');
+            
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+                searchContainer.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+                searchContainer.classList.remove('scrolled');
+            }
+        });
+
+        // Animate book cards on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.book-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Floating action button click
+        document.querySelector('.fab').addEventListener('click', function() {
+            alert('This Feature is Coming Soon!');
+        });
+    </script>
+</body>
+</html>

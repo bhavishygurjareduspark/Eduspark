@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Saved Books | EduSpark</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.97);
+            --highlight: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Header */
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Container */
+        .saved-books-container {
+            max-width: 1200px;
+            margin: 6rem auto 3rem;
+            padding: 0 1.5rem;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-red);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .page-title:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Saved Books Grid */
+        .saved-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Book Card */
+        .book-card {
+            background: var(--box-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-card-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-card-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #f5f5f5;
+            border-bottom: 1px solid #eee;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card:hover .book-card-cover {
+            transform: scale(1.05);
+        }
+
+        .book-card-content {
+            padding: 1.5rem;
+        }
+
+        .book-card-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-card-author {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .book-card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .book-card-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #0000aa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 139, 0.3);
+        }
+
+        .btn-remove {
+            background: #f0f0f0;
+            color: #ff4757;
+            border: 1px solid #ddd;
+        }
+
+        .btn-remove:hover {
+            background: #ff4757;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--box-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .empty-message {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-explore {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-explore:hover {
+            background: var(--accent-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--pure-white);
+            text-decoration: none;
+            margin-right: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--accent-red);
+            transform: translateX(-5px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .saved-books-container {
+                margin-top: 5rem;
+                padding: 0 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .saved-books-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .saved-books-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .book-card-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </a>
+        
+    </header>
+
+    <main class="saved-books-container">
+        <h1 class="page-title">My Saved Books</h1>
+        
+        <div id="savedBooksList" class="saved-books-grid">
+            <!-- Books will be dynamically inserted here -->
+        </div>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h3 class="empty-message">You haven't saved any books yet</h3>
+            <a href="/books" class="btn-explore">
+                <i class="fas fa-search"></i> Explore Books
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Load saved books from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedBooks = JSON.parse(localStorage.getItem('savedBooks')) || [];
+            const savedBooksList = document.getElementById('savedBooksList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (savedBooks.length === 0) {
+                emptyState.style.display = 'block';
+                savedBooksList.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                savedBooksList.style.display = 'grid';
+                
+                // Add delay for staggered animation
+                savedBooks.forEach((book, index) => {
+                    setTimeout(() => {
+                        const bookCard = createBookCard(book);
+                        savedBooksList.appendChild(bookCard);
+                    }, index * 100);
+                });
+            }
+        });
+        
+        // Function to create a book card element
+        function createBookCard(book) {
+            const bookCard = document.createElement('div');
+            bookCard.className = 'book-card';
+            bookCard.style.animationDelay = `${Math.random() * 0.3}s`;
+            
+            bookCard.innerHTML = `
+                <span class="book-card-badge">Saved</span>
+                <img src="${book.image}" alt="${book.title}" class="book-card-cover">
+                <div class="book-card-content">
+                    <h3 class="book-card-title">${book.title}</h3>
+                    <p class="book-card-author">${book.author}</p>
+                    <div class="book-card-meta">
+                        <span><i class="fas fa-graduation-cap"></i> ${book.class}</span>
+                        <span><i class="fas fa-file-alt"></i> ${book.format}</span>
+                    </div>
+                    <div class="book-card-actions">
+                        <button class="action-btn btn-download" data-id="${book.id}">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="action-btn btn-remove" data-id="${book.id}">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return bookCard;
+        }
+        
+        // Event delegation for buttons
+        document.addEventListener('click', function(e) {
+            // Remove book
+            if (e.target.classList.contains('btn-remove') || e.target.closest('.btn-remove')) {
+                const btn = e.target.classList.contains('btn-remove') ? e.target : e.target.closest('.btn-remove');
+                const bookId = btn.dataset.id;
+                removeBook(bookId);
+            }
+            
+            // Download book
+            if (e.target.classList.contains('btn-download') || e.target.closest('.btn-download')) {
+                const btn = e.target.classList.contains('btn-download') ? e.target : e.target.closest('.btn-download');
+                const bookId = btn.dataset.id;
+                downloadBook(bookId);
+            }
+        });
+        
+        // Function to remove a book from saved list
+        function removeBook(bookId) {
+            let savedBooks = JSON.parse(localStorage.getItem('savedBooks')) || [];
+            savedBooks = savedBooks.filter(book => book.id !== bookId);
+            localStorage.setItem('savedBooks', JSON.stringify(savedBooks));
+            
+            // Refresh the display
+            location.reload();
+        }
+        
+        // Function to handle book download
+        function downloadBook(bookId) {
+            const btn = document.querySelector(`.btn-download[data-id="${bookId}"]`);
+            if (!btn) return;
+            
+            // Visual feedback
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            btn.disabled = true;
+            
+            // Simulate download (in a real app, this would trigger actual download)
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-download"></i> Download';
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
