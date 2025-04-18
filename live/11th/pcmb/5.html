@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Section - EduSpark</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet" />
+  <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #player {
+      max-width: 100%;
+      max-height: 100vh;
+      height: auto;
+      width: auto;
+      display: block;
+    }
+
+    .plyr__controls {
+      width: 100vw !important;
+      left: 0 !important;
+      right: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .plyr {
+      width: auto;
+      position: relative;
+    }
+
+    .branding {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .branding img {
+      height: 32px;
+      width: auto;
+    }
+
+    .branding span {
+      font-family: 'Lemon Milk', sans-serif;
+      font-weight: 700; /* or 800 */
+      color: white;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+    
+    .footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+        }
+
+        .powered-by {
+            font-family: 'Lemon Milk', sans-serif;
+            font-size: 0.9rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .powered-by span {
+            color: var(--accent-red);
+            position: relative;
+        }
+
+        .powered-by span::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-red);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .powered-by:hover span::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+  </style>
+</head>
+<body>
+
+  <!-- Branding overlay -->
+  <div class="branding">
+    <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="EduSpark Logo" style="border-radius: 50%; width: 50px; height: 50px"/>
+    <br>
+    <span>EduSparK</span>
+  </div>
+
+  <video id="player" playsinline controls poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg"></video>
+  
+
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const source = 'https://d1kw75zcv4u98c.cloudfront.net/out/v1/c32c373c9874430cb6039408745a1a5e/index_1.m3u8';
+      const video = document.querySelector('video');
+      const defaultOptions = {};
+
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(source);
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+          const availableQualities = hls.levels.map((l) => l.height);
+          availableQualities.unshift(0);
+          defaultOptions.quality = {
+            default: 0,
+            options: availableQualities,
+            forced: true,
+            onChange: (e) => updateQuality(e),
+          };
+          defaultOptions.i18n = {
+            qualityLabel: {
+              0: 'Auto',
+            },
+          };
+          hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+            var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span");
+            if (hls.autoLevelEnabled) {
+              span.innerHTML = `AUTO (${hls.levels[data.level].height})`;
+            } else {
+              span.innerHTML = 'AUTO';
+            }
+          });
+
+          const player = new Plyr(video, defaultOptions);
+        });
+        hls.attachMedia(video);
+        window.hls = hls;
+      } else {
+        video.src = source;
+        const player = new Plyr(video, defaultOptions);
+      }
+
+      function updateQuality(newQuality) {
+        if (newQuality === 0) {
+          window.hls.currentLevel = -1;
+        } else {
+          window.hls.levels.forEach((level, levelIndex) => {
+            if (level.height === newQuality) {
+              console.log("Found quality match with " + newQuality);
+              window.hls.currentLevel = levelIndex;
+            }
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>
