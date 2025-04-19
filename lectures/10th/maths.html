@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials | EduSparK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --box-bg: rgba(255, 255, 255, 0.97);
+            --card-bg: rgba(20, 20, 50, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--dark-bg));
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+            color: var(--pure-white);
+            min-height: 100vh;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffffff, #ff0000);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            padding: 12px 40px;
+            border: none;
+            background: rgba(0, 0, 139, 0.5);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 200px;
+            text-align: center;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(90deg, var(--accent-red), #ff4757);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .material-card {
+            background: linear-gradient(135deg, var(--card-bg), rgba(30, 30, 70, 0.9));
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .material-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(0, 0, 139, 0.2));
+            z-index: -1;
+        }
+
+        .material-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(255, 0, 0, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .material-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+            position: relative;
+        }
+
+        .material-card h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-red);
+            transition: width 0.4s ease;
+        }
+
+        .material-card:hover h3::after {
+            width: 100%;
+        }
+
+        .material-card p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        .material-card p i {
+            color: var(--accent-red);
+            width: 20px;
+            text-align: center;
+        }
+
+        .powered-by {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .powered-by span {
+            color: var(--accent-red);
+            font-weight: 700;
+        }
+
+        .action-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, var(--accent-red), #ff4757);
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .pdf-icon {
+            color: var(--accent-red);
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+        }
+
+        @media (max-width: 768px) {
+            .toggle-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .toggle-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Mathematics</h1>
+            <p>All Lectures And Notes Are Provided By EduSparK</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="toggle-container">
+            <button class="toggle-btn active" data-target="lectures">Lectures</button>
+            <button class="toggle-btn" data-target="notes">Notes</button>
+        </div>
+
+        <!-- Lectures Section -->
+        <div id="lectures" class="content-section active">
+            <div class="materials-grid">
+                <!-- Lecture Card 1 -->
+                <div class="material-card">
+                    <h3>Real Number L 1</h3>
+                    <p><i class="fas fa-chalkboard-teacher"></i> Sobhit Nirwan</p>
+                    <p><i class="far fa-calendar-alt"></i> Last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://www.youtube.com/live/_0ooaKrdubI?si=v_gE65UdJjw1TDEc" class="action-btn">Watch Lecture</a>
+                </div>
+
+                <!-- Lecture Card 2 -->
+                <div class="material-card">
+                    <h3>Real Number L 2</h3>
+                    <p><i class="fas fa-chalkboard-teacher"></i> Sobhit Nirwan</p>
+                    <p><i class="far fa-calendar-alt"></i> Last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://edusparkk.xyz/play?url=https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4351817/174473442715988296383/index_1.m3u8" class="action-btn">Watch Lecture</a>
+                </div>
+
+                <!-- Lecture Card 3 -->
+                <div class="material-card">
+                    <h3>Real Number L 3</h3>
+                    <p><i class="fas fa-chalkboard-teacher"></i> Sobhit Nirwan</p>
+                    <p><i class="far fa-calendar-alt"></i> Last updated: 19 Apr </p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://edusparkk.xyz/play?url=https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4354873/174499225616481097666/index_1.m3u8" class="action-btn">Watch Lecture</a>
+                </div>
+                </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div id="notes" class="content-section">
+            <div class="materials-grid">
+                <!-- Notes Card 1 -->
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> Real Number 01</h3>
+                    <p><i class="fas fa-file-alt"></i>last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://www.rolexcoderz.xyz/PDF/Real+Number+L1.pdf" class="action-btn">Download Notes</a>
+                </div>
+
+                <!-- Notes Card 2 -->
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> Chemical Reactions 02</h3>
+                    <p><i class="fas fa-file-alt"></i> last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/22420916723093830.pdf" class="action-btn">Download Notes</a>
+                </div>
+
+                <!-- Notes Card 3 -->
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> DPP 01</h3>
+                    <p><i class="fas fa-file-alt"></i> last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://drive.google.com/file/d/1M2C9SEvckkjzKpzR63fIpy-0GiDBYZYN/view?usp=sharing" class="action-btn">Download Notes</a>
+                </div>
+
+                <!-- Notes Card 4 -->
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> DPP 02</h3>
+                    <p><i class="fas fa-file-alt"></i> last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/754506419720273500.pdf" class="action-btn">Download Notes</a>
+                </div>
+                
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> Real Number 03</h3>
+                    <p><i class="fas fa-file-alt"></i> last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/440507540857891140.pdf" class="action-btn">Download Notes</a>
+                </div>
+                
+                <div class="material-card">
+                    <h3><i class="fas fa-file-pdf pdf-icon"></i> DPP 03</h3>
+                    <p><i class="fas fa-file-alt"></i> last updated: 19 Apr</p>
+                    <div class="powered-by">Powered by <span>EduSparK</span></div>
+                    <a href="https://dxixtlyravvxx.cloudfront.net/540admin_v1/file_manager/pdf/50352740213663790.pdf" class="action-btn">Download Notes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 EduSparK. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and sections
+                    toggleButtons.forEach(btn => btn.classList.remove('active'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const target = this.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
