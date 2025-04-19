@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Video - Player</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <link rel="stylesheet" href="https://static.pw.live/fonts/reddit/font.css">
+    <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+    <link rel="stylesheet" href="https://rolexcoderz.netlify.app/player/rolex.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #plyr-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+
+   <video 
+  id="player" 
+  controls 
+  class="w-screen max-h-screen plyr--video z-10" 
+  poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg<ul></ul>">
+</video>
+        
+<!-- Stylish Header with Centered Brand Name -->
+<div class="w-full fixed top-0 left-0 z-50 px-4 py-3 flex items-center justify-between bg-gradient-to-r from-red-600 via-black to-blue-600 shadow-lg rounded-b-xl">
+    
+    <!-- Left: Logo -->
+    <div class="flex items-center space-x-2">
+        <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="Logo" class="h-10 w-10 rounded-full border-2 border-white">
+    </div>
+
+    <!-- Center: Brand Name -->
+    <div class="absolute left-1/2 transform -translate-x-1/2">
+        <span class="text-white text-2xl sm:text-3xl font-bold" style="font-family: 'Orbitron', sans-serif;">
+            EduSparK
+        </span>
+    </div>
+
+    <!-- Right: Copy Button -->
+    <div>
+        <button onclick="copyM3U8()" class="text-white hover:text-gray-200 transition duration-300">
+            <i data-feather="copy"></i>
+        </button>
+    </div>
+</div>
+
+   
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('player');
+    const urlParams = new URLSearchParams(window.location.search);
+    const lessonUrl = urlParams.get('url');
+
+    if (!lessonUrl) {
+        Swal.fire('Error', 'Video URL is required ✨', 'error');
+        return;
+    }
+
+    if (/^(http|https):\/\/(?:www\.)?youtube\.com\/watch\?v=|https:\/\/youtu\.be\//.test(lessonUrl)) {
+        const youtubePlayer = new Plyr(video, {
+            type: 'youtube',
+            autoplay: true,
+            controls: [
+                'play-large',
+                'rewind',
+                'play',
+                'fast-forward',
+                'progress',
+                'current-time',
+                'duration',
+                'mute',
+                'volume',
+                'captions',
+                'settings',
+                'fullscreen'
+            ],
+            tooltips: { controls: true, seek: true },
+        });
+
+        youtubePlayer.source = {
+            type: 'video',
+            sources: [{ src: lessonUrl, provider: 'youtube' }]
+        };
+    } else if (/^(http|https):\/\/.+\.m3u8$/.test(lessonUrl)) {
+        const defaultQuality = 720;
+        const availableQualities = [0, 240, 360, 480, 720];
+        const player = new Plyr(video, {
+            controls: [
+                'play-large',
+                'rewind',
+                'play',
+                'fast-forward',
+                'progress',
+                'current-time',
+                'duration',
+                'mute',
+                'volume',
+                'captions',
+                'settings',
+                'fullscreen'
+            ],
+            autoplay: true,
+            captions: { active: true, update: true },
+            speed: { options: [0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3] },
+            tooltips: { controls: true, seek: true },
+            quality: {
+                default: defaultQuality,
+                options: availableQualities,
+                forced: true,
+                onChange: updateQuality
+            },
+            i18n: {
+                qualityLabel: { 0: 'Auto', 240: '240p', 360: '360p', 480: '480p', 720: '720p' }
+            }
+        });
+
+        function loadVideoWithQuality(source) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(source);
+                hls.attachMedia(video);
+            } else {
+                video.src = source;
+            }
+        }
+
+        loadVideoWithQuality(lessonUrl);
+
+        function updateQuality(newQuality) {
+            const qualitySource = lessonUrl.replace('main.m3u8', `${newQuality}/main.m3u8`);
+            loadVideoWithQuality(qualitySource);
+        }
+    } else {
+        Swal.fire('Error', 'Invalid video URL.', 'error');
+    }
+});
+    </script>
+</body>
+
+</html>
