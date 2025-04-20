@@ -1,862 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aarambh Batch 2026 | EduSpark</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>EduSparK Video Player</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    
     <style>
         :root {
-            --primary-blue: #00008b;
-            --accent-red: #ff0000;
-            --dark-bg: #0a0a0a;
-            --pure-white: #ffffff;
+            --plyr-color-main: #dc2626; /* Red-600 */
+            --plyr-video-controls-background: rgba(0, 0, 0, 0.8);
+            --plyr-video-control-color: #fff;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        
         body {
             font-family: 'Poppins', sans-serif;
+            background: #0a0a0a; /* Black-950 */
+            color: #f5f5f5; /* White-100 */
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
-            background: var(--dark-bg);
-            color: var(--pure-white);
-            overflow-x: hidden;
         }
-
-        /* Simplified Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
+        
+        #player-container {
             width: 100%;
-            height: 100%;
-            background: var(--dark-bg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-
-        .loading-logo {
-            width: 60px;
-            height: 60px;
-            color: var(--accent-red);
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Header */
-        header {
-            padding: 0 2rem;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            height: var(--header-height);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        header.scrolled {
-            height: 70px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: var(--pure-white);
-            gap: 0.8rem;
-            text-decoration: none;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.03);
-        }
-
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
-            transition: transform 0.6s ease;
-        }
-
-        .logo:hover .logo-icon {
-            transform: rotate(15deg);
-        }
-
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--pure-white);
-            font-family: 'Lemon Milk', sans-serif;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .logo:hover .brand-name {
-            color: var(--accent-red);
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-
-        /* Menu Button */
-        .menu-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 15px;
-            z-index: 1001;
-            position: relative;
-        }
-
-        .menu-btn span {
-            display: block;
-            width: 30px;
-            height: 2px;
-            background: var(--pure-white);
-            margin: 6px 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .menu-btn:hover span {
-            background: var(--accent-red);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: translateY(8px) rotate(45deg);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-btn.active span:last-child {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Navigation Menu */
-        .nav-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: var(--nav-width);
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.98);
-            padding: 7rem 2rem 2rem;
-            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            z-index: 999;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.6);
-            overflow-y: auto;
-        }
-
-        .nav-menu.active {
-            right: 0;
-        }
-
-        .nav-btn {
-            background: rgba(0, 0, 139, 0.3);
-            color: var(--pure-white);
-            padding: 1.3rem 1.8rem;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            transition: 0.7s;
-        }
-
-        .nav-btn:hover::before {
-            left: 100%;
-        }
-
-        .nav-btn i {
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-size: 1.3rem;
-            min-width: 26px;
-            text-align: center;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255, 0, 0, 0.3);
-            transform: translateX(15px);
-            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(20deg) scale(1.2);
-            color: var(--accent-red);
-        }
-
-        .nav-menu .get-started-btn {
-            background: linear-gradient(135deg, var(--accent-red), #cc0000);
-            margin-top: 2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            justify-content: center;
-            padding: 1.5rem;
-            border: none;
-            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-        }
-
-        .nav-menu .get-started-btn:hover {
-            background: linear-gradient(135deg, var(--primary-blue), #0000aa);
-            transform: translateX(15px) scale(1.05);
-            box-shadow: 0 15px 35px rgba(0, 0, 139, 0.5);
-        }
-
-        .nav-menu .get-started-btn:hover i {
-            transform: translateX(8px) rotate(0deg) scale(1.2);
-        }
-
-        /* Main Content */
-        .main-content {
-            padding-top: 80px;
-        }
-
-        /* Batch Header */
-        .batch-header {
-            text-align: center;
-            padding: 1.5rem 1rem;
-        }
-
-        .batch-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--accent-red);
-        }
-
-        /* Sections */
-        .section {
             max-width: 1000px;
-            margin: 0 auto 1.5rem;
-            padding: 0 1rem;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* Live Classes */
-        .live-classes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-        }
-
-        .live-class-card {
-            background: rgba(20, 20, 50, 0.8);
+            margin: 20px auto;
             border-radius: 8px;
-            padding: 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .live-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: var(--accent-red);
-            color: white;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-        }
-
-        .upcoming-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: var(--primary-blue);
-            color: white;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-        }
-
-        .live-class-subject {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-        }
-
-        .live-class-teacher {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-        }
-
-        .live-class-time {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .live-join-btn {
-            display: block;
-            margin-top: 1rem;
-            padding: 0.6rem;
-            background: var(--accent-red);
-            color: white;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: none;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            position: relative;
             cursor: pointer;
+            border: 1px solid #262626; /* Neutral-800 */
+        }
+        
+        .header {
+            background: #0a0a0a; /* Black-950 */
+            color: white;
+            border-bottom: 2px solid #dc2626; /* Red-600 */
+        }
+        
+        .loading-spinner {
+            border-top-color: #dc2626; /* Red-600 */
+        }
+        
+        .bookmark-item:hover {
+            background-color: #1a1a1a; /* Neutral-900 */
+        }
+        
+        .custom-textarea {
             width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .live-join-btn:hover {
-            background: #cc0000;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
-        }
-
-        .live-join-btn:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Subjects */
-        .subjects-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1rem;
-        }
-
-        .subject-card {
-            background: rgba(30, 30, 60, 0.6);
-            border-radius: 8px;
-            padding: 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .subject-header {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .subject-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            color: white;
-            background: var(--primary-blue);
-        }
-
-        .subject-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .subject-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .stat-item {
-            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #262626; /* Neutral-800 */
+            border-radius: 0.375rem;
             padding: 0.5rem;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .subject-link {
-            display: block;
-            padding: 0.6rem;
-            background: var(--primary-blue);
+            font-family: 'Poppins', sans-serif;
+            background: #171717; /* Neutral-900 */
             color: white;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s;
         }
-
-        .subject-link:hover {
-            background: #0000aa;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 139, 0.4);
+        
+        .custom-textarea:focus {
+            outline: none;
+            border-color: #dc2626; /* Red-600 */
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
         }
-
-        /* Footer */
-       .footer {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
+        
+        .time-display {
+            background-color: #262626; /* Neutral-800 */
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            margin-bottom: 1rem;
+            color: #f5f5f5;
+        }
+        
+        /* Red-Black Footer */
+        .footer {
+            background: linear-gradient(135deg, #0a0a0a 0%, #171717 100%);
+            color: #f5f5f5;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            font-family: 'Poppins', sans-serif;
             position: relative;
             overflow: hidden;
+            border-top: 2px solid #dc2626;
         }
 
         .footer::before {
-            content: '';
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #991b1b, #7f1d1d);
+            animation: rainbow 8s linear infinite;
+            background-size: 400% 100%;
+        }
+
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f5f5f5;
+        }
+
+        .footer-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #dc2626;
+        }
+
+        .footer-message {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.6;
+            color: #a3a3a3; /* Neutral-400 */
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-social a {
+            color: #a3a3a3;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+            color: #dc2626;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #737373; /* Neutral-500 */
+        }
+
+        .footer-lightning {
+            color: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer-pattern {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+            height: 100%;
+            opacity: 0.05;
+            background-image: radial-gradient(#dc2626 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 1;
         }
 
-        .powered-by {
-            font-family: 'Lemon Milk', sans-serif;
-            font-size: 0.9rem;
-            position: relative;
-            display: inline-block;
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
-        .powered-by span {
-            color: var(--accent-red);
-            position: relative;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
-        .powered-by span::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -2px;
-            width: 100%;
-            height: 2px;
-            background: var(--accent-red);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.3s ease;
+        /* Button Styles */
+        .btn-primary {
+            background-color: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        .powered-by:hover span::after {
-            transform: scaleX(1);
-            transform-origin: left;
+        .btn-primary:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
         }
-        /* Responsive */
-        @media (max-width: 768px) {
-            .batch-title {
-                font-size: 1.5rem;
-            }
-            
-            .live-classes-container,
-            .subjects-container {
-                grid-template-columns: 1fr;
-            }
+
+        /* Bookmark item styling */
+        .bookmark-item {
+            background-color: #171717;
+            border: 1px solid #262626;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .bookmark-item:hover {
+            border-color: #dc2626;
         }
     </style>
 </head>
+
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">
-            <i class="fas fa-book-open"></i>
+    <!-- Header -->
+    <div class="header w-full px-4 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-3">
+            <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" 
+                 alt="Logo" 
+                 class="h-10 w-10 rounded-lg object-cover border-2 border-red-600">
+            <span class="text-white font-bold text-xl font-[Poppins]">EduSparK</span>
         </div>
-        <h2 class="batch-title">AARAMBH BATCH 2026</h2>
+        
+        <button onclick="copyM3U8()" class="text-white hover:bg-red-900/30 p-2 rounded-full border border-red-900">
+            <i data-feather="copy"></i>
+        </button>
     </div>
 
-    <!-- Header -->
-     <header id="mainHeader">
-        <a href="/" class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
-        </a>
-        <button class="menu-btn" id="menuBtn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu" id="navMenu">
-            <button class="nav-btn" onclick="location.href='/'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='/courses'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='/about'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='/contact'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
-        </nav>
-    </header>
+    <!-- Main Player -->
+    <div class="container mx-auto px-4 py-6">
+        <div id="player-container">
+            <div class="left-hotspot"></div>
+            <div class="right-hotspot"></div>
+            <video id="player" controls playsinline poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg"></video>
+        </div>
+        
+        
+        <div class="bg-black rounded-lg shadow-md p-4 mt-6 max-w-1000 mx-auto border border-neutral-800">
+            <h2 class="text-xl font-semibold text-white mb-4">Bookmarks</h2>
+            
+            <div id="bookmarks-list" class="space-y-2">
+                <div class="text-center text-neutral-400 py-4" id="no-bookmarks">
+                    No bookmarks yet. Click "Add Bookmark" to save your current position.
+                </div>
+            </div>
+            
+            <div class="mt-4 flex justify-center">
+                <button onclick="addBookmark()" class="btn-primary flex items-center">
+                    <i data-feather="plus" class="mr-2"></i> Add Bookmark
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Batch Header -->
-        <section class="batch-header">
-            <h1 class="batch-title">AARAMBH BATCH 2026</h1>
-            <p>Premium learning experience with India's top educators</p>
-        </section>
-
-        <!-- Live Classes -->
-        <section class="section">
-            <h2 class="section-title">Live Classes</h2>
-            <div class="live-classes-container" id="liveClassesContainer"></div>
-        </section>
-
-        <!-- Subjects -->
-        <section class="section">
-            <h2 class="section-title">Subjects</h2>
-            <div class="subjects-container" id="subjectsContainer"></div>
-        </section>
-    </main>
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 flex items-center justify-center bg-black/90 z-50 hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="powered-by">POWERED BY <span>EDUSPARK</span></div>
+        <div class="footer-pattern"></div>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="EduSparK Logo">
+                <span>EduSparK</span>
+            </div>
+            
+            <p class="footer-message">
+                Powering your learning experience with cutting-edge video technology.
+            </p>
+            
+            <div class="footer-social">
+                <a href="https://t.me/official_learnhub" aria-label="Twitter"><i data-feather="twitter"></i></a>
+                <a href="https://t.me/official_learnhub" aria-label="GitHub"><i data-feather="github"></i></a>
+                <a href="https://t.me/official_learnhub" aria-label="LinkedIn"><i data-feather="linkedin"></i></a>
+                <a href="https://t.me/official_learnhub" aria-label="Mail"><i data-feather="mail"></i></a>
+            </div>
+            
+            <div class="footer-copyright">
+                <span>Made with</span>
+                <span class="footer-lightning">⚡</span>
+                <span>by Learn Hub</span>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Simple page initialization
-        document.getElementById('loadingScreen').style.opacity = '500';
-        setTimeout(() => {
-            document.getElementById('loadingScreen').style.display = 'none';
-            initPage();
-        }, 2000);
-
-        function initPage() {
-            // Mobile menu toggle
-            const menuBtn = document.getElementById('menuBtn');
-            const navMenu = document.getElementById('navMenu');
-            
-            menuBtn.addEventListener('click', function() {
-                this.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-
-            // Get current day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-            const today = new Date().getDay();
-            const isSunday = today === 0;
-
-            // Live classes data
-            const liveClasses = [
-                {
-                    id: 1,
-                    subject: "Science - Chemical Reactions",
-                    teacher: "Prashant Kirad",
-                    startHour: 17,  // 5 PM (24-hour format)
-                    startMinute: 10,
-                    durationMinutes: 60,  // Class duration in minutes
-                    link: "/live/10th",
-                    isLive: false,  // Will be calculated automatically
-                    originalDay: 1, // Monday (0=Sun, 1=Mon, etc.)
-                    isRescheduled: false
-                },
-                {
-                    id: 2,
-                    subject: "Mathematics - Trigonometry",
-                    teacher: "Sobhit Nirwan",
-                    startHour: 20,  // 8 PM (24-hour format)
-                    startMinute: 10,
-                    durationMinutes: 60,  // Class duration in minutes
-                    link: "/live/10th",
-                    isLive: false,  // Will be calculated automatically
-                    originalDay: 2, // Tuesday
-                    isRescheduled: false
-                }
-            ];
-
-            // Adjust schedule for Sunday
-            if (isSunday) {
-                liveClasses.forEach(cls => {
-                    // If this class was originally scheduled for Sunday (0) or Monday (1)
-                    // We'll move Monday classes to Tuesday to avoid Sunday classes
-                    if (cls.originalDay === 1) { // Monday classes
-                        cls.originalDay = 2; // Move to Tuesday
-                        cls.isRescheduled = true;
-                    } else if (cls.originalDay === 0) { // Sunday classes (if any)
-                        cls.originalDay = 1; // Move to Monday
-                        cls.isRescheduled = true;
-                    }
-                });
-            }
-
-            // Subjects data remains the same
-            const subjects = [
-                {
-                    title: "Science",
-                    teacher: "Prashant Kirad",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "flask",
-                    link: "/lectures/10th/science"
-                },
-                {
-                    title: "Mathematics",
-                    teacher: "Sobhit Nirwan",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "square-root-alt",
-                    link: "/lectures/10th/maths"
-                },
-                {
-                    title: "English",
-                    teacher: "English Expert",
-                    lectures: "6-7",
-                    duration: "<7h",
-                    icon: "language",
-                    link: "/lectures/10th/English"
-                },
-                {
-                    title: "SST",
-                    teacher: "Digraj Singh Rajput",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "language",
-                    link: "lectures/10th/SST"
-                },
-                {
-                    title: "Hindi",
-                    teacher: "Hindi Expert",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "language",
-                    link: "/lectures/10th/hindi"
-                }
-            ];
-
-            // Function to check if a class should be live today
-            function shouldClassBeLiveToday(cls) {
-                const now = new Date();
-                const currentDay = now.getDay();
-                
-                // Check if this class is scheduled for today
-                if (cls.originalDay !== currentDay) {
-                    return false;
-                }
-                
-                // Check time within class duration
-                const currentHours = now.getHours();
-                const currentMinutes = now.getMinutes();
-                const currentTimeInMinutes = currentHours * 60 + currentMinutes;
-                
-                const classStartTimeInMinutes = cls.startHour * 60 + cls.startMinute;
-                const classEndTimeInMinutes = classStartTimeInMinutes + cls.durationMinutes;
-                
-                return currentTimeInMinutes >= classStartTimeInMinutes && 
-                       currentTimeInMinutes <= classEndTimeInMinutes;
-            }
-
-            // Update live status for all classes
-            function updateLiveStatus() {
-                liveClasses.forEach(cls => {
-                    cls.isLive = shouldClassBeLiveToday(cls);
-                });
-            }
-
-            // Render live classes
-            function renderLiveClasses() {
-                const container = document.getElementById('liveClassesContainer');
-                container.innerHTML = '';
-                
-                // Show a message if it's Sunday
-                if (isSunday) {
-                    const messageCard = document.createElement('div');
-                    messageCard.className = 'live-class-card';
-                    messageCard.innerHTML = `
-                        <div class="upcoming-badge">Holiday Notice</div>
-                        <h3 class="live-class-subject">No classes today (Sunday)</h3>
-                        <div class="live-class-teacher">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Regular classes will resume tomorrow</span>
-                        </div>
-                        <div class="live-class-time">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Monday classes have been shifted to Tuesday</span>
-                        </div>
-                    `;
-                    container.appendChild(messageCard);
-                    return;
-                }
-                
-                liveClasses.forEach(cls => {
-                    const isLive = shouldClassBeLiveToday(cls);
-                    const isScheduledToday = cls.originalDay === new Date().getDay();
-                    
-                    const card = document.createElement('div');
-                    card.className = 'live-class-card';
-                    
-                    if (isScheduledToday) {
-                        card.innerHTML = `
-                            <div class="${isLive ? 'live-badge' : 'upcoming-badge'}">${isLive ? 'Live Now' : 'Upcoming'}</div>
-                            <h3 class="live-class-subject">${cls.subject}</h3>
-                            <div class="live-class-teacher">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <span>${cls.teacher}</span>
-                            </div>
-                            <div class="live-class-time">
-                                <i class="far fa-clock"></i>
-                                <span>${isLive ? 'Live Now' : `Starts at ${formatTime(cls.startHour, cls.startMinute)}`}</span>
-                            </div>
-                            <button class="live-join-btn" ${isLive ? `onclick="window.open('${cls.link}', '_blank')"` : 'disabled'}>
-                                ${isLive ? 'Join Live Class' : 'Coming Soon'}
-                            </button>
-                        `;
-                    } else if (cls.isRescheduled) {
-                        // Show rescheduled classes with their new day
-                        const rescheduledDay = getDayName(cls.originalDay);
-                        card.innerHTML = `
-                            <div class="upcoming-badge">Rescheduled</div>
-                            <h3 class="live-class-subject">${cls.subject}</h3>
-                            <div class="live-class-teacher">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <span>${cls.teacher}</span>
-                            </div>
-                            <div class="live-class-time">
-                                <i class="fas fa-calendar-day"></i>
-                                <span>Moved to ${rescheduledDay} at ${formatTime(cls.startHour, cls.startMinute)}</span>
-                            </div>
-                            <button class="live-join-btn" disabled>
-                                Not Today
-                            </button>
-                        `;
-                    } else {
-                        // Regular upcoming classes (not today)
-                        const scheduledDay = getDayName(cls.originalDay);
-                        card.innerHTML = `
-                            <div class="upcoming-badge">Scheduled</div>
-                            <h3 class="live-class-subject">${cls.subject}</h3>
-                            <div class="live-class-teacher">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <span>${cls.teacher}</span>
-                            </div>
-                            <div class="live-class-time">
-                                <i class="far fa-calendar-alt"></i>
-                                <span>Every ${scheduledDay} at ${formatTime(cls.startHour, cls.startMinute)}</span>
-                            </div>
-                            <button class="live-join-btn" disabled>
-                                Not Today
-                            </button>
-                        `;
-                    }
-                    
-                    container.appendChild(card);
-                });
-            }
-
-            // Helper function to get day name
-            function getDayName(dayIndex) {
-                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                return days[dayIndex];
-            }
-
-            // Format time to 12-hour format with AM/PM
-            function formatTime(hours, minutes) {
-                const ampm = hours >= 12 ? 'PM' : 'AM';
-                const twelveHour = hours % 12 || 12;
-                return `${twelveHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-            }
-
-            // Render subjects (same as before)
-            function renderSubjects() {
-                const container = document.getElementById('subjectsContainer');
-                container.innerHTML = '';
-                
-                subjects.forEach(subject => {
-                    const card = document.createElement('div');
-                    card.className = 'subject-card';
-                    card.innerHTML = `
-                        <div class="subject-header">
-                            <div class="subject-icon">
-                                <i class="fas fa-${subject.icon}"></i>
-                            </div>
-                            <div>
-                                <h3 class="subject-title">${subject.title}</h3>
-                                <p>${subject.teacher}</p>
-                            </div>
-                        </div>
-                        <div class="subject-stats">
-                            <div class="stat-item">
-                                <div class="stat-value">${subject.lectures}</div>
-                                <div>Lectures</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">${subject.duration}</div>
-                                <div>Hours</div>
-                            </div>
-                        </div>
-                        <a href="${subject.link}" class="subject-link">View Curriculum</a>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-
-            // Initial render
-            updateLiveStatus();
-            renderLiveClasses();
-            renderSubjects();
-
-            // Set up a timer to check live status every minute
-            setInterval(() => {
-                updateLiveStatus();
-                renderLiveClasses();
-            }, 60000); // Check every minute
-        }
+        const _0x158f49=_0x5d97;(function(_0x5e5a87,_0x999537){const _0x447d30=_0x5d97,_0x577c78=_0x5e5a87();while(!![]){try{const _0x34c0c0=parseInt(_0x447d30(0xba))/0x1*(-parseInt(_0x447d30(0x122))/0x2)+-parseInt(_0x447d30(0x11e))/0x3+parseInt(_0x447d30(0x12a))/0x4*(-parseInt(_0x447d30(0xd0))/0x5)+parseInt(_0x447d30(0xf3))/0x6+parseInt(_0x447d30(0xfe))/0x7+-parseInt(_0x447d30(0x10b))/0x8+parseInt(_0x447d30(0x113))/0x9;if(_0x34c0c0===_0x999537)break;else _0x577c78['push'](_0x577c78['shift']());}catch(_0x2c15e0){_0x577c78['push'](_0x577c78['shift']());}}}(_0x14c4,0x83528));function _0x14c4(){const _0x27ce24=['filter','Yes,\x20delete\x20it!','none','duration','4284056SsgGeQ','mute','edusparkk.xyz','display','addEventListener','slice','currentTime','keydown','location','https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4355332/174506775549578037481/174506775549578037481_8037481.m3u8','progress','replace','Domain\x20verification\x20failed.','8434616MKzwTn','quality','body','Delete\x20Bookmark?','Copied!','ctrlKey','get','then','25694676jGoSXc','bg-neutral-800\x20hover:bg-neutral-700\x20text-neutral-200\x20font-medium\x20py-2\x20px-4\x20rounded-md','play-large','querySelector','speed',',\x20event)\x22\x20class=\x22text-neutral-400\x20hover:text-neutral-200\x20p-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20data-feather=\x22trash-2\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','no-bookmarks','.right-hotspot','textContent','Deleted!','backgroundColor','1903809nhrmin','play','focus','You\x20won\x27t\x20be\x20able\x20to\x20revert\x20this!','410hpSdGy','bookmark-note','forEach','isConfirmed','settings','qualities','volume','dblclick','1762724FzBAdV','Save\x20Bookmark','indexOf','edusparkk.netlify.app','bg-neutral-900\x20border\x20border-neutral-800','isSupported','fromEntries','Cancel','player','No\x20stream\x20URL\x20available','entries','remove','BHeWduspIaZrJNkk.xyzHjPnofZlZnnfZKTcNlHRBL','#f5f5f5','search','stopPropagation','time','fatal','ePYdusRApOvaLqrgkkA.qAxyURKSzMH;eduqEbWsMpBwaZXPrkkVF.nmbwetlEZONFifVTym.apJopHKABOvGLSBCRGPomSqOmSGMDcIvv','qualitychange','success','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-neutral-300\x22>','top-end','.left-hotspot','clientX','error','2987zOwKes','application/vnd.apple.mpegurl','-10s','defaultM3U8','preventDefault','block','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20for=\x22bookmark-note\x22\x20class=\x22block\x20text-sm\x20font-medium\x20text-neutral-300\x20mb-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Add\x20a\x20note\x20(optional)\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<textarea\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20id=\x22bookmark-note\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20class=\x22custom-textarea\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20rows=\x223\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20placeholder=\x22What\x27s\x20important\x20about\x20this\x20moment?\x22></textarea>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','No\x20note','Add\x20Bookmark','createElement','Video\x20not\x20loaded\x20yet','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20items-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-red-600\x20font-medium\x20mr-3\x22>','sort','Bookmark\x20Saved!','innerHTML','Failed\x20to\x20load\x20video','[BHWIZJNHjPnofZlZnnfZKTcNlHRBL]','fire','setSeconds','warning','getElementById','selectstart','10ILEzst','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:black;color:red;padding:20px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h1>\x20Unauthorized\x20Access!</h1>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>This\x20code\x20is\x20locked\x20to\x20<strong>EduSparK.XYZ</strong>\x20only.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','src','key','{}.constructor(\x22return\x20this\x22)(\x20)','charCodeAt','clipboard','#dc2626','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-medium\x22>Video\x20Duration:</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span>','style','apply','#171717','#player','test','includes','map','32rem','split','clientY','videoSrc','value','stringify','className','videoBookmarks','note','Error','setItem','div','skip-feedback','HLS\x20not\x20supported','endsWith','toISOString','canPlayType','DOMContentLoaded','destroy','1521306WHZppY','bg-red-600\x20hover:bg-red-700\x20text-white\x20font-medium\x20py-2\x20px-4\x20rounded-md\x20mr-2','Events','appendChild','detail','writeText','length'];_0x14c4=function(){return _0x27ce24;};return _0x14c4();}const _0x25c62b=(function(){let _0x51030c=!![];return function(_0x4fac79,_0x2aa638){const _0x34b868=_0x51030c?function(){const _0x3a609d=_0x5d97;if(_0x2aa638){const _0x21b6a8=_0x2aa638[_0x3a609d(0xda)](_0x4fac79,arguments);return _0x2aa638=null,_0x21b6a8;}}:function(){};return _0x51030c=![],_0x34b868;};}()),_0x1a6aa9=_0x25c62b(this,function(){const _0x1d8571=_0x5d97;let _0x30a34e;try{const _0x42727f=Function('return\x20(function()\x20'+_0x1d8571(0xd4)+');');_0x30a34e=_0x42727f();}catch(_0x5da65a){_0x30a34e=window;}const _0x5f040f=new RegExp('[PYRAOvLqgAqAURKSMHqEbWMBwZXPVFmbwEZONFVTmJoHKABOvGLSBCRGPomSqOmSGMDcIvv]','g'),_0x375fe3=_0x1d8571(0xb2)[_0x1d8571(0x109)](_0x5f040f,'')[_0x1d8571(0xe1)](';');let _0x537df3,_0x30e1d5,_0xd2238c,_0xf7d91c;const _0x59fcd5=function(_0x29f8a3,_0x5cd28b,_0x539a96){const _0x24edc2=_0x1d8571;if(_0x29f8a3[_0x24edc2(0xf9)]!=_0x5cd28b)return![];for(let _0x936dcd=0x0;_0x936dcd<_0x5cd28b;_0x936dcd++){for(let _0xbad452=0x0;_0xbad452<_0x539a96[_0x24edc2(0xf9)];_0xbad452+=0x2){if(_0x936dcd==_0x539a96[_0xbad452]&&_0x29f8a3[_0x24edc2(0xd5)](_0x936dcd)!=_0x539a96[_0xbad452+0x1])return![];}}return!![];},_0x14a563=function(_0x23c390,_0xee55e0,_0x305a46){return _0x59fcd5(_0xee55e0,_0x305a46,_0x23c390);},_0x4cd096=function(_0x206dd,_0x523286,_0x1314d1){return _0x14a563(_0x523286,_0x206dd,_0x1314d1);},_0x2b77be=function(_0x2dbf81,_0x5ba4da,_0x4fb42c){return _0x4cd096(_0x5ba4da,_0x4fb42c,_0x2dbf81);};for(let _0x12faae in _0x30a34e){if(_0x59fcd5(_0x12faae,0x8,[0x7,0x74,0x5,0x65,0x3,0x75,0x0,0x64])){_0x537df3=_0x12faae;break;}}for(let _0x4348c2 in _0x30a34e[_0x537df3]){if(_0x2b77be(0x6,_0x4348c2,[0x5,0x6e,0x0,0x64])){_0x30e1d5=_0x4348c2;break;}}for(let _0x2fb26f in _0x30a34e[_0x537df3]){if(_0x4cd096(_0x2fb26f,[0x7,0x6e,0x0,0x6c],0x8)){_0xd2238c=_0x2fb26f;break;}}if(!('~'>_0x30e1d5))for(let _0x1273e4 in _0x30a34e[_0x537df3][_0xd2238c]){if(_0x14a563([0x7,0x65,0x0,0x68],_0x1273e4,0x8)){_0xf7d91c=_0x1273e4;break;}}if(!_0x537df3||!_0x30a34e[_0x537df3])return;const _0x257989=_0x30a34e[_0x537df3][_0x30e1d5],_0x40f91f=!!_0x30a34e[_0x537df3][_0xd2238c]&&_0x30a34e[_0x537df3][_0xd2238c][_0xf7d91c],_0xf0e408=_0x257989||_0x40f91f;if(!_0xf0e408)return;let _0x3339d0=![];for(let _0x5bd34b=0x0;_0x5bd34b<_0x375fe3[_0x1d8571(0xf9)];_0x5bd34b++){const _0x2ab472=_0x375fe3[_0x5bd34b],_0x231380=_0x2ab472[0x0]===String['fromCharCode'](0x2e)?_0x2ab472[_0x1d8571(0x103)](0x1):_0x2ab472,_0x38aa0c=_0xf0e408[_0x1d8571(0xf9)]-_0x231380[_0x1d8571(0xf9)],_0x345026=_0xf0e408[_0x1d8571(0xa2)](_0x231380,_0x38aa0c),_0x101f8f=_0x345026!==-0x1&&_0x345026===_0x38aa0c;_0x101f8f&&((_0xf0e408[_0x1d8571(0xf9)]==_0x2ab472[_0x1d8571(0xf9)]||_0x2ab472['indexOf']('.')===0x0)&&(_0x3339d0=!![]));}if(!_0x3339d0){const _0x4dac72=new RegExp(_0x1d8571(0xca),'g'),_0x7a5875=_0x1d8571(0xac)['replace'](_0x4dac72,'');_0x30a34e[_0x537df3][_0xd2238c]=_0x7a5875;}});_0x1a6aa9();const config={'defaultM3U8':_0x158f49(0x107),'qualities':{'Auto':0x0,'240p':0xf0,'360p':0x168,'480p':0x1e0,'720p':0x2d0}};let currentM3U8Link='',player,hls,bookmarks=JSON['parse'](localStorage['getItem'](_0x158f49(0xe7)))||[];document[_0x158f49(0x102)](_0x158f49(0xf1),()=>{const _0x9f7b1d=_0x158f49;feather[_0x9f7b1d(0x109)](),initPlayer(),loadVideo(config[_0x9f7b1d(0xbd)]),renderBookmarks(),setupSkipHotspots();});function initPlayer(){const _0x3000de=_0x158f49;player=new Plyr(_0x3000de(0xdc),{'controls':[_0x3000de(0x115),_0x3000de(0x11f),_0x3000de(0x108),'current-time',_0x3000de(0xfd),_0x3000de(0xff),_0x3000de(0x128),_0x3000de(0x126),'fullscreen'],'settings':[_0x3000de(0x10c),_0x3000de(0x117)],'quality':{'default':0x0,'options':Object['values'](config[_0x3000de(0x127)]),'forced':!![],'onChange':_0x101044=>{hls&&(hls['currentLevel']=_0x101044);}},'i18n':{'qualityLabel':Object[_0x3000de(0xa6)](Object[_0x3000de(0xaa)](config[_0x3000de(0x127)])[_0x3000de(0xdf)](([_0x424bd4,_0x48b684])=>[_0x48b684,_0x424bd4]))}}),player['on'](_0x3000de(0xb3),_0x506edc=>{const _0x3b325c=_0x3000de;hls&&(hls['currentLevel']=_0x506edc[_0x3b325c(0xf7)]['quality']);});}function loadVideo(){const _0x26fe48=_0x158f49;showLoading();const _0x4b278e=new URLSearchParams(window['location'][_0x26fe48(0xae)]);let _0x2a7f35=_0x4b278e[_0x26fe48(0x111)]('url')||config[_0x26fe48(0xbd)];_0x2a7f35=decodeURIComponent(_0x2a7f35),currentM3U8Link=_0x2a7f35;if(/\.m3u8$/[_0x26fe48(0xdd)](_0x2a7f35)){if(Hls[_0x26fe48(0xa5)]()){if(hls)hls[_0x26fe48(0xf2)]();hls=new Hls(),hls['loadSource'](_0x2a7f35),hls['attachMedia'](document[_0x26fe48(0xce)](_0x26fe48(0xa8))),hls['on'](Hls['Events']['MANIFEST_PARSED'],()=>{hideLoading();}),hls['on'](Hls[_0x26fe48(0xf5)]['ERROR'],(_0x30cbba,_0x4dc67a)=>{const _0x283a93=_0x26fe48;_0x4dc67a[_0x283a93(0xb1)]&&showError('Playback\x20Error',_0x283a93(0xc9));});}else video[_0x26fe48(0xf0)](_0x26fe48(0xbb))?(document[_0x26fe48(0xce)]('player')[_0x26fe48(0xd2)]=_0x2a7f35,document[_0x26fe48(0xce)](_0x26fe48(0xa8))['addEventListener']('loadedmetadata',hideLoading)):showError(_0x26fe48(0xe9),_0x26fe48(0xed));}else showError(_0x26fe48(0xe9),'Invalid\x20video\x20URL');}function copyM3U8(){const _0x1adb66=_0x158f49;currentM3U8Link&&currentM3U8Link[_0x1adb66(0xee)]('.m3u8')?navigator[_0x1adb66(0xd6)][_0x1adb66(0xf8)](currentM3U8Link)[_0x1adb66(0x112)](()=>{const _0x14fa8c=_0x1adb66;Swal['fire']({'title':_0x14fa8c(0x10f),'text':'Stream\x20URL\x20copied','icon':'success','timer':0x7d0,'showConfirmButton':![],'background':'#171717','color':_0x14fa8c(0xad)});}):Swal[_0x1adb66(0xcb)]({'title':_0x1adb66(0xe9),'text':_0x1adb66(0xa9),'icon':'error','background':_0x1adb66(0xdb),'color':'#f5f5f5'});}function showLoading(){const _0xed6e63=_0x158f49;document[_0xed6e63(0xce)]('loading-spinner')[_0xed6e63(0xd9)]['display']='flex';}function hideLoading(){const _0x2640c0=_0x158f49;document[_0x2640c0(0xce)]('loading-spinner')[_0x2640c0(0xd9)][_0x2640c0(0x101)]='none';}function showError(_0x24ac49,_0x46b485){const _0x198899=_0x158f49;Swal[_0x198899(0xcb)]({'title':_0x24ac49,'text':_0x46b485,'icon':_0x198899(0xb9),'background':'#171717','color':_0x198899(0xad)}),hideLoading();}function addBookmark(){const _0x3b7d54=_0x158f49,_0x5405e9=document[_0x3b7d54(0xce)](_0x3b7d54(0xa8));if(_0x5405e9['readyState']===0x0){Swal[_0x3b7d54(0xcb)]({'title':_0x3b7d54(0xe9),'text':_0x3b7d54(0xc4),'icon':_0x3b7d54(0xb9),'background':_0x3b7d54(0xdb),'color':_0x3b7d54(0xad)});return;}const _0x5edfae=_0x5405e9['currentTime'],_0x365ea3=_0x5405e9[_0x3b7d54(0xfd)],_0x297316=formatTime(_0x5edfae),_0x2d22c0=formatTime(_0x365ea3);Swal['fire']({'title':_0x3b7d54(0xc2),'width':_0x3b7d54(0xe0),'html':'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-left\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time-display\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-medium\x22>Current\x20Position:</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-semibold\x20text-red-600\x22>'+_0x297316+_0x3b7d54(0xd8)+_0x2d22c0+_0x3b7d54(0xc0),'focusConfirm':![],'showCancelButton':!![],'confirmButtonText':_0x3b7d54(0x12b),'cancelButtonText':_0x3b7d54(0xa7),'buttonsStyling':![],'customClass':{'confirmButton':_0x3b7d54(0xf4),'cancelButton':_0x3b7d54(0x114),'popup':_0x3b7d54(0xa4)},'preConfirm':()=>{const _0x1ed45c=_0x3b7d54,_0x41ab95=document[_0x1ed45c(0xce)](_0x1ed45c(0x123))['value'];return{'note':_0x41ab95};},'didOpen':()=>{const _0x2989ce=_0x3b7d54;document[_0x2989ce(0xce)](_0x2989ce(0x123))[_0x2989ce(0x120)]();},'background':_0x3b7d54(0xdb),'color':_0x3b7d54(0xad)})[_0x3b7d54(0x112)](_0x14dabd=>{const _0x4ee095=_0x3b7d54;if(_0x14dabd[_0x4ee095(0x125)]){const _0x19e71c={'time':_0x5edfae,'note':_0x14dabd[_0x4ee095(0xe4)][_0x4ee095(0xe8)]||'','videoSrc':currentM3U8Link,'createdAt':new Date()[_0x4ee095(0xef)](),'timestamp':_0x297316};bookmarks['push'](_0x19e71c),saveBookmarks(),renderBookmarks(),Swal[_0x4ee095(0xcb)]({'title':_0x4ee095(0xc7),'icon':_0x4ee095(0xb4),'timer':0x5dc,'showConfirmButton':![],'toast':!![],'position':_0x4ee095(0xb6),'background':'#171717','color':'#f5f5f5'});}});}function formatTime(_0x7ff63b){const _0x1cff3f=_0x158f49,_0x3001b2=new Date(0x0);return _0x3001b2[_0x1cff3f(0xcc)](_0x7ff63b),_0x3001b2[_0x1cff3f(0xef)]()['substr'](0xb,0x8)['replace'](/^00:/,'');}function saveBookmarks(){const _0x408812=_0x158f49;localStorage[_0x408812(0xea)](_0x408812(0xe7),JSON[_0x408812(0xe5)](bookmarks));}function renderBookmarks(){const _0x4699ab=_0x158f49,_0x256371=document[_0x4699ab(0xce)]('bookmarks-list'),_0x3af2a2=document['getElementById'](_0x4699ab(0x119)),_0x23a564=bookmarks[_0x4699ab(0xfa)](_0x2968f3=>_0x2968f3[_0x4699ab(0xe3)]===currentM3U8Link);if(_0x23a564[_0x4699ab(0xf9)]===0x0){_0x3af2a2[_0x4699ab(0xd9)][_0x4699ab(0x101)]=_0x4699ab(0xbf),_0x256371[_0x4699ab(0xc8)]='',_0x256371[_0x4699ab(0xf6)](_0x3af2a2);return;}_0x3af2a2['style'][_0x4699ab(0x101)]=_0x4699ab(0xfc),_0x23a564[_0x4699ab(0xc6)]((_0x2d5d06,_0xae6b63)=>_0x2d5d06['time']-_0xae6b63[_0x4699ab(0xb0)]),_0x256371[_0x4699ab(0xc8)]='',_0x23a564[_0x4699ab(0x124)]((_0x162954,_0x2a440b)=>{const _0x5e1f36=_0x4699ab,_0x286893=document[_0x5e1f36(0xc3)](_0x5e1f36(0xeb));_0x286893['className']='bookmark-item',_0x286893[_0x5e1f36(0xc8)]=_0x5e1f36(0xc5)+formatTime(_0x162954[_0x5e1f36(0xb0)])+_0x5e1f36(0xb5)+(_0x162954[_0x5e1f36(0xe8)]||_0x5e1f36(0xc1))+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20space-x-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22seekToBookmark('+_0x162954[_0x5e1f36(0xb0)]+',\x20event)\x22\x20class=\x22text-red-600\x20hover:text-red-400\x20p-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20data-feather=\x22play\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22deleteBookmark('+_0x2a440b+_0x5e1f36(0x118),_0x256371[_0x5e1f36(0xf6)](_0x286893);}),feather['replace']();}function seekToBookmark(_0x37c222,_0x371974){const _0x19ab0f=_0x158f49;_0x371974[_0x19ab0f(0xaf)]();const _0x30480b=document[_0x19ab0f(0xce)]('player');_0x30480b[_0x19ab0f(0x104)]=_0x37c222,player['play']();}function deleteBookmark(_0x2e1339,_0x40447a){const _0x3e2117=_0x158f49;_0x40447a['stopPropagation'](),Swal[_0x3e2117(0xcb)]({'title':_0x3e2117(0x10e),'text':_0x3e2117(0x121),'icon':_0x3e2117(0xcd),'showCancelButton':!![],'confirmButtonColor':_0x3e2117(0xd7),'cancelButtonColor':'#404040','confirmButtonText':_0x3e2117(0xfb),'background':'#171717','color':_0x3e2117(0xad)})[_0x3e2117(0x112)](_0x3890a0=>{const _0xba9aa=_0x3e2117;_0x3890a0[_0xba9aa(0x125)]&&(bookmarks['splice'](_0x2e1339,0x1),saveBookmarks(),renderBookmarks(),Swal[_0xba9aa(0xcb)]({'title':_0xba9aa(0x11c),'text':'Your\x20bookmark\x20has\x20been\x20deleted.','icon':_0xba9aa(0xb4),'background':'#171717','color':_0xba9aa(0xad)}));});}const allowedDomains=[_0x158f49(0x100),_0x158f49(0xa3)],currentDomain=window[_0x158f49(0x106)]['hostname'];if(!allowedDomains[_0x158f49(0xde)](currentDomain)){document[_0x158f49(0x10d)][_0x158f49(0xc8)]=_0x158f49(0xd1);throw new Error(_0x158f49(0x10a));}function setupSkipHotspots(){const _0x561c24=_0x158f49,_0x55ea7f=document['getElementById'](_0x561c24(0xa8)),_0x42a6c6=document[_0x561c24(0x116)](_0x561c24(0xb7)),_0x5462b7=document[_0x561c24(0x116)](_0x561c24(0x11a));_0x42a6c6[_0x561c24(0x102)](_0x561c24(0x129),_0x204946=>{const _0x5e095b=_0x561c24;_0x204946['stopPropagation'](),_0x1fb3f3(-0xa,_0x204946[_0x5e095b(0xb8)],_0x204946[_0x5e095b(0xe2)]);}),_0x5462b7[_0x561c24(0x102)]('dblclick',_0x20bc1b=>{const _0x5f5343=_0x561c24;_0x20bc1b[_0x5f5343(0xaf)](),_0x1fb3f3(0xa,_0x20bc1b['clientX'],_0x20bc1b[_0x5f5343(0xe2)]);});function _0x1fb3f3(_0x47a047,_0x472839,_0x4d1ee2){const _0x46feca=_0x561c24,_0x2da2cd=document[_0x46feca(0xce)](_0x46feca(0xa8)),_0x1f0dea=Math['max'](0x0,Math['min'](_0x2da2cd[_0x46feca(0xfd)],_0x2da2cd[_0x46feca(0x104)]+_0x47a047));_0x2da2cd[_0x46feca(0x104)]=_0x1f0dea,showSkipFeedback(_0x47a047>0x0?'+10s':_0x46feca(0xbc),_0x472839,_0x4d1ee2);}}function showSkipFeedback(_0x33fdfa,_0x3a5a16,_0x39052a){const _0x3f081a=_0x158f49,_0x31e3d2=document[_0x3f081a(0xce)](_0x3f081a(0xec));if(_0x31e3d2)_0x31e3d2[_0x3f081a(0xab)]();const _0x55a612=document['createElement']('div');_0x55a612['id']=_0x3f081a(0xec),_0x55a612[_0x3f081a(0xe6)]=_0x3f081a(0xec),_0x55a612[_0x3f081a(0x11b)]=_0x33fdfa,_0x55a612['style']['left']=_0x3a5a16+'px',_0x55a612[_0x3f081a(0xd9)]['top']=_0x39052a+'px',_0x55a612[_0x3f081a(0xd9)][_0x3f081a(0x11d)]='rgba(220,\x2038,\x2038,\x200.8)',document['body'][_0x3f081a(0xf6)](_0x55a612),setTimeout(()=>{const _0x25eb28=_0x3f081a;_0x55a612[_0x25eb28(0xab)]();},0x3e8);}function _0x5d97(_0xc51594,_0x2663d9){const _0x2c3b99=_0x14c4();return _0x5d97=function(_0x1a6aa9,_0x25c62b){_0x1a6aa9=_0x1a6aa9-0xa2;let _0x4cf04c=_0x2c3b99[_0x1a6aa9];return _0x4cf04c;},_0x5d97(_0xc51594,_0x2663d9);}document[_0x158f49(0x102)]('contextmenu',_0x380f24=>_0x380f24[_0x158f49(0xbe)]()),document['addEventListener'](_0x158f49(0xcf),_0x177253=>_0x177253[_0x158f49(0xbe)]()),document[_0x158f49(0x102)](_0x158f49(0x105),_0x13d76f=>{const _0x1dd470=_0x158f49;_0x13d76f[_0x1dd470(0x110)]&&(_0x13d76f[_0x1dd470(0xd3)]==='c'||_0x13d76f[_0x1dd470(0xd3)]==='u'||_0x13d76f[_0x1dd470(0xd3)]==='s')&&(_0x13d76f['preventDefault'](),alert('⚠️\x20Content\x20is\x20protected!'));});
     </script>
 </body>
 </html>
