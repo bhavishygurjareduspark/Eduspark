@@ -3,169 +3,323 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Video - Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSparK Video Player</title>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.tailwindcss.com/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <link rel="stylesheet" href="https://static.pw.live/fonts/reddit/font.css">
-    <script disable-devtool-auto src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
-    <link rel="stylesheet" href="https://rolexcoderz.netlify.app/player/rolex.css">
     
     <style>
+        :root {
+            --plyr-color-main: #dc2626; /* Red-600 */
+            --plyr-video-controls-background: rgba(0, 0, 0, 0.8);
+            --plyr-video-control-color: #fff;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: #fff;
+            background: #0a0a0a; /* Black-950 */
+            color: #f5f5f5; /* White-100 */
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+        }
+        
+        #player-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #262626; /* Neutral-800 */
+        }
+        
+        .header {
+            background: #0a0a0a; /* Black-950 */
+            color: white;
+            border-bottom: 2px solid #dc2626; /* Red-600 */
+        }
+        
+        .loading-spinner {
+            border-top-color: #dc2626; /* Red-600 */
+        }
+        
+        .bookmark-item:hover {
+            background-color: #1a1a1a; /* Neutral-900 */
+        }
+        
+        .custom-textarea {
+            width: 100%;
+            border: 1px solid #262626; /* Neutral-800 */
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            background: #171717; /* Neutral-900 */
+            color: white;
+            transition: border-color 0.2s;
+        }
+        
+        .custom-textarea:focus {
+            outline: none;
+            border-color: #dc2626; /* Red-600 */
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
+        }
+        
+        .time-display {
+            background-color: #262626; /* Neutral-800 */
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            margin-bottom: 1rem;
+            color: #f5f5f5;
+        }
+        
+        /* Red-Black Footer */
+        .footer {
+            background: linear-gradient(135deg, #0a0a0a 0%, #171717 100%);
+            color: #f5f5f5;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+            border-top: 2px solid #dc2626;
         }
 
-        #plyr-video {
-            position: fixed;
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #991b1b, #7f1d1d);
+            animation: rainbow 8s linear infinite;
+            background-size: 400% 100%;
+        }
+
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f5f5f5;
+        }
+
+        .footer-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #dc2626;
+        }
+
+        .footer-message {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.6;
+            color: #a3a3a3; /* Neutral-400 */
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-social a {
+            color: #a3a3a3;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+            color: #dc2626;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #737373; /* Neutral-500 */
+        }
+
+        .footer-lightning {
+            color: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer-pattern {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            opacity: 0.05;
+            background-image: radial-gradient(#dc2626 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 1;
         }
 
-        video {
-            max-width: 100%;
-            max-height: 100%;
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+
+        /* Bookmark item styling */
+        .bookmark-item {
+            background-color: #171717;
+            border: 1px solid #262626;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .bookmark-item:hover {
+            border-color: #dc2626;
         }
     </style>
 </head>
 
-   <video 
-  id="player" 
-  controls 
-  class="w-screen max-h-screen plyr--video z-10" 
-  poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg<ul></ul>">
-</video>
+<body>
+    <!-- Header -->
+    <div class="header w-full px-4 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-3">
+            <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" 
+                 alt="Logo" 
+                 class="h-10 w-10 rounded-lg object-cover border-2 border-red-600">
+            <span class="text-white font-bold text-xl font-[Poppins]">EduSparK</span>
+        </div>
         
-<!-- Stylish Header with Centered Brand Name -->
-<div class="w-full fixed top-0 left-0 z-50 px-4 py-3 flex items-center justify-between bg-gradient-to-r from-red-600 via-black to-blue-600 shadow-lg rounded-b-xl">
-    
-    <!-- Left: Logo -->
-    <div class="flex items-center space-x-2">
-        <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="Logo" class="h-10 w-10 rounded-full border-2 border-white">
-    </div>
-
-    <!-- Center: Brand Name -->
-    <div class="absolute left-1/2 transform -translate-x-1/2">
-        <span class="text-white text-2xl sm:text-3xl font-bold" style="font-family: 'Orbitron', sans-serif;">
-            EduSparK
-        </span>
-    </div>
-
-    <!-- Right: Copy Button -->
-    <div>
-        <button onclick="copyM3U8()" class="text-white hover:text-gray-200 transition duration-300">
+        <button onclick="copyM3U8()" class="text-white hover:bg-red-900/30 p-2 rounded-full border border-red-900">
             <i data-feather="copy"></i>
         </button>
     </div>
-</div>
 
-   
-</div>
+    <!-- Main Player -->
+    <div class="container mx-auto px-4 py-6">
+        <div id="player-container">
+            <div class="left-hotspot"></div>
+            <div class="right-hotspot"></div>
+            <video id="player" controls playsinline poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg"></video>
+        </div>
+        
+        <!-- Bookmarks Section -->
+        <div class="bg-black rounded-lg shadow-md p-4 mt-6 max-w-1000 mx-auto border border-neutral-800">
+            <h2 class="text-xl font-semibold text-white mb-4">Bookmarks</h2>
+            
+            <div id="bookmarks-list" class="space-y-2">
+                <div class="text-center text-neutral-400 py-4" id="no-bookmarks">
+                    No bookmarks yet. Click "Add Bookmark" to save your current position.
+                </div>
+            </div>
+            
+            <div class="mt-4 flex justify-center">
+                <button onclick="addBookmark()" class="btn-primary flex items-center">
+                    <i data-feather="plus" class="mr-2"></i> Add Bookmark
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 flex items-center justify-center bg-black/90 z-50 hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-pattern"></div>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="EduSparK Logo">
+                <span>EduSparK</span>
+            </div>
+            
+            <p class="footer-message">
+                Powering your learning experience with cutting-edge video technology.
+            </p>
+            
+            <div class="footer-social">
+                <a href="#" aria-label="Twitter"><i data-feather="twitter"></i></a>
+                <a href="#" aria-label="GitHub"><i data-feather="github"></i></a>
+                <a href="#" aria-label="LinkedIn"><i data-feather="linkedin"></i></a>
+                <a href="#" aria-label="Mail"><i data-feather="mail"></i></a>
+            </div>
+            
+            <div class="footer-copyright">
+                <span>Made with</span>
+                <span class="footer-lightning">⚡</span>
+                <span>by Learn Hub</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('player');
-    const urlParams = new URLSearchParams(window.location.search);
-    const lessonUrl = urlParams.get('url');
-
-    if (!lessonUrl) {
-        Swal.fire('Error', 'Video URL is required ✨', 'error');
-        return;
-    }
-
-    if (/^(http|https):\/\/(?:www\.)?youtube\.com\/watch\?v=|https:\/\/youtu\.be\//.test(lessonUrl)) {
-        const youtubePlayer = new Plyr(video, {
-            type: 'youtube',
-            autoplay: true,
-            controls: [
-                'play-large',
-                'rewind',
-                'play',
-                'fast-forward',
-                'progress',
-                'current-time',
-                'duration',
-                'mute',
-                'volume',
-                'captions',
-                'settings',
-                'fullscreen'
-            ],
-            tooltips: { controls: true, seek: true },
-        });
-
-        youtubePlayer.source = {
-            type: 'video',
-            sources: [{ src: lessonUrl, provider: 'youtube' }]
+        // Configuration
+        const config = {
+            defaultM3U8: "https://d1kw75zcv4u98c.cloudfront.net/out/v1/f7bc39ff387b45f9a56fc738030c9723/index.m3u8",
+            qualities: {
+                'Auto': 0,
+                '240p': 240,
+                '360p': 360,
+                '480p': 480,
+                '720p': 720
+            }
         };
-    } else if (/^(http|https):\/\/.+\.m3u8$/.test(lessonUrl)) {
-        const defaultQuality = 720;
-        const availableQualities = [0, 240, 360, 480, 720];
-        const player = new Plyr(video, {
-            controls: [
-                'play-large',
-                'rewind',
-                'play',
-                'fast-forward',
-                'progress',
-                'current-time',
-                'duration',
-                'mute',
-                'volume',
-                'captions',
-                'settings',
-                'fullscreen'
-            ],
-            autoplay: true,
-            captions: { active: true, update: true },
-            speed: { options: [0.5, 1, 1.25, 1.5, 1.75, 2, 2.5, 3] },
-            tooltips: { controls: true, seek: true },
-            quality: {
-                default: defaultQuality,
-                options: availableQualities,
-                forced: true,
-                onChange: updateQuality
-            },
-            i18n: {
-                qualityLabel: { 0: 'Auto', 240: '240p', 360: '360p', 480: '480p', 720: '720p' }
-            }
-        });
 
-        function loadVideoWithQuality(source) {
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(source);
-                hls.attachMedia(video);
-            } else {
-                video.src = source;
-            }
-        }
+        let currentM3U8Link = '';
+        let player;
+        let hls;
+        let bookmarks = JSON.parse(localStorage.getItem('videoBookmarks')) || [];
 
-        loadVideoWithQuality(lessonUrl);
-
-        function updateQuality(newQuality) {
-            const qualitySource = lessonUrl.replace('main.m3u8', `${newQuality}/main.m3u8`);
-            loadVideoWithQuality(qualitySource);
-        }
-    } else {
-        Swal.fire('Error', 'Invalid video URL.', 'error');
-    }
-});
+       const _0x280f0b=_0x5603;(function(_0xea3a68,_0x4f8820){const _0x3fc5e8=_0x5603,_0x4ed036=_0xea3a68();while(!![]){try{const _0x7abfe0=-parseInt(_0x3fc5e8(0x116))/0x1*(parseInt(_0x3fc5e8(0x16b))/0x2)+parseInt(_0x3fc5e8(0x111))/0x3*(parseInt(_0x3fc5e8(0x132))/0x4)+-parseInt(_0x3fc5e8(0xfe))/0x5*(parseInt(_0x3fc5e8(0x140))/0x6)+parseInt(_0x3fc5e8(0x14f))/0x7*(-parseInt(_0x3fc5e8(0x174))/0x8)+parseInt(_0x3fc5e8(0x11d))/0x9+-parseInt(_0x3fc5e8(0xed))/0xa+parseInt(_0x3fc5e8(0x13c))/0xb*(parseInt(_0x3fc5e8(0x14a))/0xc);if(_0x7abfe0===_0x4f8820)break;else _0x4ed036['push'](_0x4ed036['shift']());}catch(_0x85ba6d){_0x4ed036['push'](_0x4ed036['shift']());}}}(_0x23bd,0x64c69));const _0x2317eb=(function(){let _0x58809c=!![];return function(_0x1aa56f,_0x37a1e9){const _0x5e8d52=_0x58809c?function(){const _0xa854ce=_0x5603;if(_0x37a1e9){const _0x1f8895=_0x37a1e9[_0xa854ce(0x175)](_0x1aa56f,arguments);return _0x37a1e9=null,_0x1f8895;}}:function(){};return _0x58809c=![],_0x5e8d52;};}()),_0x4cd690=_0x2317eb(this,function(){const _0xd523c0=_0x5603,_0x3ce251=function(){const _0x59d094=_0x5603;let _0x4afa03;try{_0x4afa03=Function('return\x20(function()\x20'+_0x59d094(0x110)+');')();}catch(_0x290d6c){_0x4afa03=window;}return _0x4afa03;},_0x860b5a=_0x3ce251(),_0x3ab76b=new RegExp(_0xd523c0(0x148),'g'),_0x2be1c4=_0xd523c0(0x15a)['replace'](_0x3ab76b,'')[_0xd523c0(0x155)](';');let _0x5c0d9e,_0x106395,_0x445821,_0x54fa8f;const _0xf66f9a=function(_0x5d9067,_0xf18d4,_0x4ed667){const _0x4ad999=_0xd523c0;if(_0x5d9067[_0x4ad999(0x166)]!=_0xf18d4)return![];for(let _0x202daa=0x0;_0x202daa<_0xf18d4;_0x202daa++){for(let _0xa361a5=0x0;_0xa361a5<_0x4ed667[_0x4ad999(0x166)];_0xa361a5+=0x2){if(_0x202daa==_0x4ed667[_0xa361a5]&&_0x5d9067[_0x4ad999(0xf3)](_0x202daa)!=_0x4ed667[_0xa361a5+0x1])return![];}}return!![];},_0x59d384=function(_0x6c7350,_0x1460c1,_0x325578){return _0xf66f9a(_0x1460c1,_0x325578,_0x6c7350);},_0x2f0b1d=function(_0x5deccc,_0x41dd65,_0x1f12bb){return _0x59d384(_0x41dd65,_0x5deccc,_0x1f12bb);},_0x15cc57=function(_0x1ccc85,_0xc1913a,_0x54328f){return _0x2f0b1d(_0xc1913a,_0x54328f,_0x1ccc85);};for(let _0x2cf412 in _0x860b5a){if(_0xf66f9a(_0x2cf412,0x8,[0x7,0x74,0x5,0x65,0x3,0x75,0x0,0x64])){_0x5c0d9e=_0x2cf412;break;}}for(let _0xb6f560 in _0x860b5a[_0x5c0d9e]){if(_0x15cc57(0x6,_0xb6f560,[0x5,0x6e,0x0,0x64])){_0x106395=_0xb6f560;break;}}for(let _0x454da0 in _0x860b5a[_0x5c0d9e]){if(_0x2f0b1d(_0x454da0,[0x7,0x6e,0x0,0x6c],0x8)){_0x445821=_0x454da0;break;}}if(!('~'>_0x106395))for(let _0x376b73 in _0x860b5a[_0x5c0d9e][_0x445821]){if(_0x59d384([0x7,0x65,0x0,0x68],_0x376b73,0x8)){_0x54fa8f=_0x376b73;break;}}if(!_0x5c0d9e||!_0x860b5a[_0x5c0d9e])return;const _0x18dc08=_0x860b5a[_0x5c0d9e][_0x106395],_0x14ecc0=!!_0x860b5a[_0x5c0d9e][_0x445821]&&_0x860b5a[_0x5c0d9e][_0x445821][_0x54fa8f],_0x53d0fe=_0x18dc08||_0x14ecc0;if(!_0x53d0fe)return;let _0x44bb3b=![];for(let _0x5d9252=0x0;_0x5d9252<_0x2be1c4[_0xd523c0(0x166)];_0x5d9252++){const _0x3ae5c6=_0x2be1c4[_0x5d9252],_0x404427=_0x3ae5c6[0x0]===String[_0xd523c0(0xfc)](0x2e)?_0x3ae5c6[_0xd523c0(0x13e)](0x1):_0x3ae5c6,_0xda2c0b=_0x53d0fe[_0xd523c0(0x166)]-_0x404427[_0xd523c0(0x166)],_0x456ea9=_0x53d0fe[_0xd523c0(0x17a)](_0x404427,_0xda2c0b),_0x56e967=_0x456ea9!==-0x1&&_0x456ea9===_0xda2c0b;_0x56e967&&((_0x53d0fe[_0xd523c0(0x166)]==_0x3ae5c6[_0xd523c0(0x166)]||_0x3ae5c6['indexOf']('.')===0x0)&&(_0x44bb3b=!![]));}if(!_0x44bb3b){const _0x349f4f=new RegExp('[wNYqOlZAMIOIhTONWBOGSjJlSKQlbfW]','g'),_0x58ac2a=_0xd523c0(0xf7)[_0xd523c0(0xe8)](_0x349f4f,'');_0x860b5a[_0x5c0d9e][_0x445821]=_0x58ac2a;}});_0x4cd690(),document[_0x280f0b(0x161)](_0x280f0b(0x10a),()=>{const _0xd272bf=_0x280f0b;feather['replace'](),initPlayer(),loadVideo(config[_0xd272bf(0x172)]),renderBookmarks(),setupSkipHotspots();});function _0x23bd(){const _0x3fe3d7=['skip-feedback','HLS\x20not\x20supported','progress','time','map','addEventListener','Bookmark\x20Saved!','warning','src','left','length','dblclick','forEach','Copied!','+10s','34MERXmh','ERROR','toISOString','Playback\x20Error','bg-neutral-800\x20hover:bg-neutral-700\x20text-neutral-200\x20font-medium\x20py-2\x20px-4\x20rounded-md','-10s','splice','defaultM3U8','remove','8xcVwue','apply','MANIFEST_PARSED','bg-red-600\x20hover:bg-red-700\x20text-white\x20font-medium\x20py-2\x20px-4\x20rounded-md\x20mr-2','qualities','test','indexOf','quality','replace','.m3u8','createElement','currentTime','location','2076680FiOkZk','value','fire','32rem','No\x20note','volume','charCodeAt','stopPropagation','Events','fullscreen','eduwNYqOsparklZAMIkO.IxyhTONWzBOGSjJlSKQlbfW','current-time','player','loading-spinner','isSupported','fromCharCode','entries','429315lQbAWJ','play-large','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22background:black;color:red;padding:20px;text-align:center;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h1>🚫\x20Unauthorized\x20Access!</h1>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>This\x20code\x20is\x20locked\x20to\x20<strong>EduSparK.XYZ</strong>\x20only.</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20','Your\x20bookmark\x20has\x20been\x20deleted.','Save\x20Bookmark','success','Add\x20Bookmark','setSeconds','mute','edusparkk.xyz','speed','Error','DOMContentLoaded','querySelector','#171717','sort','bookmark-item','bookmark-note','{}.constructor(\x22return\x20this\x22)(\x20)','3mcVuva','min','body',',\x20event)\x22\x20class=\x22text-red-600\x20hover:text-red-400\x20p-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20data-feather=\x22play\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22deleteBookmark(','top-end','1366neccIg','key','selectstart','Delete\x20Bookmark?','error','backgroundColor','div','6949125OyUEkm','none','#player','includes','values','appendChild','clientX','settings','.left-hotspot','#f5f5f5','duration','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22mb-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<label\x20for=\x22bookmark-note\x22\x20class=\x22block\x20text-sm\x20font-medium\x20text-neutral-300\x20mb-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20Add\x20a\x20note\x20(optional)\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</label>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<textarea\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20id=\x22bookmark-note\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20class=\x22custom-textarea\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20rows=\x223\x22\x20\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20placeholder=\x22What\x27s\x20important\x20about\x20this\x20moment?\x22></textarea>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','display','Stream\x20URL\x20copied','edusparkk.netlify.app','play','Yes,\x20delete\x20it!','contextmenu','search','#dc2626','attachMedia','3019672iIGnEw','substr','videoSrc','#404040','innerHTML','note','fatal','textContent','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22text-left\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time-display\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-medium\x22>Current\x20Position:</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-semibold\x20text-red-600\x22>','canPlayType','3026529UCbWIq','readyState','slice','no-bookmarks','42azKjSJ','endsWith','writeText','getElementById','preventDefault','⚠️\x20Content\x20is\x20protected!','isConfirmed','loadedmetadata','[IBXUIMOVGqFBTovhTNBOEgHPZMOjmgPwGAMOqDEqWXUONcBChRFFEJJhUgjhQKcgYRhXDKDXMwoQUmhoHYg]','style','12ymNEdR','filter','clipboard','then','block','3902318oCGDEO','bg-neutral-900\x20border\x20border-neutral-800','rgba(220,\x2038,\x2038,\x200.8)','loadSource','Cancel','bookmarks-list','split','Video\x20not\x20loaded\x20yet','flex','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-medium\x22>Video\x20Duration:</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span>','className','eIdusparkkB.xyzXU;eIMOdusVGqpaFBTrkok.netvlifyhTNB.apOEgpHPZMOjmgPwGAMOqDEqWXUONcBChRFFEJJhUgjhQKcgYRhXDKDXMwoQUmhoHYg','top'];_0x23bd=function(){return _0x3fe3d7;};return _0x23bd();}function initPlayer(){const _0xd214e5=_0x280f0b;player=new Plyr(_0xd214e5(0x11f),{'controls':[_0xd214e5(0xff),_0xd214e5(0x12c),_0xd214e5(0x15e),_0xd214e5(0xf8),_0xd214e5(0x127),_0xd214e5(0x106),_0xd214e5(0xf2),_0xd214e5(0x124),_0xd214e5(0xf6)],'settings':[_0xd214e5(0xe7),_0xd214e5(0x108)],'quality':{'default':0x0,'options':Object[_0xd214e5(0x121)](config[_0xd214e5(0x178)]),'forced':!![]},'i18n':{'qualityLabel':Object['fromEntries'](Object[_0xd214e5(0xfd)](config[_0xd214e5(0x178)])[_0xd214e5(0x160)](([_0x563890,_0x400153])=>[_0x400153,_0x563890]))}});}function loadVideo(){const _0x12fd86=_0x280f0b;showLoading();const _0x9f1dcf=new URLSearchParams(window[_0x12fd86(0xec)][_0x12fd86(0x12f)]);let _0x5a0779=_0x9f1dcf['get']('url')||config[_0x12fd86(0x172)];_0x5a0779=decodeURIComponent(_0x5a0779),currentM3U8Link=_0x5a0779;if(/\.m3u8$/[_0x12fd86(0x179)](_0x5a0779)){if(Hls[_0x12fd86(0xfb)]()){if(hls)hls['destroy']();hls=new Hls(),hls[_0x12fd86(0x152)](_0x5a0779),hls[_0x12fd86(0x131)](document[_0x12fd86(0x143)]('player')),hls['on'](Hls[_0x12fd86(0xf5)][_0x12fd86(0x176)],()=>{hideLoading();}),hls['on'](Hls[_0x12fd86(0xf5)][_0x12fd86(0x16c)],(_0x258b92,_0xc39aff)=>{const _0x550d4e=_0x12fd86;_0xc39aff[_0x550d4e(0x138)]&&showError(_0x550d4e(0x16e),'Failed\x20to\x20load\x20video');});}else video[_0x12fd86(0x13b)]('application/vnd.apple.mpegurl')?(document[_0x12fd86(0x143)]('player')[_0x12fd86(0x164)]=_0x5a0779,document[_0x12fd86(0x143)](_0x12fd86(0xf9))[_0x12fd86(0x161)](_0x12fd86(0x147),hideLoading)):showError(_0x12fd86(0x109),_0x12fd86(0x15d));}else showError(_0x12fd86(0x109),'Invalid\x20video\x20URL');}function copyM3U8(){const _0x5e58db=_0x280f0b;currentM3U8Link&&currentM3U8Link[_0x5e58db(0x141)](_0x5e58db(0xe9))?navigator[_0x5e58db(0x14c)][_0x5e58db(0x142)](currentM3U8Link)['then'](()=>{const _0x6325b1=_0x5e58db;Swal[_0x6325b1(0xef)]({'title':_0x6325b1(0x169),'text':_0x6325b1(0x12a),'icon':_0x6325b1(0x103),'timer':0x7d0,'showConfirmButton':![],'background':_0x6325b1(0x10c),'color':'#f5f5f5'});}):Swal[_0x5e58db(0xef)]({'title':_0x5e58db(0x109),'text':'No\x20stream\x20URL\x20available','icon':_0x5e58db(0x11a),'background':_0x5e58db(0x10c),'color':'#f5f5f5'});}function showLoading(){const _0x2e740a=_0x280f0b;document['getElementById'](_0x2e740a(0xfa))[_0x2e740a(0x149)][_0x2e740a(0x129)]=_0x2e740a(0x157);}function hideLoading(){const _0x52d4d8=_0x280f0b;document['getElementById']('loading-spinner')['style'][_0x52d4d8(0x129)]='none';}function showError(_0x15f823,_0x24cf06){const _0x17b45a=_0x280f0b;Swal[_0x17b45a(0xef)]({'title':_0x15f823,'text':_0x24cf06,'icon':_0x17b45a(0x11a),'background':_0x17b45a(0x10c),'color':'#f5f5f5'}),hideLoading();}function _0x5603(_0x34fc9f,_0x40f2da){const _0xc3e43d=_0x23bd();return _0x5603=function(_0x4cd690,_0x2317eb){_0x4cd690=_0x4cd690-0xe7;let _0x3f00d8=_0xc3e43d[_0x4cd690];return _0x3f00d8;},_0x5603(_0x34fc9f,_0x40f2da);}function addBookmark(){const _0x39e686=_0x280f0b,_0x3ea754=document[_0x39e686(0x143)](_0x39e686(0xf9));if(_0x3ea754[_0x39e686(0x13d)]===0x0){Swal[_0x39e686(0xef)]({'title':_0x39e686(0x109),'text':_0x39e686(0x156),'icon':_0x39e686(0x11a),'background':_0x39e686(0x10c),'color':_0x39e686(0x126)});return;}const _0x5a1060=_0x3ea754['currentTime'],_0x3c5c7b=_0x3ea754[_0x39e686(0x127)],_0x271458=formatTime(_0x5a1060),_0x1af08f=formatTime(_0x3c5c7b);Swal[_0x39e686(0xef)]({'title':_0x39e686(0x104),'width':_0x39e686(0xf0),'html':_0x39e686(0x13a)+_0x271458+_0x39e686(0x158)+_0x1af08f+_0x39e686(0x128),'focusConfirm':![],'showCancelButton':!![],'confirmButtonText':_0x39e686(0x102),'cancelButtonText':_0x39e686(0x153),'buttonsStyling':![],'customClass':{'confirmButton':_0x39e686(0x177),'cancelButton':_0x39e686(0x16f),'popup':_0x39e686(0x150)},'preConfirm':()=>{const _0x32fac9=_0x39e686,_0x263fc6=document[_0x32fac9(0x143)]('bookmark-note')[_0x32fac9(0xee)];return{'note':_0x263fc6};},'didOpen':()=>{const _0x367c15=_0x39e686;document['getElementById'](_0x367c15(0x10f))['focus']();},'background':'#171717','color':_0x39e686(0x126)})[_0x39e686(0x14d)](_0x5e8fe0=>{const _0x1afb2d=_0x39e686;if(_0x5e8fe0[_0x1afb2d(0x146)]){const _0xeb8e30={'time':_0x5a1060,'note':_0x5e8fe0['value'][_0x1afb2d(0x137)]||'','videoSrc':currentM3U8Link,'createdAt':new Date()[_0x1afb2d(0x16d)](),'timestamp':_0x271458};bookmarks['push'](_0xeb8e30),saveBookmarks(),renderBookmarks(),Swal[_0x1afb2d(0xef)]({'title':_0x1afb2d(0x162),'icon':_0x1afb2d(0x103),'timer':0x5dc,'showConfirmButton':![],'toast':!![],'position':_0x1afb2d(0x115),'background':'#171717','color':_0x1afb2d(0x126)});}});}function formatTime(_0x2135ff){const _0x517a04=_0x280f0b,_0x2df01e=new Date(0x0);return _0x2df01e[_0x517a04(0x105)](_0x2135ff),_0x2df01e[_0x517a04(0x16d)]()[_0x517a04(0x133)](0xb,0x8)[_0x517a04(0xe8)](/^00:/,'');}function saveBookmarks(){localStorage['setItem']('videoBookmarks',JSON['stringify'](bookmarks));}function renderBookmarks(){const _0x21a8f0=_0x280f0b,_0x43fcbe=document[_0x21a8f0(0x143)](_0x21a8f0(0x154)),_0x28082d=document['getElementById'](_0x21a8f0(0x13f)),_0x3d12a0=bookmarks[_0x21a8f0(0x14b)](_0x11dada=>_0x11dada[_0x21a8f0(0x134)]===currentM3U8Link);if(_0x3d12a0[_0x21a8f0(0x166)]===0x0){_0x28082d['style']['display']=_0x21a8f0(0x14e),_0x43fcbe[_0x21a8f0(0x136)]='',_0x43fcbe[_0x21a8f0(0x122)](_0x28082d);return;}_0x28082d[_0x21a8f0(0x149)][_0x21a8f0(0x129)]=_0x21a8f0(0x11e),_0x3d12a0[_0x21a8f0(0x10d)]((_0x3f7475,_0x134e24)=>_0x3f7475[_0x21a8f0(0x15f)]-_0x134e24['time']),_0x43fcbe[_0x21a8f0(0x136)]='',_0x3d12a0[_0x21a8f0(0x168)]((_0x2c39fc,_0x511e1d)=>{const _0x6d6623=_0x21a8f0,_0x3077e0=document[_0x6d6623(0xea)](_0x6d6623(0x11c));_0x3077e0[_0x6d6623(0x159)]=_0x6d6623(0x10e),_0x3077e0[_0x6d6623(0x136)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20justify-between\x20items-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20items-center\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-red-600\x20font-medium\x20mr-3\x22>'+formatTime(_0x2c39fc[_0x6d6623(0x15f)])+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22text-neutral-300\x22>'+(_0x2c39fc[_0x6d6623(0x137)]||_0x6d6623(0xf1))+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22flex\x20space-x-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22seekToBookmark('+_0x2c39fc['time']+_0x6d6623(0x114)+_0x511e1d+',\x20event)\x22\x20class=\x22text-neutral-400\x20hover:text-neutral-200\x20p-1\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20data-feather=\x22trash-2\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x43fcbe['appendChild'](_0x3077e0);}),feather['replace']();}function seekToBookmark(_0x1ef86a,_0x1b9418){const _0x19d49b=_0x280f0b;_0x1b9418['stopPropagation']();const _0x261e48=document[_0x19d49b(0x143)](_0x19d49b(0xf9));_0x261e48['currentTime']=_0x1ef86a,player[_0x19d49b(0x12c)]();}function deleteBookmark(_0x540bed,_0x547a9d){const _0x539f65=_0x280f0b;_0x547a9d[_0x539f65(0xf4)](),Swal[_0x539f65(0xef)]({'title':_0x539f65(0x119),'text':'You\x20won\x27t\x20be\x20able\x20to\x20revert\x20this!','icon':_0x539f65(0x163),'showCancelButton':!![],'confirmButtonColor':_0x539f65(0x130),'cancelButtonColor':_0x539f65(0x135),'confirmButtonText':_0x539f65(0x12d),'background':'#171717','color':'#f5f5f5'})[_0x539f65(0x14d)](_0x40251a=>{const _0x1c3d49=_0x539f65;_0x40251a['isConfirmed']&&(bookmarks[_0x1c3d49(0x171)](_0x540bed,0x1),saveBookmarks(),renderBookmarks(),Swal[_0x1c3d49(0xef)]({'title':'Deleted!','text':_0x1c3d49(0x101),'icon':_0x1c3d49(0x103),'background':_0x1c3d49(0x10c),'color':_0x1c3d49(0x126)}));});}const allowedDomains=[_0x280f0b(0x107),_0x280f0b(0x12b)],currentDomain=window[_0x280f0b(0xec)]['hostname'];if(!allowedDomains[_0x280f0b(0x120)](currentDomain)){document[_0x280f0b(0x113)][_0x280f0b(0x136)]=_0x280f0b(0x100);throw new Error('Domain\x20verification\x20failed.');}function setupSkipHotspots(){const _0x10a15d=_0x280f0b,_0x440d46=document[_0x10a15d(0x143)](_0x10a15d(0xf9)),_0x194b91=document['querySelector'](_0x10a15d(0x125)),_0x5f31fa=document[_0x10a15d(0x10b)]('.right-hotspot');_0x194b91['addEventListener'](_0x10a15d(0x167),_0xedd1db=>{const _0x1842eb=_0x10a15d;_0xedd1db[_0x1842eb(0xf4)](),_0x1ee4af(-0xa,_0xedd1db[_0x1842eb(0x123)],_0xedd1db['clientY']);}),_0x5f31fa['addEventListener'](_0x10a15d(0x167),_0x22530a=>{const _0x28a7dd=_0x10a15d;_0x22530a[_0x28a7dd(0xf4)](),_0x1ee4af(0xa,_0x22530a[_0x28a7dd(0x123)],_0x22530a['clientY']);});function _0x1ee4af(_0x57dd53,_0xff3e92,_0x12f349){const _0x27934a=_0x10a15d,_0x226f26=document['getElementById'](_0x27934a(0xf9)),_0x1c95e0=Math['max'](0x0,Math[_0x27934a(0x112)](_0x226f26['duration'],_0x226f26[_0x27934a(0xeb)]+_0x57dd53));_0x226f26[_0x27934a(0xeb)]=_0x1c95e0,showSkipFeedback(_0x57dd53>0x0?_0x27934a(0x16a):_0x27934a(0x170),_0xff3e92,_0x12f349);}}function showSkipFeedback(_0x4b2f98,_0x7ab9c3,_0x290395){const _0x748163=_0x280f0b,_0x165821=document[_0x748163(0x143)](_0x748163(0x15c));if(_0x165821)_0x165821[_0x748163(0x173)]();const _0x59089f=document[_0x748163(0xea)](_0x748163(0x11c));_0x59089f['id']=_0x748163(0x15c),_0x59089f[_0x748163(0x159)]=_0x748163(0x15c),_0x59089f[_0x748163(0x139)]=_0x4b2f98,_0x59089f[_0x748163(0x149)][_0x748163(0x165)]=_0x7ab9c3+'px',_0x59089f['style'][_0x748163(0x15b)]=_0x290395+'px',_0x59089f[_0x748163(0x149)][_0x748163(0x11b)]=_0x748163(0x151),document[_0x748163(0x113)][_0x748163(0x122)](_0x59089f),setTimeout(()=>{_0x59089f['remove']();},0x3e8);}document[_0x280f0b(0x161)](_0x280f0b(0x12e),_0x5dcf71=>_0x5dcf71[_0x280f0b(0x144)]()),document[_0x280f0b(0x161)](_0x280f0b(0x118),_0x3b6eee=>_0x3b6eee[_0x280f0b(0x144)]()),document[_0x280f0b(0x161)]('keydown',_0x31e810=>{const _0x119080=_0x280f0b;_0x31e810['ctrlKey']&&(_0x31e810[_0x119080(0x117)]==='c'||_0x31e810[_0x119080(0x117)]==='u'||_0x31e810[_0x119080(0x117)]==='s')&&(_0x31e810['preventDefault'](),alert(_0x119080(0x145)));});
     </script>
 </body>
-
 </html>
