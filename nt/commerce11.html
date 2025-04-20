@@ -306,6 +306,17 @@
             margin-bottom: 0.8rem;
         }
 
+        .upcoming-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
         .live-class-subject {
             font-size: 1.1rem;
             font-weight: 600;
@@ -341,6 +352,20 @@
             border: none;
             cursor: pointer;
             width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .live-join-btn:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .live-join-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Subjects */
@@ -410,6 +435,13 @@
             font-weight: 600;
             font-size: 0.9rem;
             text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .subject-link:hover {
+            background: #0000aa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 139, 0.4);
         }
 
         /* Footer */
@@ -475,69 +507,7 @@
 </head>
 <body>
     <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">
-            <i class="fas fa-book-open"></i>
-        </div>
-        <h2 class="batch-title">PRARAMBH BATCH 2026</h2>
-    </div>
-
-    <!-- Header -->
-     <header id="mainHeader">
-        <a href="/" class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
-        </a>
-        <button class="menu-btn" id="menuBtn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu" id="navMenu">
-            <button class="nav-btn" onclick="location.href='/'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='/courses'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='/about'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='/contact'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Batch Header -->
-        <section class="batch-header">
-            <h1 class="batch-title">PRARAMBH COMMERCE 2026</h1>
-            <p>Premium learning experience with India's top educators</p>
-        </section>
-
-        <!-- Live Classes -->
-        <section class="section">
-            <h2 class="section-title">Live Classes</h2>
-            <div class="live-classes-container" id="liveClassesContainer"></div>
-        </section>
-
-        <!-- Subjects -->
-        <section class="section">
-            <h2 class="section-title">Subjects</h2>
-            <div class="subjects-container" id="subjectsContainer"></div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="powered-by">POWERED BY <span>EDUSPARK</span></div>
-    </footer>
+    <div class="loading-screen" id="loadingScreen"> <div class="loading-logo"> <i class="fas fa-book-open"></i> </div> <h2 class="batch-title">PRARAMBH BATCH 2026</h2> </div> <!-- Header --> <header id="mainHeader"> <a href="/" class="logo"> <i class="fas fa-book-open logo-icon"></i> <h1 class="brand-name">EduSpark</h1> </a> <button class="menu-btn" id="menuBtn" aria-label="Navigation Menu"> <span></span> <span></span> <span></span> </button> <nav class="nav-menu" id="navMenu"> <button class="nav-btn" onclick="location.href='/'"> <i class="fas fa-home"></i> Home </button> <button class="nav-btn" onclick="location.href='/courses'"> <i class="fas fa-graduation-cap"></i> Courses </button> <button class="nav-btn" onclick="location.href='/about'"> <i class="fas fa-info-circle"></i> About </button> <button class="nav-btn" onclick="location.href='/contact'"> <i class="fas fa-envelope"></i> Contact </button> </nav> </header> <!-- Main Content --> <main class="main-content"> <!-- Batch Header --> <section class="batch-header"> <h1 class="batch-title">PRARAMBH COMMERCE 2026</h1> <p>Premium learning experience with India's top educators</p> </section> <!-- Live Classes --> <section class="section"> <h2 class="section-title">Live Classes</h2> <div class="live-classes-container" id="liveClassesContainer"></div> </section> <!-- Subjects --> <section class="section"> <h2 class="section-title">Subjects</h2> <div class="subjects-container" id="subjectsContainer"></div> </section> </main> <!-- Footer --> <footer class="footer"> <div class="powered-by">POWERED BY <span>EDUSPARK</span></div> </footer>
 
     <script>
         // Simple page initialization
@@ -557,91 +527,189 @@
                 navMenu.classList.toggle('active');
             });
 
+            // Get current day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+            const today = new Date().getDay();
+            const isSunday = today === 0;
+
             // Live classes data
             const liveClasses = [
                 {
-                    subject: "Account's",
-                    teacher: "Unknown",
-                    startHour: 17,
-                    startMinute: 10,
+                    id: 1,
+                    subject: "Mathamatics",
+                    teacher: "Sobhit Nirwan",
+                    startHour: 17,  // 5 PM (24-hour format)
+                    startMinute: 05,
+                    durationMinutes: 60,  // Class duration in minutes
                     link: "/live/11th/comm",
-                    isLive: false
+                    isLive: false,  // Will be calculated automatically
+                    originalDay: 1, // Monday (0=Sun, 1=Mon, etc.)
+                    isRescheduled: false
                 },
                 {
-                    subject: "Economic's",
+                    id: 2,
+                    subject: "Business studies",
                     teacher: "Unknown",
-                    startHour: 20,
-                    startMinute: 10,
+                    startHour: 20,  // 8 PM (24-hour format)
+                    startMinute: 05,
+                    durationMinutes: 60,  // Class duration in minutes
                     link: "/live/11th/comm",
-                    isLive: true
+                    isLive: false,  // Will be calculated automatically
+                    originalDay: 2, // Tuesday
+                    isRescheduled: false
                 }
             ];
 
-            // Subjects data
-            const subjects = [
-                {
-                    title: "Mathamatics",
-                    teacher: "Unknown",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "flask",
-                    link: "/lectures/11th/comm/mathematics"
-                },
-                {
-                    title: "Business Studies",
-                    teacher: "Unknown",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "square-root-alt",
-                    link: "/lectures/11th/comm/business"
-                },
-                {
-                    title: "Account's",
-                    teacher: "Unknown",
-                    lectures: "6-7",
-                    duration: "<7h",
-                    icon: "language",
-                    link: "/lectures/11th/comm/account"
-                },
-                {
-                    title: "Economic's",
-                    teacher: "Unknown",
-                    lectures: "10-12",
-                    duration: "<12h",
-                    icon: "language",
-                    link: "lectures/11th/comm/economic"
-                },
-               
-            ];
+            // Adjust schedule for Sunday
+            if (isSunday) {
+                liveClasses.forEach(cls => {
+                    // If this class was originally scheduled for Sunday (0) or Monday (1)
+                    // We'll move Monday classes to Tuesday to avoid Sunday classes
+                    if (cls.originalDay === 1) { // Monday classes
+                        cls.originalDay = 2; // Move to Tuesday
+                        cls.isRescheduled = true;
+                    } else if (cls.originalDay === 0) { // Sunday classes (if any)
+                        cls.originalDay = 1; // Move to Monday
+                        cls.isRescheduled = true;
+                    }
+                });
+            }
+
+            // Subjects data remains the same
+            const subjects = [ { title: "Mathamatics", teacher: "Unknown", lectures: "10-12", duration: "<12h", icon: "flask", link: "/lectures/11th/comm/mathematics" }, { title: "Business Studies", teacher: "Unknown", lectures: "10-12", duration: "<12h", icon: "square-root-alt", link: "/lectures/11th/comm/business" }, { title: "Account's", teacher: "Unknown", lectures: "6-7", duration: "<7h", icon: "language", link: "/lectures/11th/comm/account" }, { title: "Economic's", teacher: "Unknown", lectures: "10-12", duration: "<12h", icon: "language", link: "lectures/11th/comm/economic" }, ];
+
+            // Function to check if a class should be live today
+            function shouldClassBeLiveToday(cls) {
+                const now = new Date();
+                const currentDay = now.getDay();
+                
+                // Check if this class is scheduled for today
+                if (cls.originalDay !== currentDay) {
+                    return false;
+                }
+                
+                // Check time within class duration
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+                const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+                
+                const classStartTimeInMinutes = cls.startHour * 60 + cls.startMinute;
+                const classEndTimeInMinutes = classStartTimeInMinutes + cls.durationMinutes;
+                
+                return currentTimeInMinutes >= classStartTimeInMinutes && 
+                       currentTimeInMinutes <= classEndTimeInMinutes;
+            }
+
+            // Update live status for all classes
+            function updateLiveStatus() {
+                liveClasses.forEach(cls => {
+                    cls.isLive = shouldClassBeLiveToday(cls);
+                });
+            }
 
             // Render live classes
             function renderLiveClasses() {
                 const container = document.getElementById('liveClassesContainer');
                 container.innerHTML = '';
                 
-                liveClasses.forEach(cls => {
-                    const card = document.createElement('div');
-                    card.className = 'live-class-card';
-                    card.innerHTML = `
-                        <div class="live-badge">${cls.isLive ? 'Live Now' : 'Upcoming'}</div>
-                        <h3 class="live-class-subject">${cls.subject}</h3>
+                // Show a message if it's Sunday
+                if (isSunday) {
+                    const messageCard = document.createElement('div');
+                    messageCard.className = 'live-class-card';
+                    messageCard.innerHTML = `
+                        <div class="upcoming-badge">Holiday Notice</div>
+                        <h3 class="live-class-subject">No classes today (Sunday)</h3>
                         <div class="live-class-teacher">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>${cls.teacher}</span>
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Regular classes will resume tomorrow</span>
                         </div>
                         <div class="live-class-time">
-                            <i class="far fa-clock"></i>
-                            <span>${cls.isLive ? 'Live Now' : `Starts at ${cls.startHour > 12 ? cls.startHour-12 : cls.startHour}:${cls.startMinute} ${cls.startHour >= 12 ? 'PM' : 'AM'}`}</span>
+                            <i class="fas fa-info-circle"></i>
+                            <span>By EduSparK ⚡</span>
                         </div>
-                        <button class="live-join-btn" ${cls.isLive ? `onclick="window.open('${cls.link}', '_blank')"` : 'disabled'}>
-                            ${cls.isLive ? 'Join Live Class' : 'Coming Soon'}
-                        </button>
                     `;
+                    container.appendChild(messageCard);
+                    return;
+                }
+                
+                liveClasses.forEach(cls => {
+                    const isLive = shouldClassBeLiveToday(cls);
+                    const isScheduledToday = cls.originalDay === new Date().getDay();
+                    
+                    const card = document.createElement('div');
+                    card.className = 'live-class-card';
+                    
+                    if (isScheduledToday) {
+                        card.innerHTML = `
+                            <div class="${isLive ? 'live-badge' : 'upcoming-badge'}">${isLive ? 'Live Now' : 'Upcoming'}</div>
+                            <h3 class="live-class-subject">${cls.subject}</h3>
+                            <div class="live-class-teacher">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>${cls.teacher}</span>
+                            </div>
+                            <div class="live-class-time">
+                                <i class="far fa-clock"></i>
+                                <span>${isLive ? 'Live Now' : `Starts at ${formatTime(cls.startHour, cls.startMinute)}`}</span>
+                            </div>
+                            <button class="live-join-btn" ${isLive ? `onclick="window.open('${cls.link}', '_blank')"` : 'disabled'}>
+                                ${isLive ? 'Join Live Class' : 'Coming Soon'}
+                            </button>
+                        `;
+                    } else if (cls.isRescheduled) {
+                        // Show rescheduled classes with their new day
+                        const rescheduledDay = getDayName(cls.originalDay);
+                        card.innerHTML = `
+                            <div class="upcoming-badge">Rescheduled</div>
+                            <h3 class="live-class-subject">${cls.subject}</h3>
+                            <div class="live-class-teacher">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>${cls.teacher}</span>
+                            </div>
+                            <div class="live-class-time">
+                                <i class="fas fa-calendar-day"></i>
+                                <span>Moved to ${rescheduledDay} at ${formatTime(cls.startHour, cls.startMinute)}</span>
+                            </div>
+                            <button class="live-join-btn" disabled>
+                                Not Today
+                            </button>
+                        `;
+                    } else {
+                        // Regular upcoming classes (not today)
+                        const scheduledDay = getDayName(cls.originalDay);
+                        card.innerHTML = `
+                            <div class="upcoming-badge">Scheduled</div>
+                            <h3 class="live-class-subject">${cls.subject}</h3>
+                            <div class="live-class-teacher">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>${cls.teacher}</span>
+                            </div>
+                            <div class="live-class-time">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>Every ${scheduledDay} at ${formatTime(cls.startHour, cls.startMinute)}</span>
+                            </div>
+                            <button class="live-join-btn" disabled>
+                                Not Today
+                            </button>
+                        `;
+                    }
+                    
                     container.appendChild(card);
                 });
             }
 
-            // Render subjects
+            // Helper function to get day name
+            function getDayName(dayIndex) {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return days[dayIndex];
+            }
+
+            // Format time to 12-hour format with AM/PM
+            function formatTime(hours, minutes) {
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const twelveHour = hours % 12 || 12;
+                return `${twelveHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+            }
+
+            // Render subjects (same as before)
             function renderSubjects() {
                 const container = document.getElementById('subjectsContainer');
                 container.innerHTML = '';
@@ -676,8 +744,15 @@
             }
 
             // Initial render
+            updateLiveStatus();
             renderLiveClasses();
             renderSubjects();
+
+            // Set up a timer to check live status every minute
+            setInterval(() => {
+                updateLiveStatus();
+                renderLiveClasses();
+            }, 60000); // Check every minute
         }
     </script>
 </body>
