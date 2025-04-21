@@ -306,6 +306,17 @@
             margin-bottom: 0.8rem;
         }
 
+        .upcoming-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
         .live-class-subject {
             font-size: 1.1rem;
             font-weight: 600;
@@ -341,6 +352,20 @@
             border: none;
             cursor: pointer;
             width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .live-join-btn:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .live-join-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Subjects */
@@ -410,6 +435,13 @@
             font-weight: 600;
             font-size: 0.9rem;
             text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .subject-link:hover {
+            background: #0000aa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 139, 0.4);
         }
 
         /* Footer */
@@ -560,44 +592,48 @@
             // Live classes data
             const liveClasses = [
                 {
-                    subject: "No Class ❌",
-                    teacher: "Unknown",
-                    startHour: 17,
-                    startMinute: 10,
+                    id: 1,
+                    subject: "Mathematics",
+                    teacher: "Shobhit Nirvan",
+                    startHour: 17,  // 5 PM (24-hour format)
+                    startMinute: 05,
+                    durationMinutes: 60,  // Class duration in minutes
                     link: "/live/11th/pcmb",
-                    isLive: false
+                    isLive: false  // Will be calculated automatically
                 },
                 {
-                    subject: "Chemistry",
+                    id: 2,
+                    subject: "Physics",
                     teacher: "Prashant Kirad",
-                    startHour: 20,
-                    startMinute: 10,
+                    startHour: 20,  // 8 PM (24-hour format)
+                    startMinute: 05,
+                    durationMinutes: 60,  // Class duration in minutes
                     link: "/live/11th/pcmb",
-                    isLive: true
+                    isLive: false  // Will be calculated automatically
                 }
             ];
 
             // Subjects data
             const subjects = [
                 {
-                    title: "Mathamatics",
-                    teacher: "Unknown",
+                    title: "Physics",
+                    teacher: "Prashant Kirad",
                     lectures: "10-12",
                     duration: "<12h",
                     icon: "flask",
-                    link: "/lectures/11th/pcmb/mathematics"
+                    link: "/lectures/11th/pcmb/physics"
                 },
                 {
-                    title: "Physics",
-                    teacher: "Unknown",
+                    title: "Mathematics",
+                    teacher: "Sobhit Nirwan",
                     lectures: "10-12",
                     duration: "<12h",
                     icon: "square-root-alt",
-                    link: "/lectures/11th/pcmb/Physics"
+                    link: "/lectures/11th/comm/mathematics"
                 },
                 {
                     title: "Chemistry",
-                    teacher: "Unknown",
+                    teacher: "Prashant Kirad",
                     lectures: "6-7",
                     duration: "<7h",
                     icon: "language",
@@ -605,14 +641,34 @@
                 },
                 {
                     title: "Biology",
-                    teacher: "Unknown",
+                    teacher: "Biology Expert",
                     lectures: "10-12",
                     duration: "<12h",
                     icon: "language",
                     link: "lectures/11th/pcmb/biology"
                 },
-               
             ];
+
+            // Function to check if a class should be live
+            function checkClassStatus(cls) {
+                const now = new Date();
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+                const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+                
+                const classStartTimeInMinutes = cls.startHour * 60 + cls.startMinute;
+                const classEndTimeInMinutes = classStartTimeInMinutes + cls.durationMinutes;
+                
+                return currentTimeInMinutes >= classStartTimeInMinutes && 
+                       currentTimeInMinutes <= classEndTimeInMinutes;
+            }
+
+            // Update live status for all classes
+            function updateLiveStatus() {
+                liveClasses.forEach(cls => {
+                    cls.isLive = checkClassStatus(cls);
+                });
+            }
 
             // Render live classes
             function renderLiveClasses() {
@@ -620,10 +676,11 @@
                 container.innerHTML = '';
                 
                 liveClasses.forEach(cls => {
+                    const isLive = checkClassStatus(cls);
                     const card = document.createElement('div');
                     card.className = 'live-class-card';
                     card.innerHTML = `
-                        <div class="live-badge">${cls.isLive ? 'Live Now' : 'Upcoming'}</div>
+                        <div class="${isLive ? 'live-badge' : 'upcoming-badge'}">${isLive ? 'Live Now' : 'Upcoming'}</div>
                         <h3 class="live-class-subject">${cls.subject}</h3>
                         <div class="live-class-teacher">
                             <i class="fas fa-chalkboard-teacher"></i>
@@ -631,14 +688,21 @@
                         </div>
                         <div class="live-class-time">
                             <i class="far fa-clock"></i>
-                            <span>${cls.isLive ? 'Live Now' : `Starts at ${cls.startHour > 12 ? cls.startHour-12 : cls.startHour}:${cls.startMinute} ${cls.startHour >= 12 ? 'PM' : 'AM'}`}</span>
+                            <span>${isLive ? 'Live Now' : `Starts at ${formatTime(cls.startHour, cls.startMinute)}`}</span>
                         </div>
-                        <button class="live-join-btn" ${cls.isLive ? `onclick="window.open('${cls.link}', '_blank')"` : 'disabled'}>
-                            ${cls.isLive ? 'Join Live Class' : 'Coming Soon'}
+                        <button class="live-join-btn" ${isLive ? `onclick="window.open('${cls.link}', '_blank')"` : 'disabled'}>
+                            ${isLive ? 'Join Live Class' : 'Coming Soon'}
                         </button>
                     `;
                     container.appendChild(card);
                 });
+            }
+
+            // Format time to 12-hour format with AM/PM
+            function formatTime(hours, minutes) {
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                const twelveHour = hours % 12 || 12;
+                return `${twelveHour}:${minutes.toString().padStart(2, '0')} ${ampm}`;
             }
 
             // Render subjects
@@ -676,8 +740,15 @@
             }
 
             // Initial render
+            updateLiveStatus();
             renderLiveClasses();
             renderSubjects();
+
+            // Set up a timer to check live status every minute
+            setInterval(() => {
+                updateLiveStatus();
+                renderLiveClasses();
+            }, 60000); // Check every minute
         }
     </script>
 </body>
