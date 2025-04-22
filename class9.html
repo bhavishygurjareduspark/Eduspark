@@ -1,492 +1,1008 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSpark - Modern Learning Platform</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>EduSparK Video Player</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    
     <style>
         :root {
-            --primary-blue: #00008b;
-            --accent-red: #ff0000;
-            --dark-bg: #0a0a0a;
-            --pure-white: #ffffff;
-            --box-bg: rgba(255, 255, 255, 0.95);
-            --tag-hot: #ff4757;
-            --tag-new: #2ed573;
-            --rating-star: #ffd700;
-            --price-green: #2ed573;
+            --plyr-color-main: #dc2626; /* Red-600 */
+            --plyr-video-controls-background: rgba(0, 0, 0, 0.8);
+            --plyr-video-control-color: #fff;
         }
-
-        * {
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a; /* Black-950 */
+            color: #f5f5f5; /* White-100 */
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
-            background-size: 400% 400%;
-            animation: gradientFlow 20s ease infinite;
-            overflow-x: hidden;
-            touch-action: manipulation;
         }
-
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        header {
-            padding: 1rem 2rem;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
+        
+        #player-container {
             width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: var(--pure-white);
-            gap: 0.8rem;
-        }
-
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
-        }
-
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
+            max-width: 1000px;
+            margin: 20px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            position: relative;
             cursor: pointer;
-            padding: 12px;
-            z-index: 1001;
-            transition: transform 0.3s;
+            border: 1px solid #262626; /* Neutral-800 */
+        }
+        
+        .header {
+            background: #0a0a0a; /* Black-950 */
+            color: white;
+            border-bottom: 2px solid #dc2626; /* Red-600 */
+        }
+        
+        .loading-spinner {
+            border-top-color: #dc2626; /* Red-600 */
+        }
+        
+        .bookmark-item:hover {
+            background-color: #1a1a1a; /* Neutral-900 */
+        }
+        
+        .custom-textarea {
+            width: 100%;
+            border: 1px solid #262626; /* Neutral-800 */
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            background: #171717; /* Neutral-900 */
+            color: white;
+            transition: border-color 0.2s;
+        }
+        
+        .custom-textarea:focus {
+            outline: none;
+            border-color: #dc2626; /* Red-600 */
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
+        }
+        
+        .time-display {
+            background-color: #262626; /* Neutral-800 */
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            margin-bottom: 1rem;
+            color: #f5f5f5;
+        }
+        
+        /* Red-Black Footer */
+        .footer {
+            background: linear-gradient(135deg, #0a0a0a 0%, #171717 100%);
+            color: #f5f5f5;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+            border-top: 2px solid #dc2626;
         }
 
-        .menu-btn:hover {
-            transform: scale(1.1);
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #991b1b, #7f1d1d);
+            animation: rainbow 8s linear infinite;
+            background-size: 400% 100%;
         }
 
-        .menu-btn span {
-            display: block;
-            width: 28px;
-            height: 3px;
-            background: var(--pure-white);
-            margin: 5px 0;
-            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: rotate(-45deg) translate(-6px, 7px);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        .menu-btn.active span:last-child {
-            transform: rotate(45deg) translate(-6px, -7px);
-        }
-
-        .nav-menu {
-            position: fixed;
-            top: 70px;
-            right: -300px;
-            width: 300px;
-            height: calc(100vh - 70px);
-            background: rgba(0, 0, 0, 0.98);
-            padding: 2rem;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
-            z-index: 999;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-menu.active {
-            transform: translateX(-300px);
-        }
-
-        .nav-btn {
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease-out;
-            font-size: 1.1rem;
-            display: flex;
             align-items: center;
-            gap: 0.8rem;
-        }
-
-        .nav-btn i {
-            transition: transform 0.3s;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent-red);
-            transform: translateX(10px);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(360deg);
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            padding: 6rem 2rem 2rem;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        .study-box {
-            background: var(--box-bg);
-            padding: 1.8rem;
-            border-radius: 16px;
-            text-align: left;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            gap: 1rem;
+            padding: 0 1rem;
             position: relative;
-            overflow: hidden;
-        }
-
-        .study-box::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, var(--primary-blue), transparent);
-            transform: rotate(45deg);
-            opacity: 0.1;
-            transition: opacity 0.4s;
-        }
-
-        .study-box:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-        }
-
-        .study-box:hover::before {
-            opacity: 0.2;
-        }
-
-        .study-box.clicked {
-            opacity: 0;
-            transform: translateX(120%) rotate(15deg);
-            pointer-events: none;
-        }
-
-        .image-container {
-            width: 100%;
-            padding-top: 62.5%;
-            position: relative;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .image-tag {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
             z-index: 2;
         }
 
-        .tag-hot {
-            background: var(--tag-hot);
-            color: var(--pure-white);
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f5f5f5;
         }
 
-        .tag-new {
-            background: var(--tag-new);
-            color: var(--pure-white);
+        .footer-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #dc2626;
         }
 
-        .study-box img {
+        .footer-message {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.6;
+            color: #a3a3a3; /* Neutral-400 */
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .footer-social a {
+            color: #a3a3a3;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            transform: translateY(-3px);
+            color: #dc2626;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #737373; /* Neutral-500 */
+        }
+
+        .footer-lightning {
+            color: #dc2626;
+            animation: pulse 1.5s infinite;
+        }
+
+        .footer-pattern {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s;
+            opacity: 0.05;
+            background-image: radial-gradient(#dc2626 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 1;
         }
 
-        .study-box:hover img {
-            transform: scale(1.05);
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
-        .course-details {
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+
+        /* Bookmark item styling */
+        .bookmark-item {
+            background-color: #171717;
+            border: 1px solid #262626;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .bookmark-item:hover {
+            border-color: #dc2626;
+        }
+        
+         /* Feedback Modal Styles */
+        .feedback-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .feedback-content {
+            background: #171717;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #dc2626;
+        }
+        
+        .stars-container {
+            display: flex;
+            justify-content: center;
             margin: 1.5rem 0;
         }
-
-        .course-title {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-blue);
+        
+        .star {
+            font-size: 2rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 5px;
         }
-
-        .batch-name {
-            font-size: 1rem;
-            color: #666;
-            margin-bottom: 0.8rem;
+        
+        .star:hover, .star.active {
+            color: #ffcc00;
+            transform: scale(1.2);
         }
-
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .rating-stars {
-            color: var(--rating-star);
-        }
-
-        .rating-value {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--price-green);
+        
+        .feedback-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #262626;
+            border: 1px solid #444;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
             margin-bottom: 1rem;
         }
-
-        .description {
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
+        
+         .url-input-container {
+            background: rgba(0,0,0,0.7);
+            padding: 8px;
+            border-radius: 4px;
+            margin-left: 15px;
         }
-
-        .study-link {
-            display: block;
-            width: 100%;
-            padding: 1rem 2rem;
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            font-weight: 600;
-            text-align: center;
+        .url-input {
+            width: 300px;
+            background: #262626;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
         }
-
-        .study-link::before {
-            content: "→";
-            position: absolute;
-            left: -30px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: all 0.4s;
-            font-size: 1.4rem;
+        .url-input:focus {
+            outline: none;
+            border-color: #dc2626;
         }
-
-        .study-link:hover {
-            background: var(--accent-red);
-            letter-spacing: 0.5px;
+        .load-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-left: 5px;
+            cursor: pointer;
         }
-
-        .study-link:hover::before {
-            left: 20px;
-            opacity: 1;
-        }
-
-        .eduspark-animation {
-            position: fixed;
-            top: 50%;
-            left: -100%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.96);
-            padding: 1.5rem 2.5rem;
-            border-radius: 16px;
-            color: var(--pure-white);
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1002;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .eduspark-animation.show {
-            left: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 6rem 1rem 2rem;
-            }
-
-            .nav-menu {
-                width: 100%;
-                right: -100%;
-            }
-
-            .nav-menu.active {
-                transform: translateX(-100%);
-            }
-
-            .eduspark-animation {
-                width: 90%;
-                justify-content: center;
-                padding: 1.2rem;
-            }
-
-            .eduspark-animation.show {
-                left: 5%;
-            }
+        .load-btn:hover {
+            background: #b91c1c;
         }
     </style>
 </head>
+
 <body>
-    <div class="eduspark-animation">
-        <i class="fas fa-book-open logo-icon"></i>
-        <h2 class="brand-name">EduSpark</h2>
+    <!-- Header -->
+    <div class="header w-full px-4 py-3 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-3">
+            <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" 
+                 alt="Logo" 
+                 class="h-10 w-10 rounded-lg object-cover border-2 border-red-600">
+            <span class="text-white font-bold text-xl font-[Poppins]">EduSparK</span>
+        </div>
+        
+        <button onclick="copyM3U8()" class="text-white hover:bg-red-900/30 p-2 rounded-full border border-red-900">
+            <i data-feather="copy"></i>
+        </button>
     </div>
 
-    <header>
-        <div class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
+    <!-- Main Player -->
+    <div class="container mx-auto px-4 py-6">
+        <div id="player-container">
+            <div class="left-hotspot"></div>
+            <div class="right-hotspot"></div>
+            <video id="player" controls playsinline poster="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg"></video>
         </div>
-        <button class="menu-btn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu">
-            <button class="nav-btn" onclick="location.href='index.html'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='courses.html'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='about.html'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='contact.html'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
-        </header>
-
-    <main class="container">
-        <!-- Study Box 1 - Mathematics -->
-        <article class="study-box">
-            <div class="image-container">
-                <div class="image-tag tag-hot">Hot</div>
-                <img src="https://i.postimg.cc/JhSDtQyL/images-2.jpg" alt="Mathematics Course">
-            </div>
-            <div class="course-details">
-                <h3 class="course-title">AARAMBH CLASS 9TH</h3>
-                <div class="batch-name"></div>
-                <div class="rating">
-                    <div class="rating-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <div class="rating-value">4.5/5</div>
+        
+        <!-- Bookmarks Section -->
+        <div class="bg-black rounded-lg shadow-md p-4 mt-6 max-w-1000 mx-auto border border-neutral-800">
+            <h2 class="text-xl font-semibold text-white mb-4">Bookmarks</h2>
+            
+            <div id="bookmarks-list" class="space-y-2">
+                <div class="text-center text-neutral-400 py-4" id="no-bookmarks">
+                    No bookmarks yet. Click "Add Bookmark" to save your current position.
                 </div>
-                <div class="price">Free</div>
             </div>
-            <a href="comingsoon.html" class="study-link" onclick="handleStudyLink(event)">
-                Let's Study
-            </a>
-        </article>
-
-        <!-- Study Box 2 - Science -->
-        <article class="study-box">
-            <div class="image-container">
-                <div class="image-tag tag-new">New</div>
-                <img src="https://i.postimg.cc/Yqb7n1z5/download-1.jpg" alt="Science Course">
+            
+            <div class="mt-4 flex justify-center">
+                <button onclick="addBookmark()" class="btn-primary flex items-center">
+                    <i data-feather="plus" class="mr-2"></i> Add Bookmark
+                </button>
             </div>
-            <div class="course-details">
-                <h3 class="course-title">NEEV CLASS 9TH</h3>
-                <div class="batch-name"></div>
-                <div class="rating">
-                    <div class="rating-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="far fa-star"></i>
-                    </div>
-                    <div class="rating-value">4.0/5</div>
-                </div>
-                <div class="price">Free</div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="fixed inset-0 flex items-center justify-center bg-black/90 z-50 hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+    </div>
+    
+    <div id="feedbackModal" class="feedback-modal">
+        <div class="feedback-content">
+            <h3 class="text-xl font-semibold text-center text-white mb-2">How was your experience?</h3>
+            <p class="text-neutral-400 text-center mb-4">Please rate this video content</p>
+            
+            <div class="stars-container">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
             </div>
-            <a href="comingsoon.html" class="study-link" onclick="handleStudyLink(event)">
-                Let's Study
-            </a>
-        </article>
+            
+            <textarea class="feedback-textarea" placeholder="Optional feedback..."></textarea>
+            
+            <div class="flex justify-between">
+                <button id="skipFeedback" class="bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded">
+                    Skip
+                </button>
+                <button id="submitFeedback" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-pattern"></div>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.postimg.cc/tg7w991M/Picsart-25-02-28-22-52-30-635.jpg" alt="EduSparK Logo">
+                <span>EduSparK</span>
+            </div>
+            
+            <p class="footer-message">
+                Powering your learning experience with cutting-edge video technology.
+            </p>
+            
+            <div class="footer-social">
+                <a href="#" aria-label="Twitter"><i data-feather="twitter"></i></a>
+                <a href="#" aria-label="GitHub"><i data-feather="github"></i></a>
+                <a href="#" aria-label="LinkedIn"><i data-feather="linkedin"></i></a>
+                <a href="#" aria-label="Mail"><i data-feather="mail"></i></a>
+            </div>
+            
+            <div class="footer-copyright">
+                <span>Made with</span>
+                <span class="footer-lightning">⚡</span>
+                <span>by Learn Hub</span>
+            </div>
+        </div>
+    </footer>
 
-        <!-- Add more study boxes following the same pattern -->
-    </main>
-
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
-        // Menu Toggle
-        const menuBtn = document.querySelector('.menu-btn');
-        const navMenu = document.querySelector('.nav-menu');
+        // Firebase Configuration (Replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsKPZDZyGqIqpGVXYUf4arljlI1Ynn3aM",
+            authDomain: "eduspark-feedback.firebaseapp.com",
+            databaseURL: "https://eduspark-feedback-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "eduspark-feedback",
+            storageBucket: "eduspark-feedback.appspot.com",
+            messagingSenderId: "777568861602",
+            appId: "1:777568861602:web:2caafd1482e51d88e386fb"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Feedback System Variables
+        let watchedDuration = 0;
+        let feedbackInterval;
+        let currentRating = 0;
+        let currentVideoId = "video_001"; // You can make this dynamic
+        
+        
+        
+        
+           // Global variables
+        let currentM3U8Link = '';
+        let player;
+        let hls;
+        let bookmarks = JSON.parse(localStorage.getItem('videoBookmarks')) || [];
+        const defaultSource = "videoUrlInput";
 
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            initPlayer();
+            const initialUrl = getVideoUrlFromParameter() || defaultSource;
+            loadVideo(initialUrl);
+            renderBookmarks();
+            setupSkipHotspots();
         });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
-                menuBtn.classList.remove('active');
-                navMenu.classList.remove('active');
+        // URL Parameter Handling
+        function getVideoUrlFromParameter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoUrl = urlParams.get('url');
+            
+            if (videoUrl) {
+                try {
+                    const decodedUrl = decodeURIComponent(videoUrl);
+                    if (isValidVideoUrl(decodedUrl)) {
+                        document.getElementById('videoUrlInput').value = decodedUrl;
+                        return decodedUrl;
+                    }
+                } catch (e) {
+                    console.error("Invalid URL in parameters");
+                }
+            }
+            return null;
+        }
+
+        function isValidVideoUrl(url) {
+            if (!url) return false;
+            const videoFormats = [
+                /\.m3u8($|\?)/i,
+                /\.mp4($|\?)/i,
+                /\.webm($|\?)/i,
+                /\/manifest\.mpd($|\?)/i,
+                /\/hls\/|\.ts($|\?)/i
+            ];
+            return videoFormats.some(format => format.test(url)) && 
+                  (url.startsWith('http://') || url.startsWith('https://'));
+        }
+
+        function loadFromUrlInput() {
+            const input = document.getElementById('videoUrlInput');
+            const newUrl = input.value.trim();
+            
+            if (newUrl && isValidVideoUrl(newUrl)) {
+                // Update browser URL without reload
+                window.history.pushState({}, '', `?url=${encodeURIComponent(newUrl)}`);
+                // Load new video
+                loadVideo(newUrl);
+                // Clear old bookmarks
+                bookmarks = bookmarks.filter(b => b.videoSrc !== currentM3U8Link);
+                saveBookmarks();
+                renderBookmarks();
+            } else {
+                Swal.fire({
+                    title: 'Invalid URL',
+                    text: 'Please enter a valid video URL (.m3u8, .mp4, etc.) starting with http:// or https://',
+                    icon: 'error',
+                    background: '#171717',
+                    color: '#f5f5f5'
+                });
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', () => {
+            const paramUrl = getVideoUrlFromParameter();
+            if (paramUrl) {
+                loadVideo(paramUrl);
             }
         });
 
-       
+        function initPlayer() {
+            // Player will be initialized in loadVideo after HLS manifest is parsed
+        }
+
+        function loadVideo(source) {
+            showLoading();
+            currentM3U8Link = source;
+            
+            const video = document.getElementById('player');
+            
+            if (Hls.isSupported()) {
+                if (hls) hls.destroy();
+                
+                hls = new Hls();
+                hls.loadSource(source);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+                    const availableQualities = hls.levels.map((l) => l.height);
+                    availableQualities.unshift(0); // Add Auto option
+                    
+                    // Create quality labels
+                    const qualityLabels = {};
+                    qualityLabels[0] = 'Auto';
+                    hls.levels.forEach(level => {
+                        qualityLabels[level.height] = level.height + 'p';
+                    });
+                    
+                    // Initialize Plyr player
+                    player = new Plyr(video, {
+                        controls: [
+                            'play-large',
+                            'play',
+                            'progress',
+                            'current-time',
+                            'duration',
+                            'mute',
+                            'volume',
+                            'settings',
+                            'fullscreen'
+                        ],
+                        settings: ['quality', 'speed'],
+                        quality: {
+                            default: 0,
+                            options: availableQualities,
+                            forced: true,
+                            onChange: (quality) => updateQuality(quality)
+                        },
+                        i18n: {
+                            qualityLabel: qualityLabels
+                        }
+                    });
+                    
+                     // After player is initialized, add this:
+        player.on('play', () => {
+            startWatchingTimer();
+        });
+        
+        player.on('pause', () => {
+            clearInterval(feedbackInterval);
+        });
+        
+        player.on('ended', () => {
+            checkForFeedback();
+        });
+        
+        function startWatchingTimer() {
+            clearInterval(feedbackInterval);
+            watchedDuration = 0;
+            
+            feedbackInterval = setInterval(() => {
+                watchedDuration += 1;
+                
+                // Trigger feedback after 5 minutes (300 seconds)
+                if (watchedDuration === 300) {
+                    checkForFeedback();
+                }
+            }, 1000);
+        }
+        
+        function checkForFeedback() {
+            clearInterval(feedbackInterval);
+            
+            // Only ask for feedback once per session
+            if (!localStorage.getItem(`feedbackGiven_${currentVideoId}`)) {
+                showFeedbackModal();
+            }
+        }
+        
+        function showFeedbackModal() {
+            const modal = document.getElementById('feedbackModal');
+            modal.style.display = 'flex';
+            
+            // Star rating interaction
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.getAttribute('data-rating'));
+                    currentRating = rating;
+                    
+                    stars.forEach(s => {
+                        s.classList.toggle('active', parseInt(s.getAttribute('data-rating')) <= rating);
+                    });
+                });
+            });
+            
+            // Submit button
+            document.getElementById('submitFeedback').addEventListener('click', () => {
+                const feedbackText = document.querySelector('.feedback-textarea').value;
+                saveFeedback(currentRating, feedbackText);
+                modal.style.display = 'none';
+                localStorage.setItem(`feedbackGiven_${currentVideoId}`, 'true');
+            });
+            
+            // Skip button
+            document.getElementById('skipFeedback').addEventListener('click', () => {
+                modal.style.display = 'none';
+                localStorage.setItem(`feedbackGiven_${currentVideoId}`, 'skipped');
+            });
+        }
+        
+        function saveFeedback(rating, comment = '') {
+            const feedbackData = {
+                videoId: currentVideoId,
+                rating: rating,
+                comment: comment,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                durationWatched: watchedDuration
+            };
+            
+            
+            
+            // Push to Firebase database
+            database.ref('feedback/').push(feedbackData)
+                .then(() => {
+                    Swal.fire({
+                        title: 'Thank You!',
+                        text: 'Your feedback has been recorded.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#171717',
+                        color: '#f5f5f5'
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error saving feedback: ", error);
+                });
+        }
+                    
+                    // Update Auto quality label when level changes
+                    hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                        const autoOption = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span");
+                        if (hls.autoLevelEnabled) {
+                            autoOption.innerHTML = `Auto (${hls.levels[data.level].height}p)`;
+                        } else {
+                            autoOption.innerHTML = 'Auto';
+                        }
+                    });
+                    
+                    hideLoading();
+                });
+                
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        showError('Playback Error', 'Failed to load video');
+                    }
+                });
+                
+                hls.attachMedia(video);
+                window.hls = hls;
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // For Safari
+                video.src = source;
+                player = new Plyr(video);
+                video.addEventListener('loadedmetadata', hideLoading);
+            } else {
+                showError('Error', 'HLS not supported');
+            }
+        }
+        
+        function updateQuality(newQuality) {
+            if (newQuality === 0) {
+                // Auto quality
+                hls.currentLevel = -1;
+            } else {
+                // Find the level index that matches the selected quality
+                hls.levels.forEach((level, levelIndex) => {
+                    if (level.height === newQuality) {
+                        hls.currentLevel = levelIndex;
+                    }
+                });
+            }
+        }
+        
+        
+
+        function copyM3U8() {
+            if (currentM3U8Link && currentM3U8Link.endsWith('.m3u8')) {
+                navigator.clipboard.writeText(currentM3U8Link).then(() => {
+                    Swal.fire({
+                        title: 'Copied!',
+                        text: 'Stream URL copied',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#171717',
+                        color: '#f5f5f5'
+                    });
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No stream URL available',
+                    icon: 'error',
+                    background: '#171717',
+                    color: '#f5f5f5'
+                });
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading-spinner').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-spinner').style.display = 'none';
+        }
+
+        function showError(title, message) {
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'error',
+                background: '#171717',
+                color: '#f5f5f5'
+            });
+            hideLoading();
+        }
+        
+        function addBookmark() {
+            const video = document.getElementById('player');
+            if (video.readyState === 0) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Video not loaded yet',
+                    icon: 'error',
+                    background: '#171717',
+                    color: '#f5f5f5'
+                });
+                return;
+            }
+            
+            const currentTime = video.currentTime;
+            const duration = video.duration;
+            const timestamp = formatTime(currentTime);
+            const durationStamp = formatTime(duration);
+            
+            Swal.fire({
+                title: 'Add Bookmark',
+                width: '32rem',
+                html: `
+                    <div class="text-left">
+                        <div class="time-display">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Current Position:</span>
+                                <span class="font-semibold text-red-600">${timestamp}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Video Duration:</span>
+                                <span>${durationStamp}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <label for="bookmark-note" class="block text-sm font-medium text-neutral-300 mb-1">
+                                Add a note (optional)
+                            </label>
+                            <textarea 
+                                id="bookmark-note" 
+                                class="custom-textarea" 
+                                rows="3" 
+                                placeholder="What's important about this moment?"></textarea>
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Save Bookmark',
+                cancelButtonText: 'Cancel',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md mr-2',
+                    cancelButton: 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium py-2 px-4 rounded-md',
+                    popup: 'bg-neutral-900 border border-neutral-800'
+                },
+                preConfirm: () => {
+                    const note = document.getElementById('bookmark-note').value;
+                    return { note };
+                },
+                didOpen: () => {
+                    document.getElementById('bookmark-note').focus();
+                },
+                background: '#171717',
+                color: '#f5f5f5'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const newBookmark = {
+                        time: currentTime,
+                        note: result.value.note || '',
+                        videoSrc: currentM3U8Link,
+                        createdAt: new Date().toISOString(),
+                        timestamp: timestamp
+                    };
+                    
+                    bookmarks.push(newBookmark);
+                    saveBookmarks();
+                    renderBookmarks();
+                    
+                    Swal.fire({
+                        title: 'Bookmark Saved!',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end',
+                        background: '#171717',
+                        color: '#f5f5f5'
+                    });
+                }
+            });
+        }
+        
+        function formatTime(seconds) {
+            const date = new Date(0);
+            date.setSeconds(seconds);
+            return date.toISOString().substr(11, 8).replace(/^00:/, '');
+        }
+        
+        function saveBookmarks() {
+            localStorage.setItem('videoBookmarks', JSON.stringify(bookmarks));
+        }
+        
+        function renderBookmarks() {
+            const bookmarksList = document.getElementById('bookmarks-list');
+            const noBookmarksMsg = document.getElementById('no-bookmarks');
+            
+            const currentVideoBookmarks = bookmarks.filter(b => b.videoSrc === currentM3U8Link);
+            
+            if (currentVideoBookmarks.length === 0) {
+                noBookmarksMsg.style.display = 'block';
+                bookmarksList.innerHTML = '';
+                bookmarksList.appendChild(noBookmarksMsg);
+                return;
+            }
+            
+            noBookmarksMsg.style.display = 'none';
+            currentVideoBookmarks.sort((a, b) => a.time - b.time);
+            bookmarksList.innerHTML = '';
+            
+            currentVideoBookmarks.forEach((bookmark, index) => {
+                const bookmarkElement = document.createElement('div');
+                bookmarkElement.className = 'bookmark-item';
+                bookmarkElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <span class="text-red-600 font-medium mr-3">${formatTime(bookmark.time)}</span>
+                            <span class="text-neutral-300">${bookmark.note || 'No note'}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="seekToBookmark(${bookmark.time}, event)" class="text-red-600 hover:text-red-400 p-1">
+                                <i data-feather="play"></i>
+                            </button>
+                            <button onclick="deleteBookmark(${index}, event)" class="text-neutral-400 hover:text-neutral-200 p-1">
+                                <i data-feather="trash-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                bookmarksList.appendChild(bookmarkElement);
+            });
+            feather.replace();
+        }
+        
+        function seekToBookmark(time, event) {
+            event.stopPropagation();
+            const video = document.getElementById('player');
+            video.currentTime = time;
+            player.play();
+        }
+        
+        function deleteBookmark(index, event) {
+            event.stopPropagation();
+            Swal.fire({
+                title: 'Delete Bookmark?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#404040',
+                confirmButtonText: 'Yes, delete it!',
+                background: '#171717',
+                color: '#f5f5f5'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    bookmarks.splice(index, 1);
+                    saveBookmarks();
+                    renderBookmarks();
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your bookmark has been deleted.',
+                        icon: 'success',
+                        background: '#171717',
+                        color: '#f5f5f5'
+                    });
+                }
+            });
+        }
+        
+        function setupSkipHotspots() {
+            const video = document.getElementById('player');
+            const leftHotspot = document.querySelector('.left-hotspot');
+            const rightHotspot = document.querySelector('.right-hotspot');
+            
+            leftHotspot.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                skipVideo(-10, e.clientX, e.clientY);
+            });
+            
+            rightHotspot.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                skipVideo(10, e.clientX, e.clientY);
+            });
+            
+            function skipVideo(seconds, x, y) {
+                const video = document.getElementById('player');
+                const newTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
+                video.currentTime = newTime;
+                showSkipFeedback(seconds > 0 ? '+10s' : '-10s', x, y);
+            }
+        }
+        
+        function showSkipFeedback(text, x, y) {
+            const existingFeedback = document.getElementById('skip-feedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            const feedback = document.createElement('div');
+            feedback.id = 'skip-feedback';
+            feedback.className = 'skip-feedback';
+            feedback.textContent = text;
+            feedback.style.left = `${x}px`;
+            feedback.style.top = `${y}px`;
+            feedback.style.backgroundColor = 'rgba(220, 38, 38, 0.8)';
+            
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 1000);
+        }
+        
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+document.addEventListener('selectstart', (e) => e.preventDefault());
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) {
+        e.preventDefault();
+        alert("⚠️ Content is protected!");
+    }
+});
+
+// Allow only specific domains (replace with yours)
+const allowedDomains = ["edusparkk.xyz", "edusparkk.netlify.app","localhost"];  
+const currentDomain = window.location.hostname;
+
+if (!allowedDomains.includes(currentDomain)) {
+    document.body.innerHTML = `
+        <div style="background:black;color:red;padding:20px;text-align:center;">
+            <h1> Unauthorized Access!</h1>
+            <p>This code is locked to <strong>EduSparK</strong> only.</p>
+        </div>
+    `;
+    throw new Error("Domain verification failed.");
+}
+
+
     </script>
 </body>
 </html>
