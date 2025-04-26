@@ -1,0 +1,4057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSpark Books</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+    <style>
+        :root {
+            --primary-blue: #00008b;
+            --accent-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --pure-white: #ffffff;
+            --box-bg: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --success-green: #28a745;
+            --warning-orange: #fd7e14;
+            --star-yellow: #ffc107;
+            --info-blue: #17a2b8;
+            --verified-blue: #1da1f2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Header Styles */
+        header {
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        header.scrolled {
+            padding: 0.7rem 2rem;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: var(--pure-white);
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            color: var(--accent-red);
+            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(90deg, #fff, #ff0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: -200%; }
+            100% { background-position: 200%; }
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            transition: all 0.3s;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-red);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1001;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background: var(--pure-white);
+            margin: 5px 0;
+            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-btn.active span:first-child {
+            transform: rotate(-45deg) translate(-6px, 7px);
+            background: var(--accent-red);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-btn.active span:last-child {
+            transform: rotate(45deg) translate(-6px, -7px);
+            background: var(--accent-red);
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 70px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            padding: 2rem;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+            border-left: 1px solid var(--glass-border);
+        }
+
+        .nav-menu.active {
+            transform: translateX(-300px);
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: var(--pure-white);
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn i {
+            transition: transform 0.4s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-red);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .nav-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: fixed;
+            top: 70px;
+            width: 100%;
+            z-index: 999;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
+        }
+
+        .search-container.scrolled {
+            top: 60px;
+            padding: 0.8rem;
+        }
+
+        .search-bar {
+            display: flex;
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.4s;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            background: white;
+            box-shadow: 0 0 0 2px var(--accent-red);
+        }
+
+        /* Advanced Search */
+        .advanced-search {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1.5rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 998;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-top: none;
+        }
+
+        .advanced-search.active {
+            display: block;
+        }
+
+        .advanced-search-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .advanced-search-group {
+            flex: 1;
+        }
+
+        .advanced-search-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .advanced-search-select, .advanced-search-input {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .advanced-search-select:focus, .advanced-search-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+        }
+
+        .toggle-advanced {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .toggle-advanced.active {
+            transform: rotate(180deg);
+        }
+
+        /* Saved Books Section */
+        .saved-books-container {
+            padding: 8rem 2rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .saved-books-title {
+            font-family: 'Lemon Milk', sans-serif;
+            font-size: 2rem;
+            color: var(--pure-white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            padding-left: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .saved-books-title i {
+            color: var(--accent-red);
+            font-size: 1.8rem;
+        }
+
+        .saved-books-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: var(--accent-red);
+            border-radius: 5px;
+        }
+
+        .view-all-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-all-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        .saved-books-slider {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 2rem;
+        }
+
+        .saved-books-slider::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .saved-books-slider::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .saved-books-slider::-webkit-scrollbar-thumb {
+            background: var(--accent-red);
+            border-radius: 10px;
+        }
+
+        .saved-book-card {
+            scroll-snap-align: start;
+            flex: 0 0 180px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            transform: translateY(0);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .saved-book-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .saved-book-cover {
+            height: 220px;
+            width: 100%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saved-book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .saved-book-card:hover .saved-book-cover img {
+            transform: scale(1.05);
+        }
+
+        .saved-book-details {
+            padding: 1rem;
+        }
+
+        .saved-book-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-book-author {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .saved-book-view-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saved-book-view-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .saved-book-view-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        .saved-book-view-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .saved-book-view-btn i {
+            margin-right: 0.3rem;
+        }
+
+        .saved-book-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+        }
+
+        .saved-book-progress-bar {
+            height: 100%;
+            background: var(--accent-red);
+            width: 65%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .saved-book-meta {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .saved-book-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Vertical Books Section */
+        .vertical-books-container {
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .vertical-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .vertical-book-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            transform: translateY(0);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .vertical-book-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .vertical-book-cover {
+            height: 220px;
+            width: 100%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vertical-book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .vertical-book-card:hover .vertical-book-cover img {
+            transform: scale(1.05);
+        }
+
+        .vertical-book-details {
+            padding: 1rem;
+        }
+
+        .vertical-book-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vertical-book-author {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .vertical-book-view-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vertical-book-view-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .vertical-book-view-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        .vertical-book-view-btn:hover {
+            background: var(--accent-red);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .vertical-book-view-btn i {
+            margin-right: 0.3rem;
+        }
+
+        .vertical-book-progress {
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+        }
+
+        .vertical-book-progress-bar {
+            height: 100%;
+            background: var(--accent-red);
+            width: 65%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .vertical-book-meta {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .vertical-book-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Book Details Modal */
+        .book-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .book-modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .book-modal {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .book-modal-overlay.active .book-modal {
+            transform: translateY(0);
+        }
+
+        .book-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--pure-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .book-modal-close:hover {
+            color: var(--accent-red);
+            transform: rotate(90deg);
+        }
+
+        .book-modal-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .book-modal-header {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .book-modal-cover {
+            flex: 0 0 200px;
+            height: 300px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .book-modal-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-modal-info {
+            flex: 1;
+        }
+
+        .book-modal-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-modal-author {
+            color: rgba(255,255,255,0.8);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-modal-category {
+            display: inline-block;
+            background: var(--accent-red);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .book-modal-description {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-modal-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-modal-meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .book-modal-meta-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--pure-white);
+        }
+
+        .book-modal-meta-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .book-modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .book-modal-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .book-modal-btn-primary {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .book-modal-btn-primary:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
+
+        .book-modal-btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .book-modal-btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .book-modal-section {
+            margin-top: 1.5rem;
+        }
+
+        .book-modal-section-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .book-modal-section-title i {
+            color: var(--accent-red);
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .average-rating {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--pure-white);
+        }
+
+        .rating-count {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .user-rating {
+            margin-top: 1rem;
+        }
+
+        .user-rating-title {
+            margin-bottom: 0.5rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .submit-rating {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-rating:hover {
+            background: #cc0000;
+        }
+
+        .reviews-container {
+            margin-top: 1rem;
+        }
+
+        .review-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .review-user-name {
+            font-weight: 600;
+            color: var(--pure-white);
+        }
+
+        .review-rating {
+            margin-left: auto;
+            color: var(--star-yellow);
+        }
+
+        .review-text {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 0.5rem;
+        }
+
+        /* Add Book Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .add-book-modal {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .add-book-modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--pure-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--pure-white);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--pure-white);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            border: 2px dashed var(--glass-border);
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--accent-red);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--accent-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            color: var(--pure-white);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        #bookImage, #screenshotImage {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 1rem;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            color: var(--success-green);
+            margin-bottom: 1rem;
+            animation: bounce 1s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .success-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+            overflow: hidden;
+            border: 3px solid var(--glass-border);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .verified-badge {
+            color: var(--verified-blue);
+            font-size: 1rem;
+            display: none;
+        }
+
+        .verify-btn {
+            background: var(--verified-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .verify-btn:hover {
+            background: #0d8bd9;
+        }
+
+        .profile-email {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-username {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .profile-userid {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-bio {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .profile-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--pure-white);
+        }
+
+        .profile-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .profile-section {
+            margin-top: 1.5rem;
+        }
+
+        .profile-section-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-section-title i {
+            color: var(--accent-red);
+        }
+
+        .profile-books {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .profile-book {
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            padding: 0.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .profile-book:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .profile-book-cover {
+            height: 100px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-book-title {
+            font-size: 0.7rem;
+            color: var(--pure-white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            font-size: 1.8rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-tab {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: var(--pure-white);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-tab.active {
+            background: var(--accent-red);
+        }
+
+        .admin-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-tab.active:hover {
+            background: #cc0000;
+        }
+
+        .pending-requests, .approved-books, .users-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .request-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .request-image {
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .request-details {
+            flex: 1;
+        }
+
+        .request-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .request-author {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .request-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .approve-btn, .reject-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .approve-btn {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #218838;
+        }
+
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: #c82333;
+        }
+
+        /* Admin Login Modal */
+        .admin-login-modal {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .admin-login-title {
+            font-family: 'Lemon Milk', sans-serif;
+            color: var(--pure-white);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* OTP Verification Modal */
+        .otp-modal {
+            background: var(--dark-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--verified-blue);
+        }
+
+        .resend-otp {
+            color: var(--verified-blue);
+            cursor: pointer;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .resend-otp:hover {
+            text-decoration: underline;
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-red);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .notification.show {
+            opacity: 1;
+            bottom: 3rem;
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success-green);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning-orange);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--info-blue);
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+
+        .notification-close {
+            margin-left: 1rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .saved-books-container {
+                padding: 7rem 1rem 1rem;
+            }
+            
+            .vertical-books-container {
+                padding: 2rem 1rem;
+            }
+            
+            .saved-books-title {
+                font-size: 1.8rem;
+            }
+            
+            .vertical-books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .saved-book-card, .vertical-book-card {
+                flex: 0 0 150px;
+            }
+
+            .saved-book-cover, .vertical-book-cover {
+                height: 180px;
+            }
+
+            .request-meta {
+                flex-direction: column;
+            }
+            
+            .request-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .book-modal-header {
+                flex-direction: column;
+            }
+
+            .book-modal-cover {
+                flex: 0 0 auto;
+                width: 100%;
+                height: 250px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .saved-books-title {
+                font-size: 1.5rem;
+            }
+
+            .fab {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+
+            .admin-tabs {
+                flex-direction: column;
+            }
+
+            .book-modal-actions {
+                flex-direction: column;
+            }
+
+            .book-modal-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .approve-btn, .reject-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-book-open logo-icon"></i>
+            <h1 class="brand-name">EduSpark</h1>
+        </div>
+        <div class="header-right">
+            <button class="menu-btn" aria-label="Navigation Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="user-avatar" id="userAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <button class="nav-btn" id="homeBtn">
+                <i class="fas fa-home"></i>
+                Home
+            </button>
+            <button class="nav-btn" id="booksBtn">
+                <i class="fas fa-book"></i>
+                Books
+            </button>
+            <button class="nav-btn" id="coursesBtn">
+                <i class="fas fa-graduation-cap"></i>
+                Courses
+            </button>
+            <button class="nav-btn" id="profileBtn">
+                <i class="fas fa-user"></i>
+                Profile
+            </button>
+            <button class="nav-btn" id="adminBtn" style="display: none;">
+                <i class="fas fa-lock"></i>
+                Admin
+            </button>
+            <button class="nav-btn" id="authBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
+        </nav>
+    </header>
+  
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search books..." onkeypress="if(event.keyCode==13) performSearch()">
+            <button class="toggle-advanced" id="toggleAdvanced" aria-label="Advanced Search">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+        </div>
+        <div class="advanced-search" id="advancedSearch">
+            <div class="advanced-search-row">
+                <div class="advanced-search-group">
+                    <label class="advanced-search-label">Category</label>
+                    <select class="advanced-search-select" id="searchCategory">
+                        <option value="">All Categories</option>
+                        <option value="JEE">JEE</option>
+                        <option value="NEET">NEET</option>
+                        <option value="Class 11th">Class 11th</option>
+                        <option value="Class 12th">Class 12th</option>
+                        <option value="Reference">Reference</option>
+                    </select>
+                </div>
+                <div class="advanced-search-group">
+                    <label class="advanced-search-label">Author</label>
+                    <input type="text" class="advanced-search-input" id="searchAuthor" placeholder="Search by author">
+                </div>
+            </div>
+            <div class="advanced-search-row">
+                <div class="advanced-search-group">
+                    <label class="advanced-search-label">Minimum Rating</label>
+                    <select class="advanced-search-select" id="searchRating">
+                        <option value="0">Any Rating</option>
+                        <option value="3">3+ Stars</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="4.5">4.5+ Stars</option>
+                    </select>
+                </div>
+                <div class="advanced-search-group">
+                    <label class="advanced-search-label">Sort By</label>
+                    <select class="advanced-search-select" id="searchSort">
+                        <option value="recent">Most Recent</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="rating">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+            <button class="submit-btn" id="applySearchBtn" style="margin-top: 1rem;">
+                <i class="fas fa-search"></i>
+                Apply Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Saved Books Section -->
+    <section class="saved-books-container">
+        <div class="section-header">
+            <h1 class="saved-books-title">
+                <i class="fas fa-bookmark"></i>
+                Popular Books
+            </h1>
+            <button class="view-all-btn" id="viewAllPopular">
+                View All
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="saved-books-slider" id="popularBooksSlider">
+            <!-- Popular books will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Vertical Books Section -->
+    <section class="vertical-books-container">
+        <div class="section-header">
+            <h1 class="saved-books-title">
+                <i class="fas fa-book"></i>
+                All Books
+            </h1>
+            <button class="view-all-btn" id="viewAllBooks">
+                View All
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="vertical-books-grid" id="booksGrid">
+            <!-- Books will be loaded here -->
+        </div>
+        
+        <div class="loading-spinner" id="booksLoading">
+            <div class="spinner"></div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2 class="admin-title">Admin Dashboard</h2>
+            <button class="nav-btn" id="logoutAdminBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="pending">Pending Requests</button>
+            <button class="admin-tab" data-tab="approved">Approved Books</button>
+            <button class="admin-tab" data-tab="users">Users</button>
+        </div>
+        
+        <div class="pending-requests" id="pendingRequests">
+            <!-- Pending requests will be loaded here -->
+        </div>
+        
+        <div class="approved-books" id="approvedBooks" style="display: none;">
+            <!-- Approved books will be loaded here -->
+        </div>
+        
+        <div class="users-list" id="usersList" style="display: none;">
+            <!-- Users list will be loaded here -->
+        </div>
+        
+        <div class="loading-spinner" id="adminLoading">
+            <div class="spinner"></div>
+        </div>
+    </section>
+
+    <!-- Book Details Modal -->
+    <div class="book-modal-overlay" id="bookModal">
+        <div class="book-modal">
+            <button class="book-modal-close" id="closeBookModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="book-modal-content" id="bookModalContent">
+                <!-- Book details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div class="modal-overlay" id="addBookModal">
+        <div class="add-book-modal">
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-content" id="formContent">
+                <h3 class="modal-title">Add New Book</h3>
+                
+                <form id="bookForm">
+                    <div class="form-group">
+                        <label for="bookImage" class="image-upload-container">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <div class="upload-text">Click to upload book cover</div>
+                            <div class="upload-hint">JPG, PNG (Max 2MB)</div>
+                            <img id="imagePreview" class="preview-image" alt="Preview">
+                        </label>
+                        <input type="file" id="bookImage" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="screenshotImage" class="image-upload-container">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <div class="upload-text">Click to upload screenshot (Optional)</div>
+                            <div class="upload-hint">JPG, PNG (Max 2MB)</div>
+                            <img id="screenshotPreview" class="preview-image" alt="Preview">
+                        </label>
+                        <input type="file" id="screenshotImage" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookName" class="form-label">Book Title</label>
+                        <input type="text" id="bookName" class="form-input" placeholder="Enter book title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookAuthor" class="form-label">Author</label>
+                        <input type="text" id="bookAuthor" class="form-input" placeholder="Enter author name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookCategory" class="form-label">Category</label>
+                        <select id="bookCategory" class="form-input" required>
+                            <option value="">Select category</option>
+                            <option value="JEE">JEE</option>
+                            <option value="NEET">NEET</option>
+                            <option value="Class 11th">Class 11th</option>
+                            <option value="Class 12th">Class 12th</option>
+                            <option value="Reference">Reference</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookDescription" class="form-label">Description</label>
+                        <textarea id="bookDescription" class="form-input" rows="3" placeholder="Enter book description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookLink" class="form-label">Drive Link</label>
+                        <input type="url" id="bookLink" class="form-input" placeholder="Enter Google Drive link" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit for Approval
+                    </button>
+                </form>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h3 class="success-title">Submission Successful!</h3>
+                <p class="success-text">Your book has been submitted for admin approval. You'll be notified once it's approved.</p>
+                <button class="submit-btn" id="closeSuccess">
+                    <i class="fas fa-check"></i>
+                    Okay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="add-book-modal">
+            <button class="modal-close" id="closeLoginModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-content">
+                <h3 class="modal-title">Login to EduSpark</h3>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail" class="form-label">Email</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p style="color: rgba(255,255,255,0.7);">Don't have an account? <a href="#" id="showRegister" style="color: var(--accent-red);">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="add-book-modal">
+            <button class="modal-close" id="closeRegisterModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-content">
+                <h3 class="modal-title">Create Account</h3>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName" class="form-label">Full Name</label>
+                        <input type="text" id="registerName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerEmail" class="form-label">Email</label>
+                        <input type="email" id="registerEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword" class="form-label">Password</label>
+                        <input type="password" id="registerPassword" class="form-input" placeholder="Create a password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerConfirm" class="form-label">Confirm Password</label>
+                        <input type="password" id="registerConfirm" class="form-input" placeholder="Confirm your password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Register
+                    </button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <p style="color: rgba(255,255,255,0.7);">Already have an account? <a href="#" id="showLogin" style="color: var(--accent-red);">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="profile-modal">
+            <button class="modal-close" id="closeProfileModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="profile-content" id="profileContent">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="adminLoginModal">
+        <div class="admin-login-modal">
+            <button class="modal-close" id="closeAdminLoginModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-content">
+                <h3 class="admin-login-title">Admin Login</h3>
+                
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminUserId" class="form-label">Admin ID</label>
+                        <input type="text" id="adminUserId" class="form-input" placeholder="Enter admin ID" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminPassword" class="form-label">Password</label>
+                        <input type="password" id="adminPassword" class="form-input" placeholder="Enter password" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="modal-overlay" id="otpModal">
+        <div class="otp-modal">
+            <button class="modal-close" id="closeOtpModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-content">
+                <h3 class="modal-title">Verify Your Number</h3>
+                <p style="color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 1rem;">
+                    We've sent a 6-digit OTP to your mobile number
+                </p>
+                
+                <div class="otp-input-container">
+                    <input type="text" class="otp-input" maxlength="1" id="otp1">
+                    <input type="text" class="otp-input" maxlength="1" id="otp2">
+                    <input type="text" class="otp-input" maxlength="1" id="otp3">
+                    <input type="text" class="otp-input" maxlength="1" id="otp4">
+                    <input type="text" class="otp-input" maxlength="1" id="otp5">
+                    <input type="text" class="otp-input" maxlength="1" id="otp6">
+                </div>
+                
+                <button class="submit-btn" id="verifyOtpBtn">
+                    <i class="fas fa-check"></i>
+                    Verify OTP
+                </button>
+                
+                <div class="resend-otp" id="resendOtp">
+                    Didn't receive OTP? Resend in <span id="otpTimer">30</span>s
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle notification-icon"></i>
+        <span class="notification-message">Notification message</span>
+        <span class="notification-close">
+            <i class="fas fa-times"></i>
+        </span>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" id="fabBtn">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-functions-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+
+    <script>
+        // Firebase configuration (replace with your config)
+        const firebaseConfig = {
+  apiKey: "AIzaSyASKb2xr27kjYokZICpIbBYULWsRdmBzI0",
+  authDomain: "eduspark-books.firebaseapp.com",
+  projectId: "eduspark-books",
+  storageBucket: "eduspark-books.firebasestorage.app",
+  messagingSenderId: "977405961718",
+  appId: "1:977405961718:web:4f9d16cf0a44e1f54e93d7"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const functions = firebase.functions();
+
+        // DOM Elements
+        const fabBtn = document.getElementById('fabBtn');
+        const addBookModal = document.getElementById('addBookModal');
+        const closeModal = document.getElementById('closeModal');
+        const bookForm = document.getElementById('bookForm');
+        const bookImage = document.getElementById('bookImage');
+        const screenshotImage = document.getElementById('screenshotImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const screenshotPreview = document.getElementById('screenshotPreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const formContent = document.getElementById('formContent');
+        const successMessage = document.getElementById('successMessage');
+        const closeSuccess = document.getElementById('closeSuccess');
+        const booksGrid = document.getElementById('booksGrid');
+        const popularBooksSlider = document.getElementById('popularBooksSlider');
+        const booksLoading = document.getElementById('booksLoading');
+        const adminBtn = document.getElementById('adminBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const logoutAdminBtn = document.getElementById('logoutAdminBtn');
+        const pendingRequests = document.getElementById('pendingRequests');
+        const approvedBooks = document.getElementById('approvedBooks');
+        const usersList = document.getElementById('usersList');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const adminLoading = document.getElementById('adminLoading');
+        const authBtn = document.getElementById('authBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const loginForm = document.getElementById('loginForm');
+        const registerModal = document.getElementById('registerModal');
+        const closeRegisterModal = document.getElementById('closeRegisterModal');
+        const registerForm = document.getElementById('registerForm');
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const profileModal = document.getElementById('profileModal');
+        const closeProfileModal = document.getElementById('closeProfileModal');
+        const profileContent = document.getElementById('profileContent');
+        const bookModal = document.getElementById('bookModal');
+        const closeBookModal = document.getElementById('closeBookModal');
+        const bookModalContent = document.getElementById('bookModalContent');
+        const searchInput = document.getElementById('searchInput');
+        const toggleAdvanced = document.getElementById('toggleAdvanced');
+        const advancedSearch = document.getElementById('advancedSearch');
+        const searchCategory = document.getElementById('searchCategory');
+        const searchAuthor = document.getElementById('searchAuthor');
+        const searchRating = document.getElementById('searchRating');
+        const searchSort = document.getElementById('searchSort');
+        const applySearchBtn = document.getElementById('applySearchBtn');
+        const viewAllPopular = document.getElementById('viewAllPopular');
+        const viewAllBooks = document.getElementById('viewAllBooks');
+        const homeBtn = document.getElementById('homeBtn');
+        const booksBtn = document.getElementById('booksBtn');
+        const coursesBtn = document.getElementById('coursesBtn');
+        const profileBtn = document.getElementById('profileBtn');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.querySelector('.notification-message');
+        const notificationClose = document.querySelector('.notification-close');
+        const userAvatar = document.getElementById('userAvatar');
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const closeAdminLoginModal = document.getElementById('closeAdminLoginModal');
+        const adminLoginForm = document.getElementById('adminLoginForm');
+        const otpModal = document.getElementById('otpModal');
+        const closeOtpModal = document.getElementById('closeOtpModal');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const resendOtp = document.getElementById('resendOtp');
+        const otpTimer = document.getElementById('otpTimer');
+        const otpInputs = document.querySelectorAll('.otp-input');
+
+        // Current user and admin state
+        let currentUser = null;
+        let isAdmin = false;
+        let selectedImageFile = null;
+        let selectedScreenshotFile = null;
+        let currentBookId = null;
+        let userRating = 0;
+        let verificationId = null;
+        let otpCountdown = 30;
+        let otpInterval = null;
+
+        // Admin credentials (in a real app, these should be stored securely)
+        const ADMIN_CREDENTIALS = {
+            id: "admin123",
+            password: "securepassword123"
+        };
+
+        // Initialize the app
+        function initApp() {
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                currentUser = user;
+                if (user) {
+                    authBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                    authBtn.onclick = logoutUser;
+                    checkAdminStatus(user.uid);
+                    loadBooks();
+                    loadPopularBooks();
+                    fabBtn.style.display = 'flex';
+                    
+                    // Load user data for avatar
+                    db.collection('users').doc(user.uid).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const userData = doc.data();
+                                updateUserAvatar(userData);
+                            }
+                        });
+                } else {
+                    authBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    authBtn.onclick = showLoginModal;
+                    adminBtn.style.display = 'none';
+                    adminPanel.style.display = 'none';
+                    fabBtn.style.display = 'none';
+                    loadBooks();
+                    loadPopularBooks();
+                    
+                    // Reset avatar
+                    userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                    if (userAvatar.classList.contains('has-image')) {
+                        userAvatar.classList.remove('has-image');
+                    }
+                }
+            });
+
+            // Load books initially
+            loadBooks();
+            loadPopularBooks();
+        }
+
+        // Update user avatar in header
+        function updateUserAvatar(userData) {
+            if (userData.photoURL) {
+                userAvatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile">`;
+                userAvatar.classList.add('has-image');
+            } else {
+                userAvatar.innerHTML = userData.name ? userData.name.charAt(0).toUpperCase() : '<i class="fas fa-user"></i>';
+                userAvatar.classList.remove('has-image');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notification.className = `notification ${type}`;
+            notificationMessage.textContent = message;
+            
+            // Set appropriate icon
+            const icon = notification.querySelector('.notification-icon');
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle notification-icon';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle notification-icon';
+            } else if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle notification-icon';
+            } else {
+                icon.className = 'fas fa-info-circle notification-icon';
+            }
+            
+            notification.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Event Listeners
+        fabBtn.addEventListener('click', openAddBookModal);
+        closeModal.addEventListener('click', closeAddBookModal);
+        closeSuccess.addEventListener('click', closeAddBookModal);
+        bookForm.addEventListener('submit', submitBook);
+        bookImage.addEventListener('change', handleImageUpload);
+        screenshotImage.addEventListener('change', handleScreenshotUpload);
+        adminBtn.addEventListener('click', showAdminLoginModal);
+        logoutAdminBtn.addEventListener('click', logoutAdmin);
+        adminTabs.forEach(tab => tab.addEventListener('click', switchAdminTab));
+        closeLoginModal.addEventListener('click', closeLoginModalFunc);
+        closeRegisterModal.addEventListener('click', closeRegisterModalFunc);
+        loginForm.addEventListener('submit', loginUser);
+        registerForm.addEventListener('submit', registerUser);
+        showRegister.addEventListener('click', showRegisterModal);
+        showLogin.addEventListener('click', showLoginModal);
+        closeProfileModal.addEventListener('click', closeProfileModalFunc);
+        profileBtn.addEventListener('click', showProfileModal);
+        userAvatar.addEventListener('click', showProfileModal);
+        closeBookModal.addEventListener('click', closeBookModalFunc);
+        toggleAdvanced.addEventListener('click', toggleAdvancedSearch);
+        applySearchBtn.addEventListener('click', performSearch);
+        viewAllPopular.addEventListener('click', () => {
+            searchSort.value = 'popular';
+            performSearch();
+            window.scrollTo(0, document.querySelector('.vertical-books-container').offsetTop);
+        });
+        viewAllBooks.addEventListener('click', () => {
+            searchSort.value = 'recent';
+            performSearch();
+        });
+        homeBtn.addEventListener('click', () => {
+            window.scrollTo(0, 0);
+            closeNavMenu();
+        });
+        booksBtn.addEventListener('click', () => {
+            window.scrollTo(0, document.querySelector('.vertical-books-container').offsetTop);
+            closeNavMenu();
+        });
+        coursesBtn.addEventListener('click', () => {
+            showNotification('Courses section coming soon!', 'info');
+            closeNavMenu();
+        });
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
+        });
+        closeAdminLoginModal.addEventListener('click', closeAdminLoginModalFunc);
+        adminLoginForm.addEventListener('submit', adminLogin);
+        closeOtpModal.addEventListener('click', closeOtpModalFunc);
+        verifyOtpBtn.addEventListener('click', verifyOtp);
+        resendOtp.addEventListener('click', resendOtpFunc);
+
+        // OTP input navigation
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && index > 0 && !e.target.value) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Toggle advanced search
+        function toggleAdvancedSearch() {
+            advancedSearch.classList.toggle('active');
+            toggleAdvanced.classList.toggle('active');
+        }
+
+        // Perform search
+        function performSearch() {
+            const query = searchInput.value.trim();
+            const category = searchCategory.value;
+            const author = searchAuthor.value.trim();
+            const minRating = parseFloat(searchRating.value);
+            const sortBy = searchSort.value;
+            
+            booksLoading.style.display = 'flex';
+            booksGrid.innerHTML = '';
+            
+            let booksRef = db.collection('books').where('approved', '==', true);
+            
+            // Apply filters
+            if (query) {
+                booksRef = booksRef.where('searchKeywords', 'array-contains', query.toLowerCase());
+            }
+            
+            if (category) {
+                booksRef = booksRef.where('category', '==', category);
+            }
+            
+            if (author) {
+                booksRef = booksRef.where('authorLower', '>=', author.toLowerCase())
+                                   .where('authorLower', '<=', author.toLowerCase() + '\uf8ff');
+            }
+            
+            // Apply sorting
+            if (sortBy === 'recent') {
+                booksRef = booksRef.orderBy('createdAt', 'desc');
+            } else if (sortBy === 'popular') {
+                booksRef = booksRef.orderBy('views', 'desc');
+            } else if (sortBy === 'rating') {
+                booksRef = booksRef.orderBy('avgRating', 'desc');
+            }
+            
+            booksRef.limit(20).get()
+                .then(querySnapshot => {
+                    booksLoading.style.display = 'none';
+                    
+                    if (querySnapshot.empty) {
+                        booksGrid.innerHTML = '<p style="color: white; grid-column: 1/-1; text-align: center;">No books found matching your criteria</p>';
+                        return;
+                    }
+                    
+                    const promises = [];
+                    querySnapshot.forEach(doc => {
+                        const book = doc.data();
+                        
+                        // Check rating filter if applied
+                        if (minRating > 0) {
+                            promises.push(
+                                db.collection('ratings')
+                                    .where('bookId', '==', doc.id)
+                                    .get()
+                                    .then(ratingsSnapshot => {
+                                        let totalRating = 0;
+                                        let ratingCount = 0;
+                                        
+                                        ratingsSnapshot.forEach(ratingDoc => {
+                                            totalRating += ratingDoc.data().rating;
+                                            ratingCount++;
+                                        });
+                                        
+                                        const avgRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+                                        
+                                        if (avgRating >= minRating) {
+                                            booksGrid.appendChild(createBookCard(book, doc.id));
+                                        }
+                                    })
+                            );
+                        } else {
+                            booksGrid.appendChild(createBookCard(book, doc.id));
+                        }
+                    });
+                    
+                    if (minRating > 0) {
+                        Promise.all(promises).then(() => {
+                            if (booksGrid.children.length === 0) {
+                                booksGrid.innerHTML = '<p style="color: white; grid-column: 1/-1; text-align: center;">No books found with the minimum rating</p>';
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    booksLoading.style.display = 'none';
+                    console.error('Error searching books:', error);
+                    showNotification('Error searching books', 'error');
+                });
+        }
+
+        // Load books from Firebase
+        function loadBooks() {
+            booksLoading.style.display = 'flex';
+            booksGrid.innerHTML = '';
+            
+            db.collection('books')
+                .where('approved', '==', true)
+                .orderBy('createdAt', 'desc')
+                .limit(12)
+                .get()
+                .then(querySnapshot => {
+                    booksLoading.style.display = 'none';
+                    querySnapshot.forEach(doc => {
+                        const book = doc.data();
+                        booksGrid.appendChild(createBookCard(book, doc.id));
+                    });
+                })
+                .catch(error => {
+                    booksLoading.style.display = 'none';
+                    console.error('Error loading books:', error);
+                    showNotification('Error loading books', 'error');
+                });
+        }
+
+        // Load popular books
+        function loadPopularBooks() {
+            db.collection('books')
+                .where('approved', '==', true)
+                .orderBy('views', 'desc')
+                .limit(4)
+                .get()
+                .then(querySnapshot => {
+                    popularBooksSlider.innerHTML = '';
+                    querySnapshot.forEach(doc => {
+                        const book = doc.data();
+                        popularBooksSlider.appendChild(createPopularBookCard(book, doc.id));
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading popular books:', error);
+                    showNotification('Error loading popular books', 'error');
+                });
+        }
+
+        // Create book card element
+        function createBookCard(book, id) {
+            const card = document.createElement('div');
+            card.className = 'vertical-book-card';
+            
+            // Calculate star rating display
+            const roundedRating = book.avgRating ? Math.round(book.avgRating * 10) / 10 : 0;
+            const ratingCount = book.ratingCount || 0;
+            
+            card.innerHTML = `
+                <div class="vertical-book-cover">
+                    <span class="vertical-book-category">${book.category}</span>
+                    <img src="${book.imageUrl}" alt="${book.title}" loading="lazy">
+                </div>
+                <div class="vertical-book-details">
+                    <h3 class="vertical-book-title">${book.title}</h3>
+                    <p class="vertical-book-author">By ${book.author}</p>
+                    <div class="book-rating">
+                        <span class="rating-stars">
+                            ${getStarRating(roundedRating)}
+                        </span>
+                        <span class="rating-count">(${ratingCount})</span>
+                    </div>
+                    <div class="vertical-book-meta">
+                        <span>${book.category}</span>
+                        <span>PDF</span>
+                    </div>
+                    <button class="vertical-book-view-btn" data-book-id="${id}">
+                        <i class="fas fa-eye"></i>
+                        View Details
+                    </button>
+                </div>
+            `;
+            
+            // Add click event to view details
+            const viewBtn = card.querySelector('.vertical-book-view-btn');
+            viewBtn.addEventListener('click', () => {
+                showBookDetails(id);
+            });
+            
+            return card;
+        }
+
+        // Helper function to generate star rating HTML
+        function getStarRating(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            
+            return stars;
+        }
+
+        // Create popular book card
+        function createPopularBookCard(book, id) {
+            const card = document.createElement('div');
+            card.className = 'saved-book-card';
+            
+            const roundedRating = book.avgRating ? Math.round(book.avgRating * 10) / 10 : 0;
+            const ratingCount = book.ratingCount || 0;
+            
+            card.innerHTML = `
+                <div class="saved-book-cover">
+                    <span class="saved-book-category">${book.category}</span>
+                    <img src="${book.imageUrl}" alt="${book.title}" loading="lazy">
+                </div>
+                <div class="saved-book-details">
+                    <h3 class="saved-book-title">${book.title}</h3>
+                    <p class="saved-book-author">By ${book.author}</p>
+                    <div class="book-rating">
+                        <span class="rating-stars">
+                            ${getStarRating(roundedRating)}
+                        </span>
+                        <span class="rating-count">(${ratingCount})</span>
+                    </div>
+                    <div class="saved-book-meta">
+                        <span>${book.category}</span>
+                        <span>${book.pages || 'PDF'}</span>
+                    </div>
+                    <button class="saved-book-view-btn" data-book-id="${id}">
+                        <i class="fas fa-eye"></i>
+                        View Details
+                    </button>
+                </div>
+            `;
+            
+            // Add click event to view details
+            const viewBtn = card.querySelector('.saved-book-view-btn');
+            viewBtn.addEventListener('click', () => {
+                showBookDetails(id);
+            });
+            
+            return card;
+        }
+
+        // Show book details modal
+        function showBookDetails(bookId) {
+            currentBookId = bookId;
+            bookModalContent.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+            bookModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Load book data
+            db.collection('books').doc(bookId).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        throw new Error('Book not found');
+                    }
+                    
+                    const book = doc.data();
+                    
+                    // Load ratings
+                    db.collection('ratings')
+                        .where('bookId', '==', bookId)
+                        .get()
+                        .then(ratingsSnapshot => {
+                            let totalRating = 0;
+                            let ratingCount = 0;
+                            const reviews = [];
+                            
+                            ratingsSnapshot.forEach(ratingDoc => {
+                                const ratingData = ratingDoc.data();
+                                totalRating += ratingData.rating;
+                                ratingCount++;
+                                
+                                // Get user data for each review
+                                if (ratingData.review) {
+                                    db.collection('users').doc(ratingData.userId).get()
+                                        .then(userDoc => {
+                                            const userData = userDoc.data();
+                                            reviews.push({
+                                                userName: userData.name || 'Anonymous',
+                                                rating: ratingData.rating,
+                                                review: ratingData.review,
+                                                date: ratingData.createdAt.toDate().toLocaleDateString()
+                                            });
+                                            
+                                            // Update reviews display if all loaded
+                                            if (reviews.length === ratingsSnapshot.size) {
+                                                updateBookModalContent(book, totalRating, ratingCount, reviews);
+                                            }
+                                        });
+                                }
+                            });
+                            
+                            // If no reviews, just update with book data
+                            if (ratingsSnapshot.empty) {
+                                updateBookModalContent(book, 0, 0, []);
+                            }
+                        });
+                    
+                    // Update view count
+                    db.collection('books').doc(bookId).update({
+                        views: firebase.firestore.FieldValue.increment(1)
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading book details:', error);
+                    bookModalContent.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--accent-red); margin-bottom: 1rem;"></i>
+                            <p>Error loading book details. Please try again.</p>
+                            <button class="submit-btn" id="closeError">
+                                <i class="fas fa-times"></i>
+                                Close
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('closeError').addEventListener('click', closeBookModalFunc);
+                });
+        }
+
+        // Update book modal content with loaded data
+        function updateBookModalContent(book, totalRating, ratingCount, reviews) {
+            const avgRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+            
+            // Check if current user has rated this book
+            let userHasRated = false;
+            if (currentUser) {
+                db.collection('ratings')
+                    .where('bookId', '==', currentBookId)
+                    .where('userId', '==', currentUser.uid)
+                    .get()
+                    .then(snapshot => {
+                        if (!snapshot.empty) {
+                            userHasRated = true;
+                            userRating = snapshot.docs[0].data().rating;
+                            renderBookModalContent(book, avgRating, ratingCount, reviews, userHasRated, userRating);
+                        } else {
+                            renderBookModalContent(book, avgRating, ratingCount, reviews, false, 0);
+                        }
+                    });
+            } else {
+                renderBookModalContent(book, avgRating, ratingCount, reviews, false, 0);
+            }
+        }
+
+        // Render book modal content
+        function renderBookModalContent(book, avgRating, ratingCount, reviews, userHasRated, userRatingValue) {
+            bookModalContent.innerHTML = `
+                <div class="book-modal-header">
+                    <div class="book-modal-cover">
+                        <img src="${book.imageUrl}" alt="${book.title}">
+                    </div>
+                    <div class="book-modal-info">
+                        <h2 class="book-modal-title">${book.title}</h2>
+                        <p class="book-modal-author">By ${book.author}</p>
+                        <span class="book-modal-category">${book.category}</span>
+                        <p class="book-modal-description">${book.description}</p>
+                        
+                        ${book.screenshotUrl ? `
+                        <div class="book-modal-section">
+                            <h3 class="book-modal-section-title">
+                                <i class="fas fa-image"></i>
+                                Screenshot
+                            </h3>
+                            <img src="${book.screenshotUrl}" alt="Book Screenshot" style="max-width: 100%; border-radius: 5px; margin-top: 1rem;">
+                        </div>
+                        ` : ''}
+                        
+                        <div class="book-modal-meta">
+                            <div class="book-modal-meta-item">
+                                <span class="book-modal-meta-value">${book.views || 0}</span>
+                                <span class="book-modal-meta-label">Views</span>
+                            </div>
+                            <div class="book-modal-meta-item">
+                                <span class="book-modal-meta-value">${ratingCount}</span>
+                                <span class="book-modal-meta-label">Ratings</span>
+                            </div>
+                            <div class="book-modal-meta-item">
+                                <span class="book-modal-meta-value">${avgRating.toFixed(1)}</span>
+                                <span class="book-modal-meta-label">Avg Rating</span>
+                            </div>
+                        </div>
+                        
+                        <div class="book-modal-actions">
+                            <a href="${book.driveLink}" target="_blank" class="book-modal-btn book-modal-btn-primary">
+                                <i class="fas fa-external-link-alt"></i>
+                                View Book
+                            </a>
+                            <button class="book-modal-btn book-modal-btn-secondary" id="saveBookBtn">
+                                <i class="far fa-bookmark"></i>
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="book-modal-section">
+                    <h3 class="book-modal-section-title">
+                        <i class="fas fa-star"></i>
+                        Ratings & Reviews
+                    </h3>
+                    
+                    <div class="rating-container">
+                        <div class="average-rating">${avgRating.toFixed(1)}</div>
+                        <div>
+                            <div class="rating-stars">${getStarRating(avgRating)}</div>
+                            <div class="rating-count">Based on ${ratingCount} ratings</div>
+                        </div>
+                    </div>
+                    
+                    ${currentUser && !userHasRated ? `
+                    <div class="user-rating">
+                        <div class="user-rating-title">Rate this book:</div>
+                        <div id="rateYo"></div>
+                        <textarea id="reviewText" class="form-input" placeholder="Write your review (optional)" rows="3" style="margin-top: 1rem; width: 100%;"></textarea>
+                        <button class="submit-rating" id="submitRatingBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Rating
+                        </button>
+                    </div>
+                    ` : ''}
+                    
+                    ${currentUser && userHasRated ? `
+                    <div class="user-rating">
+                        <div class="user-rating-title">Your Rating:</div>
+                        <div class="rating-stars">${getStarRating(userRatingValue)}</div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="reviews-container" id="reviewsContainer">
+                        ${reviews.length > 0 ? reviews.map(review => `
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="review-user-avatar">
+                                        ${review.userName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div class="review-user-name">${review.userName}</div>
+                                    <div class="review-rating">${getStarRating(review.rating)}</div>
+                                </div>
+                                <p class="review-text">${review.review}</p>
+                                <div class="review-date">${review.date}</div>
+                            </div>
+                        `).join('') : '<p style="color: rgba(255,255,255,0.7); text-align: center;">No reviews yet</p>'}
+                    </div>
+                </div>
+            `;
+            
+            // Initialize rating widget if needed
+            if (currentUser && !userHasRated) {
+                $('#rateYo').rateYo({
+                    rating: 0,
+                    fullStar: true,
+                    starWidth: "20px",
+                    ratedFill: "#ffc107",
+                    onSet: function(rating) {
+                        userRating = rating;
+                    }
+                });
+                
+                document.getElementById('submitRatingBtn').addEventListener('click', submitRating);
+            }
+            
+            // Set up save book button
+            if (currentUser) {
+                document.getElementById('saveBookBtn').addEventListener('click', toggleSaveBook);
+                
+                // Check if book is already saved
+                db.collection('savedBooks')
+                    .where('userId', '==', currentUser.uid)
+                    .where('bookId', '==', currentBookId)
+                    .get()
+                    .then(snapshot => {
+                        const saveBtn = document.getElementById('saveBookBtn');
+                        if (!snapshot.empty) {
+                            saveBtn.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+                        } else {
+                            saveBtn.innerHTML = '<i class="far fa-bookmark"></i> Save';
+                        }
+                    });
+            }
+        }
+
+        // Submit rating for a book
+        function submitRating() {
+            if (!currentUser) {
+                showNotification('Please login to rate books', 'error');
+                return;
+            }
+            
+            const reviewText = document.getElementById('reviewText').value.trim();
+            
+            const ratingData = {
+                bookId: currentBookId,
+                userId: currentUser.uid,
+                rating: userRating,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            if (reviewText) {
+                ratingData.review = reviewText;
+            }
+            
+            db.collection('ratings').add(ratingData)
+                .then(() => {
+                    // Update book's rating stats
+                    const bookRef = db.collection('books').doc(currentBookId);
+                    
+                    return db.runTransaction(transaction => {
+                        return transaction.get(bookRef).then(doc => {
+                            if (!doc.exists) {
+                                throw new Error('Book does not exist');
+                            }
+                            
+                            const bookData = doc.data();
+                            const newRatingCount = (bookData.ratingCount || 0) + 1;
+                            const newTotalRating = (bookData.totalRating || 0) + userRating;
+                            const newAvgRating = newTotalRating / newRatingCount;
+                            
+                            transaction.update(bookRef, {
+                                ratingCount: newRatingCount,
+                                totalRating: newTotalRating,
+                                avgRating: newAvgRating
+                            });
+                        });
+                    });
+                })
+                .then(() => {
+                    showNotification('Rating submitted successfully!', 'success');
+                    showBookDetails(currentBookId); // Refresh the view
+                })
+                .catch(error => {
+                    console.error('Error submitting rating:', error);
+                    showNotification('Error submitting rating', 'error');
+                });
+        }
+
+        // Toggle save book for user
+        function toggleSaveBook() {
+            if (!currentUser) {
+                showNotification('Please login to save books', 'error');
+                return;
+            }
+            
+            const saveBtn = document.getElementById('saveBookBtn');
+            
+            db.collection('savedBooks')
+                .where('userId', '==', currentUser.uid)
+                .where('bookId', '==', currentBookId)
+                .get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        // Save the book
+                        return db.collection('savedBooks').add({
+                            userId: currentUser.uid,
+                            bookId: currentBookId,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            saveBtn.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+                            showNotification('Book saved to your profile', 'success');
+                        });
+                    } else {
+                        // Remove the saved book
+                        return db.collection('savedBooks').doc(snapshot.docs[0].id).delete()
+                            .then(() => {
+                                saveBtn.innerHTML = '<i class="far fa-bookmark"></i> Save';
+                                showNotification('Book removed from saved', 'info');
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error toggling saved book:', error);
+                    showNotification('Error saving book', 'error');
+                });
+        }
+
+        // Open add book modal
+        function openAddBookModal() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            addBookModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close add book modal
+        function closeAddBookModal() {
+            addBookModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            resetForm();
+        }
+
+        // Close book modal
+        function closeBookModalFunc() {
+            bookModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Handle image upload
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showNotification('Image size should be less than 2MB', 'error');
+                    return;
+                }
+                
+                selectedImageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle screenshot upload
+        function handleScreenshotUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showNotification('Image size should be less than 2MB', 'error');
+                    return;
+                }
+                
+                selectedScreenshotFile = file;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    screenshotPreview.src = event.target.result;
+                    screenshotPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Submit book form
+        function submitBook(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('bookName').value;
+            const author = document.getElementById('bookAuthor').value;
+            const category = document.getElementById('bookCategory').value;
+            const description = document.getElementById('bookDescription').value;
+            const driveLink = document.getElementById('bookLink').value;
+            
+            if (!selectedImageFile) {
+                showNotification('Please upload a book cover image', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            
+            // Upload image to Firebase Storage
+            const storageRef = storage.ref(`book_covers/${Date.now()}_${selectedImageFile.name}`);
+            const uploadTask = storageRef.put(selectedImageFile);
+            
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Progress monitoring can be added here
+                },
+                (error) => {
+                    console.error('Upload failed:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Approval';
+                    showNotification('Image upload failed. Please try again.', 'error');
+                },
+                () => {
+                    // Get download URL
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        // If screenshot is uploaded, handle it
+                        if (selectedScreenshotFile) {
+                            const screenshotRef = storage.ref(`book_screenshots/${Date.now()}_${selectedScreenshotFile.name}`);
+                            const screenshotUploadTask = screenshotRef.put(selectedScreenshotFile);
+                            
+                            screenshotUploadTask.on('state_changed',
+                                null,
+                                (error) => {
+                                    console.error('Screenshot upload failed:', error);
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Approval';
+                                    showNotification('Screenshot upload failed. Please try again.', 'error');
+                                },
+                                () => {
+                                    screenshotUploadTask.snapshot.ref.getDownloadURL().then((screenshotURL) => {
+                                        saveBookData(title, author, category, description, driveLink, downloadURL, screenshotURL);
+                                    });
+                                }
+                            );
+                        } else {
+                            saveBookData(title, author, category, description, driveLink, downloadURL, null);
+                        }
+                    });
+                }
+            );
+        }
+
+        // Save book data to Firestore
+        function saveBookData(title, author, category, description, driveLink, imageUrl, screenshotUrl) {
+            db.collection('book_requests').add({
+                title: title,
+                author: author,
+                category: category,
+                description: description,
+                driveLink: driveLink,
+                imageUrl: imageUrl,
+                screenshotUrl: screenshotUrl || null,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                searchKeywords: generateSearchKeywords(title, author),
+                authorLower: author.toLowerCase()
+            }).then(() => {
+                // Show success message
+                formContent.style.display = 'none';
+                successMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Approval';
+                
+                // Send email notification to admin
+                sendApprovalEmail(title, author, currentUser.email);
+            }).catch(error => {
+                console.error('Error saving book:', error);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Approval';
+                showNotification('Error submitting book. Please try again.', 'error');
+            });
+        }
+
+        // Generate search keywords from title and author
+        function generateSearchKeywords(title, author) {
+            const keywords = [];
+            const titleWords = title.toLowerCase().split(/\s+/);
+            const authorWords = author.toLowerCase().split(/\s+/);
+            
+            // Add full title and author
+            keywords.push(title.toLowerCase());
+            keywords.push(author.toLowerCase());
+            
+            // Add individual words
+            titleWords.forEach(word => {
+                if (word.length > 2 && !keywords.includes(word)) {
+                    keywords.push(word);
+                }
+            });
+            
+            authorWords.forEach(word => {
+                if (word.length > 2 && !keywords.includes(word)) {
+                    keywords.push(word);
+                }
+            });
+            
+            return keywords;
+        }
+
+        // Send approval email to admin
+        function sendApprovalEmail(title, author, userEmail) {
+            const sendEmail = functions.httpsCallable('sendApprovalEmail');
+            sendEmail({
+                title: title,
+                author: author,
+                userEmail: userEmail
+            }).then(result => {
+                console.log('Email sent:', result);
+            }).catch(error => {
+                console.error('Error sending email:', error);
+            });
+        }
+
+        // Reset form
+        function resetForm() {
+            bookForm.reset();
+            selectedImageFile = null;
+            selectedScreenshotFile = null;
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            screenshotPreview.src = '';
+            screenshotPreview.style.display = 'none';
+            formContent.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        // Check admin status
+        function checkAdminStatus(userId) {
+            db.collection('admins').doc(userId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        isAdmin = true;
+                        adminBtn.style.display = 'flex';
+                        fabBtn.style.display = 'flex';
+                        loadPendingRequests();
+                    } else {
+                        isAdmin = false;
+                        adminBtn.style.display = 'none';
+                        fabBtn.style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking admin status:', error);
+                });
+        }
+
+        // Show admin login modal
+        function showAdminLoginModal() {
+            adminLoginModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close admin login modal
+        function closeAdminLoginModalFunc() {
+            adminLoginModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Admin login
+        function adminLogin(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('adminUserId').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (userId === ADMIN_CREDENTIALS.id && password === ADMIN_CREDENTIALS.password) {
+                closeAdminLoginModalFunc();
+                adminPanel.style.display = 'block';
+                window.scrollTo(0, 0);
+                loadPendingRequests();
+                showNotification('Admin login successful', 'success');
+            } else {
+                showNotification('Invalid admin credentials', 'error');
+            }
+        }
+
+        // Logout admin
+        function logoutAdmin() {
+            adminPanel.style.display = 'none';
+            showNotification('Admin panel closed', 'info');
+        }
+
+        // Switch admin tabs
+        function switchAdminTab(e) {
+            const tab = e.target.dataset.tab;
+            
+            adminTabs.forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            pendingRequests.style.display = 'none';
+            approvedBooks.style.display = 'none';
+            usersList.style.display = 'none';
+            
+            if (tab === 'pending') {
+                pendingRequests.style.display = 'grid';
+                loadPendingRequests();
+            } else if (tab === 'approved') {
+                approvedBooks.style.display = 'grid';
+                loadApprovedBooks();
+            } else {
+                usersList.style.display = 'grid';
+                loadUsers();
+            }
+        }
+
+        // Load pending requests
+        function loadPendingRequests() {
+            adminLoading.style.display = 'flex';
+            pendingRequests.innerHTML = '';
+            
+            db.collection('book_requests')
+                .where('status', '==', 'pending')
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then(querySnapshot => {
+                    adminLoading.style.display = 'none';
+                    
+                    if (querySnapshot.empty) {
+                        pendingRequests.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1;">No pending requests</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const request = doc.data();
+                        pendingRequests.appendChild(createRequestCard(request, doc.id));
+                    });
+                })
+                .catch(error => {
+                    adminLoading.style.display = 'none';
+                    console.error('Error loading requests:', error);
+                    showNotification('Error loading requests', 'error');
+                });
+        }
+
+        // Load approved books
+        function loadApprovedBooks() {
+            adminLoading.style.display = 'flex';
+            approvedBooks.innerHTML = '';
+            
+            db.collection('books')
+                .orderBy('createdAt', 'desc')
+                .get()
+                .then(querySnapshot => {
+                    adminLoading.style.display = 'none';
+                    
+                    if (querySnapshot.empty) {
+                        approvedBooks.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1;">No approved books</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const book = doc.data();
+                        approvedBooks.appendChild(createApprovedBookCard(book, doc.id));
+                    });
+                })
+                .catch(error => {
+                    adminLoading.style.display = 'none';
+                    console.error('Error loading approved books:', error);
+                    showNotification('Error loading approved books', 'error');
+                });
+        }
+
+        // Load users
+        function loadUsers() {
+            adminLoading.style.display = 'flex';
+            usersList.innerHTML = '';
+            
+            db.collection('users')
+                .get()
+                .then(querySnapshot => {
+                    adminLoading.style.display = 'none';
+                    
+                    if (querySnapshot.empty) {
+                        usersList.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1;">No users found</p>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const user = doc.data();
+                        usersList.appendChild(createUserCard(user, doc.id));
+                    });
+                })
+                .catch(error => {
+                    adminLoading.style.display = 'none';
+                    console.error('Error loading users:', error);
+                    showNotification('Error loading users', 'error');
+                });
+        }
+
+        // Create request card for admin
+        function createRequestCard(request, id) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            
+            card.innerHTML = `
+                <div class="request-meta">
+                    <img src="${request.imageUrl}" alt="${request.title}" class="request-image" loading="lazy">
+                    <div class="request-details">
+                        <h3 class="request-title">${request.title}</h3>
+                        <p class="request-author">By ${request.author}</p>
+                        <p class="request-description">${request.description}</p>
+                        ${request.screenshotUrl ? `<p><strong>Screenshot:</strong> <a href="${request.screenshotUrl}" target="_blank">View</a></p>` : ''}
+                        <p><strong>Submitted by:</strong> ${request.userEmail}</p>
+                        <p><strong>Drive Link:</strong> <a href="${request.driveLink}" target="_blank">View Book</a></p>
+                        <p><strong>Submitted on:</strong> ${new Date(request.createdAt?.seconds * 1000).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="approve-btn" data-id="${id}">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="reject-btn" data-id="${id}">
+                        <i class="fas fa-times"></i> Reject
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            card.querySelector('.approve-btn').addEventListener('click', () => approveBook(id, request));
+            card.querySelector('.reject-btn').addEventListener('click', () => rejectBook(id));
+            
+            return card;
+        }
+
+        // Create approved book card for admin
+        function createApprovedBookCard(book, id) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            
+            card.innerHTML = `
+                <div class="request-meta">
+                    <img src="${book.imageUrl}" alt="${book.title}" class="request-image" loading="lazy">
+                    <div class="request-details">
+                        <h3 class="request-title">${book.title}</h3>
+                        <p class="request-author">By ${book.author}</p>
+                        <p class="request-description">${book.description}</p>
+                        ${book.screenshotUrl ? `<p><strong>Screenshot:</strong> <a href="${book.screenshotUrl}" target="_blank">View</a></p>` : ''}
+                        <p><strong>Category:</strong> ${book.category}</p>
+                        <p><strong>Drive Link:</strong> <a href="${book.driveLink}" target="_blank">View Book</a></p>
+                        <p><strong>Approved on:</strong> ${new Date(book.createdAt?.seconds * 1000).toLocaleDateString()}</p>
+                        <p><strong>Views:</strong> ${book.views || 0}</p>
+                        <p><strong>Rating:</strong> ${book.avgRating?.toFixed(1) || 'N/A'} (${book.ratingCount || 0} ratings)</p>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="reject-btn" data-id="${id}">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+            `;
+            
+            // Add event listener to remove button
+            card.querySelector('.reject-btn').addEventListener('click', () => removeBook(id));
+            
+            return card;
+        }
+
+        // Create user card for admin
+        function createUserCard(user, id) {
+            const card = document.createElement('div');
+            card.className = 'request-card';
+            
+            card.innerHTML = `
+                <div class="request-meta">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary-blue); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                        ${user.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div class="request-details">
+                        <h3 class="request-title">${user.name || 'No Name'}</h3>
+                        <p class="request-author">${user.email}</p>
+                        <p><strong>Joined:</strong> ${new Date(user.createdAt?.seconds * 1000).toLocaleDateString()}</p>
+                        <p><strong>Role:</strong> ${user.isAdmin ? 'Admin' : 'User'}</p>
+                        <p><strong>Status:</strong> ${user.verified ? 'Verified' : 'Not Verified'}</p>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    ${!user.isAdmin ? `
+                    <button class="approve-btn make-admin-btn" data-id="${id}">
+                        <i class="fas fa-user-shield"></i> Make Admin
+                    </button>
+                    ` : ''}
+                    <button class="reject-btn" data-id="${id}">
+                        <i class="fas fa-ban"></i> Ban User
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            if (!user.isAdmin) {
+                card.querySelector('.make-admin-btn').addEventListener('click', () => makeAdmin(id));
+            }
+            card.querySelector('.reject-btn').addEventListener('click', () => banUser(id));
+            
+            return card;
+        }
+
+        // Approve book request
+        function approveBook(requestId, bookData) {
+            if (!confirm('Are you sure you want to approve this book?')) return;
+            
+            // Add to approved books collection
+            db.collection('books').add({
+                title: bookData.title,
+                author: bookData.author,
+                category: bookData.category,
+                description: bookData.description,
+                driveLink: bookData.driveLink,
+                imageUrl: bookData.imageUrl,
+                screenshotUrl: bookData.screenshotUrl || null,
+                approved: true,
+                views: 0,
+                searchKeywords: generateSearchKeywords(bookData.title, bookData.author),
+                authorLower: bookData.author.toLowerCase(),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                // Update request status
+                db.collection('book_requests').doc(requestId).update({
+                    status: 'approved'
+                }).then(() => {
+                    // Send approval email to user
+                    sendApprovalResultEmail(bookData.userEmail, bookData.title, true);
+                    
+                    loadPendingRequests();
+                    loadBooks(); // Refresh the books list
+                    loadPopularBooks(); // Refresh popular books
+                    showNotification('Book approved successfully', 'success');
+                });
+            }).catch(error => {
+                console.error('Error approving book:', error);
+                showNotification('Error approving book', 'error');
+            });
+        }
+
+        // Reject book request
+        function rejectBook(requestId) {
+            if (!confirm('Are you sure you want to reject this book?')) return;
+            
+            db.collection('book_requests').doc(requestId).get()
+                .then(doc => {
+                    const bookData = doc.data();
+                    
+                    return db.collection('book_requests').doc(requestId).update({
+                        status: 'rejected'
+                    }).then(() => {
+                        // Send rejection email to user
+                        sendApprovalResultEmail(bookData.userEmail, bookData.title, false);
+                        
+                        loadPendingRequests();
+                        showNotification('Book rejected', 'info');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error rejecting book:', error);
+                    showNotification('Error rejecting book', 'error');
+                });
+        }
+
+        // Send approval/rejection email to user
+        function sendApprovalResultEmail(userEmail, bookTitle, approved) {
+            const sendEmail = functions.httpsCallable('sendApprovalResultEmail');
+            sendEmail({
+                userEmail: userEmail,
+                bookTitle: bookTitle,
+                approved: approved
+            }).then(result => {
+                console.log('Email sent:', result);
+            }).catch(error => {
+                console.error('Error sending email:', error);
+            });
+        }
+
+        // Remove approved book
+        function removeBook(bookId) {
+            if (!confirm('Are you sure you want to remove this book?')) return;
+            
+            db.collection('books').doc(bookId).delete()
+                .then(() => {
+                    loadApprovedBooks();
+                    loadBooks(); // Refresh the books list
+                    loadPopularBooks(); // Refresh popular books
+                    showNotification('Book removed successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Error removing book:', error);
+                    showNotification('Error removing book', 'error');
+                });
+        }
+
+        // Make user admin
+        function makeAdmin(userId) {
+            if (!confirm('Are you sure you want to make this user an admin?')) return;
+            
+            db.collection('admins').doc(userId).set({
+                userId: userId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                // Update user role in users collection
+                db.collection('users').doc(userId).update({
+                    isAdmin: true
+                }).then(() => {
+                    loadUsers();
+                    showNotification('User promoted to admin', 'success');
+                });
+            }).catch(error => {
+                console.error('Error making admin:', error);
+                showNotification('Error making admin', 'error');
+            });
+        }
+
+        // Ban user
+        function banUser(userId) {
+            if (!confirm('Are you sure you want to ban this user?')) return;
+            
+            // In a real app, you would implement proper banning logic
+            db.collection('users').doc(userId).update({
+                isBanned: true
+            }).then(() => {
+                showNotification('User banned successfully', 'success');
+                loadUsers();
+            }).catch(error => {
+                console.error('Error banning user:', error);
+                showNotification('Error banning user', 'error');
+            });
+        }
+
+        // Show login modal
+        function showLoginModal() {
+            loginModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            closeNavMenu();
+        }
+
+        // Close login modal
+        function closeLoginModalFunc() {
+            loginModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Show register modal
+        function showRegisterModal(e) {
+            e.preventDefault();
+            loginModal.classList.remove('active');
+            registerModal.classList.add('active');
+        }
+
+        // Close register modal
+        function closeRegisterModalFunc() {
+            registerModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Show profile modal
+        function showProfileModal() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            
+            profileContent.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+            profileModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Load user data
+            db.collection('users').doc(currentUser.uid).get()
+                .then(userDoc => {
+                    const userData = userDoc.data();
+                    
+                    // Load saved books
+                    db.collection('savedBooks')
+                        .where('userId', '==', currentUser.uid)
+                        .orderBy('createdAt', 'desc')
+                        .get()
+                        .then(savedBooksSnapshot => {
+                            const savedBooks = [];
+                            const bookPromises = [];
+                            
+                            savedBooksSnapshot.forEach(savedBookDoc => {
+                                const bookPromise = db.collection('books')
+                                    .doc(savedBookDoc.data().bookId)
+                                    .get()
+                                    .then(bookDoc => {
+                                        if (bookDoc.exists) {
+                                            savedBooks.push(bookDoc.data());
+                                        }
+                                    });
+                                
+                                bookPromises.push(bookPromise);
+                            });
+                            
+                            Promise.all(bookPromises).then(() => {
+                                renderProfileContent(userData, savedBooks);
+                            });
+                        });
+                })
+                .catch(error => {
+                    console.error('Error loading profile:', error);
+                    profileContent.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--accent-red); margin-bottom: 1rem;"></i>
+                            <p>Error loading profile. Please try again.</p>
+                            <button class="submit-btn" id="closeProfileError">
+                                <i class="fas fa-times"></i>
+                                Close
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.getElementById('closeProfileError').addEventListener('click', closeProfileModalFunc);
+                });
+        }
+
+        // Render profile content
+        function renderProfileContent(userData, savedBooks) {
+            profileContent.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        ${userData.photoURL ? `<img src="${userData.photoURL}" alt="Profile">` : 
+                          userData.name ? userData.name.charAt(0).toUpperCase() : '<i class="fas fa-user"></i>'}
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name">
+                            ${userData.name || 'User'}
+                            ${userData.verified ? 
+                                '<i class="fas fa-check-circle verified-badge"></i>' : 
+                                '<button class="verify-btn" id="verifyBtn"><i class="fas fa-mobile-alt"></i> Verify</button>'}
+                        </h2>
+                        <p class="profile-email">${currentUser.email}</p>
+                        ${userData.username ? `<p class="profile-username">@${userData.username}</p>` : ''}
+                        <p class="profile-userid">User ID: ${currentUser.uid.substring(0, 8)}...</p>
+                        ${userData.bio ? `<p class="profile-bio">${userData.bio}</p>` : ''}
+                        <span class="profile-role">
+                            ${isAdmin ? 'Admin' : 'Member'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">${savedBooks.length}</div>
+                        <div class="profile-stat-label">Saved Books</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">0</div>
+                        <div class="profile-stat-label">Books Read</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">0</div>
+                        <div class="profile-stat-label">Reviews</div>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-bookmark"></i>
+                        Saved Books
+                    </h3>
+                    
+                    ${savedBooks.length > 0 ? `
+                    <div class="profile-books">
+                        ${savedBooks.slice(0, 6).map(book => `
+                            <div class="profile-book">
+                                <div class="profile-book-cover">
+                                    <img src="${book.imageUrl}" alt="${book.title}">
+                                </div>
+                                <div class="profile-book-title">${book.title}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ` : '<p style="color: rgba(255,255,255,0.7); text-align: center;">No saved books yet</p>'}
+                </div>
+            `;
+            
+            // Add verify button event if needed
+            if (!userData.verified) {
+                document.getElementById('verifyBtn').addEventListener('click', startPhoneVerification);
+            }
+        }
+
+        // Start phone verification process
+        function startPhoneVerification() {
+            const phoneNumber = prompt("Please enter your mobile number with country code (e.g., +919876543210):");
+            
+            if (!phoneNumber) return;
+            
+            // In a real app, you would use Firebase phone auth here
+            // For demo purposes, we'll simulate it
+            showNotification('OTP sent to your mobile number', 'info');
+            
+            // Show OTP modal
+            otpModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Start OTP countdown
+            startOtpTimer();
+            
+            // Store verification ID (in a real app, this would come from Firebase)
+            verificationId = 'simulated-verification-id';
+        }
+
+        // Start OTP timer
+        function startOtpTimer() {
+            otpCountdown = 30;
+            otpTimer.textContent = otpCountdown;
+            resendOtp.style.pointerEvents = 'none';
+            resendOtp.style.opacity = '0.5';
+            
+            otpInterval = setInterval(() => {
+                otpCountdown--;
+                otpTimer.textContent = otpCountdown;
+                
+                if (otpCountdown <= 0) {
+                    clearInterval(otpInterval);
+                    resendOtp.style.pointerEvents = 'auto';
+                    resendOtp.style.opacity = '1';
+                    resendOtp.textContent = "Didn't receive OTP? Resend";
+                }
+            }, 1000);
+        }
+
+        // Close OTP modal
+        function closeOtpModalFunc() {
+            otpModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            clearInterval(otpInterval);
+            
+            // Clear OTP inputs
+            otpInputs.forEach(input => input.value = '');
+        }
+
+        // Verify OTP
+        function verifyOtp() {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            
+            if (otp.length !== 6) {
+                showNotification('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+            
+            // In a real app, you would verify with Firebase
+            // For demo, we'll just check if it's 123456
+            if (otp === '123456') {
+                // Mark user as verified
+                db.collection('users').doc(currentUser.uid).update({
+                    verified: true
+                }).then(() => {
+                    closeOtpModalFunc();
+                    showNotification('Phone number verified successfully!', 'success');
+                    showProfileModal(); // Refresh profile view
+                });
+            } else {
+                showNotification('Invalid OTP. Please try again.', 'error');
+            }
+        }
+
+        // Resend OTP
+        function resendOtpFunc() {
+            if (otpCountdown > 0) return;
+            
+            // In a real app, you would resend OTP via Firebase
+            showNotification('OTP resent to your mobile number', 'info');
+            startOtpTimer();
+        }
+
+        // Close profile modal
+        function closeProfileModalFunc() {
+            profileModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Login user
+        function loginUser(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    closeLoginModalFunc();
+                    showNotification('Logged in successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    showNotification('Login failed: ' + error.message, 'error');
+                });
+        }
+
+        // Register user
+        function registerUser(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirm').value;
+            
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Save additional user data
+                    return db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        verified: false
+                    });
+                })
+                .then(() => {
+                    closeRegisterModalFunc();
+                    showNotification('Account created successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Registration error:', error);
+                    showNotification('Registration failed: ' + error.message, 'error');
+                });
+        }
+
+        // Logout user
+        function logoutUser() {
+            auth.signOut()
+                .then(() => {
+                    showNotification('Logged out successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    showNotification('Logout failed', 'error');
+                });
+        }
+
+        // Toggle mobile menu
+        const menuBtn = document.querySelector('.menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        function closeNavMenu() {
+            menuBtn.classList.remove('active');
+            navMenu.classList.remove('active');
+        }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const searchContainer = document.querySelector('.search-container');
+            
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+                searchContainer.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+                searchContainer.classList.remove('scrolled');
+            }
+        });
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
