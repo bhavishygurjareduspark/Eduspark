@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Access | EduSpark</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Lemon+Milk&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #00008b;
+      --accent-red: #ff0000;
+      --dark-bg: #0a0a0a;
+      --pure-white: #ffffff;
+      --box-bg: rgba(255, 255, 255, 0.95);
+      --tag-hot: #ff4757;
+      --tag-new: #2ed573;
+      --rating-star: #ffd700;
+      --glow-blue: rgba(0, 82, 255, 0.4);
+      --glow-red: rgba(255, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
+      background-size: 400% 400%;
+      animation: gradientFlow 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--pure-white);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Original Header (unchanged) */
+    header {
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      color: var(--pure-white);
+      gap: 0.8rem;
+    }
+
+    .logo-icon {
+      font-size: 2.2rem;
+      color: var(--accent-red);
+      filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+    }
+
+    .brand-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 12px;
+      z-index: 1001;
+      transition: transform 0.3s;
+    }
+
+    .menu-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .menu-btn span {
+      display: block;
+      width: 28px;
+      height: 3px;
+      background: var(--pure-white);
+      margin: 5px 0;
+      transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .menu-btn.active span:first-child {
+      transform: rotate(-45deg) translate(-6px, 7px);
+    }
+
+    .menu-btn.active span:nth-child(2) {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+
+    .menu-btn.active span:last-child {
+      transform: rotate(45deg) translate(-6px, -7px);
+    }
+
+    .nav-menu {
+      position: fixed;
+      top: 70px;
+      right: -300px;
+      width: 300px;
+      height: calc(100vh - 70px);
+      background: rgba(0, 0, 0, 0.98);
+      padding: 2rem;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-menu.active {
+      transform: translateX(-300px);
+    }
+
+    .nav-btn {
+      background: var(--primary-blue);
+      color: var(--pure-white);
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-btn i {
+      transition: transform 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-red);
+      transform: translateX(10px);
+    }
+
+    .nav-btn:hover i {
+      transform: rotate(360deg);
+    }
+
+    /* Enhanced Container */
+    .container {
+      background: var(--box-bg);
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      margin-top: 80px;
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+      transform: translateY(30px);
+      opacity: 0;
+      animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+      );
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: var(--primary-blue);
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      display: inline-block;
+    }
+
+    h2::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary-blue), var(--accent-red));
+      border-radius: 2px;
+    }
+
+    .duration-box {
+      background: var(--rating-star);
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      font-weight: bold;
+      color: #000;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      color: #333;
+      line-height: 1.7;
+    }
+
+    /* Enhanced Buttons */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 16px;
+      font-size: 1rem;
+      color: var(--pure-white);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 12px 0;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: translateX(-100%);
+      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+      z-index: -1;
+    }
+
+    .button:hover::before {
+      transform: translateX(100%);
+    }
+
+    .button i {
+      margin-right: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .button:hover i {
+      transform: translateX(5px);
+    }
+
+    /* Server Buttons */
+    #server02, #server03Url {
+      background: var(--primary-blue);
+      background: linear-gradient(135deg, var(--primary-blue), #0000aa);
+    }
+
+    #server02:hover, #server03Url:hover {
+      box-shadow: 0 8px 25px var(--glow-blue);
+    }
+
+    /* Server 3 - HOT */
+    #recommendServer {
+      background: var(--rating-star);
+      background: linear-gradient(135deg, var(--rating-star), #ffcc00);
+      color: #000;
+      font-weight: bold;
+      position: relative;
+    }
+
+    #recommendServer::after {
+      content: "HOT";
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--tag-hot);
+      color: white;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      transform: rotate(15deg);
+      box-shadow: 0 3px 10px rgba(255, 71, 87, 0.5);
+      animation: hotPulse 1.5s infinite;
+    }
+
+    @keyframes hotPulse {
+      0%, 100% { transform: rotate(15deg) scale(1); }
+      50% { transform: rotate(15deg) scale(1.1); }
+    }
+
+    #recommendServer:hover {
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Tutorial Button */
+    #watchVideo {
+      background: var(--accent-red);
+      background: linear-gradient(135deg, var(--accent-red), #cc0000);
+      margin-top: 20px;
+    }
+
+    #watchVideo:hover {
+      box-shadow: 0 8px 25px var(--glow-red);
+    }
+
+    /* Loading Message */
+    .loading {
+      font-size: 1rem;
+      color: var(--accent-red);
+      margin-top: 25px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .loading i {
+      margin-right: 10px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Optimized Floating Particles */
+    .particle {
+      position: fixed;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+      to {
+        transform: translateY(-100vh);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1.5rem;
+      }
+      
+      h2 {
+        font-size: 1.6rem;
+      }
+      
+      .button {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-book-open logo-icon"></i>
+      <h1 class="brand-name">EduSpark</h1>
+    </div>
+    <button class="menu-btn" aria-label="Navigation Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="nav-menu">
+      <button class="nav-btn" onclick="location.href='index.html'">
+        <i class="fas fa-home"></i>
+        Home
+      </button>
+      <button class="nav-btn" onclick="location.href='courses.html'">
+        <i class="fas fa-graduation-cap"></i>
+        Courses
+      </button>
+      <button class="nav-btn" onclick="location.href='about.html'">
+        <i class="fas fa-info-circle"></i>
+        About
+      </button>
+      <button class="nav-btn" onclick="location.href='contact.html'">
+        <i class="fas fa-envelope"></i>
+        Contact
+      </button>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <h2><i class="fas fa-key"></i> Premium Access</h2>
+    <div class="duration-box"><i class="fas fa-clock"></i> Duration: Your Choice</div>
+    <p>Generate Key to Use Our Premium Resources</p>
+    
+    <button id="server02" class="button">
+      <i class="fas fa-bolt"></i> SERVER 01 (24 Hours)
+    </button>
+    <button id="server03Url" class="button">
+      <i class="fas fa-rocket"></i> SERVER 02 (48 Hours)
+    </button>
+    <button id="recommendServer" class="button">
+      <i class="fas fa-crown"></i> SERVER 03 (72 Hours)
+    </button>
+    <button id="watchVideo" class="button">
+      <i class="fas fa-play-circle"></i> TUTORIAL VIDEO
+    </button>
+    
+    <p class="loading" id="loadingMessage"><i class="fas fa-spinner"></i> Generating access...</p>
+  </div>
+
+  <script>
+            
+    // Optimized Particle System
+    class ParticleSystem {
+      constructor() {
+        this.particles = [];
+        this.maxParticles = 20;
+        this.container = document.body;
+        this.colors = ['rgba(255,255,255,0.8)', 'rgba(255,0,0,0.6)', 'rgba(0,0,255,0.6)'];
+        this.init();
+      }
+
+      init() {
+        this.createParticles();
+        window.addEventListener('resize', this.handleResize.bind(this));
+      }
+
+      createParticles() {
+        // Clear existing particles
+        this.clearParticles();
+
+        // Create new particles
+        for (let i = 0; i < this.maxParticles; i++) {
+          setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random properties
+            const size = Math.random() * 3 + 1;
+            const posX = Math.random() * window.innerWidth;
+            const duration = Math.random() * 5 + 3;
+            const delay = Math.random() * 2;
+            const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            
+            // Apply styles
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}px`;
+            particle.style.top = `${window.innerHeight + size}px`;
+            particle.style.backgroundColor = color;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+            
+            // Add to DOM and store reference
+            this.container.appendChild(particle);
+            this.particles.push({
+              element: particle,
+              duration: duration * 1000
+            });
+            
+            // Schedule removal
+            setTimeout(() => {
+              particle.remove();
+              this.particles = this.particles.filter(p => p.element !== particle);
+            }, duration * 1000);
+          }, i * 300);
+        }
+      }
+
+      clearParticles() {
+        this.particles.forEach(p => p.element.remove());
+        this.particles = [];
+      }
+
+      handleResize() {
+        this.createParticles();
+      }
+
+      burst(count) {
+        for (let i = 0; i < count; i++) {
+          setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            const size = Math.random() * 4 + 2;
+            const posX = Math.random() * window.innerWidth;
+            const duration = Math.random() * 3 + 2;
+            const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}px`;
+            particle.style.top = `${window.innerHeight * 0.7}px`;
+            particle.style.backgroundColor = color;
+            particle.style.animationDuration = `${duration}s`;
+            
+            this.container.appendChild(particle);
+            
+            setTimeout(() => {
+              particle.remove();
+            }, duration * 1000);
+          }, i * 50);
+        }
+      }
+    }
+
+    // Initialize particle system
+    const particles = new ParticleSystem();
+
+    // Original script functionality (unchanged)
+    const menuBtn = document.querySelector('.menu-btn');
+    const navMenu = document.querySelector('.nav-menu');
+
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
+        menuBtn.classList.remove('active');
+        navMenu.classList.remove('active');
+      }
+    });
+
+    const urls = {
+      server02: 'https://lksfy.com/Login',
+      server03: 'https://lksfy.com/Login',
+      recommendServer: 'https://lksfy.com/Login',
+      tutorialVideo: 'https://t.me/EduSparkk/444'
+    };
+
+    function setTemporaryCookieAndRedirect(cookieName, url) {
+      if (!url) return alert('Invalid URL!');
+      
+      const loadingMessage = document.getElementById("loadingMessage");
+      loadingMessage.style.display = "block";
+      
+      // Create particle burst effect
+      particles.burst(15);
+      
+      setTimeout(() => {
+        document.cookie = `${cookieName}=true; path=/; max-age=${02 * 60 * 60}`;
+        window.open(url, '_blank');
+        loadingMessage.style.display = "none";
+      }, 2000);
+    }
+
+    document.getElementById('server02').addEventListener('click', () => {
+      setTemporaryCookieAndRedirect('24key', urls.server02);
+    });
+
+    document.getElementById('server03Url').addEventListener('click', () => {
+      setTemporaryCookieAndRedirect('48Key', urls.server03);
+    });
+
+    document.getElementById('recommendServer').addEventListener('click', () => {
+      setTemporaryCookieAndRedirect('72key', urls.recommendServer);
+    });
+
+    document.getElementById('watchVideo').addEventListener('click', () => {
+      window.open(urls.tutorialVideo, '_blank');
+    });
+
+    function getCookie(name) {
+      return document.cookie.split('; ').some(cookie => cookie.startsWith(name + '='));
+    }
+
+    
+  </script>
+</body>
+</html>
