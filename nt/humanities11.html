@@ -1555,6 +1555,12 @@
                 alert('Reminder set for this class! We will notify you when it starts.');
             };
         } 
+
+                  if (!document.cookie.includes('24done=') &&
+      !document.cookie.includes('48done=') &&
+      !document.cookie.includes('72done=')) {
+    window.location.href = '/login'; // change to your login page URL
+  }
     </script>
 </body>
 </html>
