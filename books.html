@@ -3,1057 +3,2536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Books | EduSpark</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
+    <title>EduSparK - Share Knowledge</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+   
     <style>
         :root {
-            --primary-blue: #00008b;
-            --accent-red: #ff0000;
-            --dark-bg: #0a0a0a;
-            --pure-white: #ffffff;
-            --box-bg: rgba(255, 255, 255, 0.95);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --primary-color: #ff4757;
+            --primary-light: #ff6b81;
+            --primary-dark: #e84118;
+            --secondary-color: #2f3542;
+            --secondary-light: #57606f;
+            --secondary-dark: #1e272e;
+            --text-light: #f1f2f6;
+            --text-dark: #2f3542;
+            --text-muted: #747d8c;
+            --bg-light: #ffffff;
+            --bg-dark: #1e272e;
+            --card-bg: #ffffff;
+            --card-bg-dark: #2f3542;
+            --gradient: linear-gradient(135deg, #ff4757, #2f3542);
+            --gradient-light: linear-gradient(135deg, #ff6b81, #57606f);
+            --gradient-dark: linear-gradient(135deg, #e84118, #1e272e);
+            --message-sent-bg: linear-gradient(135deg, #ff4757, #ff6b81);
+            --message-received-bg: #f1f2f6;
+            --message-received-text: #2f3542;
+            --typing-indicator-bg: #f1f2f6;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --border-radius-xs: 6px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-fast: all 0.15s ease;
+            --header-height: 70px;
+            --nav-height: 70px;
+            --max-width: 1200px;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #ff6b81;
+            --primary-light: #ff8fa3;
+            --primary-dark: #ff4757;
+            --secondary-color: #1e272e;
+            --secondary-light: #2f3542;
+            --secondary-dark: #12181f;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #2f3542;
+            --bg-dark: #1e272e;
+            --card-bg: #2f3542;
+            --card-bg-dark: #1e272e;
+            --gradient: linear-gradient(135deg, #ff6b81, #1e272e);
+            --gradient-light: linear-gradient(135deg, #ff8fa3, #2f3542);
+            --gradient-dark: linear-gradient(135deg, #ff4757, #12181f);
+            --message-sent-bg: linear-gradient(135deg, #ff6b81, #ff4757);
+            --message-received-bg: #1e272e;
+            --message-received-text: #dfe4ea;
+            --typing-indicator-bg: #1e272e;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
 
         body {
-            font-family: 'Poppins', system-ui, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             min-height: 100vh;
-            background: linear-gradient(-45deg, var(--dark-bg), var(--primary-blue), #8b0000, var(--pure-white));
-            background-size: 400% 400%;
-            animation: gradientFlow 20s ease infinite;
-            color: white;
+            padding-top: var(--header-height);
+            padding-bottom: var(--nav-height);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Header with Glass Morphism */
-        header {
-            padding: 1rem 2rem;
-            background: rgba(0, 0, 0, 0.7);
+        /* Enhanced Header with Glass Morphism */
+        .header {
+            background-color: rgba(47, 53, 66, 0.95);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            color: var(--text-light);
+            height: var(--header-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--shadow-md);
             position: fixed;
-            width: 100%;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 0 20px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        header.scrolled {
-            padding: 0.7rem 2rem;
-            background: rgba(0, 0, 0, 0.9);
+        [data-theme="dark"] .header {
+            background-color: rgba(30, 39, 46, 0.95);
+        }
+
+        .header.scrolled {
+            height: 60px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
         }
 
         .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             display: flex;
             align-items: center;
-            color: var(--pure-white);
-            gap: 0.8rem;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 5px 0;
         }
 
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .logo-text {
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo-text::after {
+            content: '❤️‍🔥';
+            position: absolute;
+            right: -25px;
+            top: -5px;
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-container.active {
+            width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: none;
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 1rem;
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-xl);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .search-results {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        [data-theme="dark"] .search-result-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-result-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .search-result-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .search-result-item h4 {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .search-result-item p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            position: relative;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: transform 0.5s ease, background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle .sun {
+            display: none;
+            position: absolute;
+        }
+
+        .theme-toggle .moon {
+            display: block;
+            position: absolute;
+        }
+
+        [data-theme="dark"] .theme-toggle .sun {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle .moon {
+            display: none;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .user-avatar:hover::after {
+            opacity: 1;
+        }
+
+        /* Bottom Navigation with Glass Morphism */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(47, 53, 66, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: var(--nav-height);
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .bottom-nav {
+            background-color: rgba(30, 39, 46, 0.95);
+        }
+
+        .nav-item {
+            color: var(--text-light);
+            font-size: 1.3rem;
+            padding: 10px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        .nav-item:hover::before {
+            opacity: 1;
+        }
+
+        .nav-item.active {
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .nav-item.active::before {
+            opacity: 1;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
             animation: pulse 2s infinite;
+            z-index: 1;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
 
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            background: linear-gradient(90deg, #fff, #ff0000);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { background-position: -200%; }
-            100% { background-position: 200%; }
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 12px;
-            z-index: 1001;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-        }
-
-        .menu-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .menu-btn span {
-            display: block;
-            width: 28px;
-            height: 3px;
-            background: var(--pure-white);
-            margin: 5px 0;
-            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: rotate(-45deg) translate(-6px, 7px);
-            background: var(--accent-red);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        .menu-btn.active span:last-child {
-            transform: rotate(45deg) translate(-6px, -7px);
-            background: var(--accent-red);
-        }
-
-        .nav-menu {
-            position: fixed;
-            top: 70px;
-            right: -300px;
-            width: 300px;
-            height: calc(100vh - 70px);
-            background: rgba(0, 0, 0, 0.98);
-            padding: 2rem;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            z-index: 999;
-            backdrop-filter: blur(10px);
-            border-left: 1px solid var(--glass-border);
-        }
-
-        .nav-menu.active {
-            transform: translateX(-300px);
-        }
-
-        .nav-btn {
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .nav-btn:hover::before {
-            left: 100%;
-        }
-
-        .nav-btn i {
-            transition: transform 0.4s;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent-red);
-            transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(360deg);
-        }
-
-        /* Search Bar with Glass Morphism */
-        .search-container {
-            display: flex;
-            justify-content: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            position: fixed;
-            top: 70px;
-            width: 100%;
-            z-index: 999;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid var(--glass-border);
-            transition: all 0.5s ease;
-        }
-
-        .search-container.scrolled {
-            top: 60px;
-            padding: 0.8rem;
-        }
-
-        .search-bar {
-            display: flex;
-            width: 100%;
-            max-width: 800px;
-            transition: all 0.4s;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            border: none;
-            border-radius: 25px 0 0 25px;
-            font-size: 1rem;
-            outline: none;
-            background: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            background: white;
-            box-shadow: 0 0 0 2px var(--accent-red);
-        }
-
-        .search-btn {
-            padding: 0 1.5rem;
-            background: var(--accent-red);
+        .add-btn {
+            background: var(--gradient);
             color: white;
-            border: none;
-            border-radius: 0 25px 25px 0;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            transform: translateY(-20px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+            transition: var(--transition);
             cursor: pointer;
-            transition: all 0.4s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            border: none;
+            outline: none;
+            z-index: 1001;
             position: relative;
             overflow: hidden;
         }
 
-        .search-btn::after {
+        .add-btn::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: translateX(-100%);
-            transition: 0.5s;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .search-btn:hover::after {
-            transform: translateX(100%);
+        .add-btn:hover {
+            transform: translateY(-20px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.6);
+            background: var(--gradient-light);
+            animation: none;
         }
 
-        .search-btn:hover {
-            background: #cc0000;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
-        }
-
-        /* Saved Books Section */
-        .saved-books-container {
-            padding: 8rem 2rem 1rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .saved-books-title {
-            font-family: 'Lemon Milk', sans-serif;
-            font-size: 2rem;
-            color: var(--pure-white);
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            position: relative;
-            padding-left: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .saved-books-title i {
-            color: var(--accent-red);
-            font-size: 1.8rem;
-        }
-
-        .saved-books-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background: var(--accent-red);
-            border-radius: 5px;
-        }
-
-        .saved-books-slider {
-            display: flex;
-            gap: 1.5rem;
-            padding: 1rem 0;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 2rem;
-        }
-
-        .saved-books-slider::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .saved-books-slider::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-        }
-
-        .saved-books-slider::-webkit-scrollbar-thumb {
-            background: var(--accent-red);
-            border-radius: 10px;
-        }
-
-        .saved-book-card {
-            scroll-snap-align: start;
-            flex: 0 0 180px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            border: 1px solid var(--glass-border);
-            position: relative;
-            transform: translateY(0);
-            animation: float 4s ease-in-out infinite;
+        .add-btn:hover::after {
+            opacity: 1;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(-20px); }
+            50% { transform: translateY(-25px); }
         }
 
-        .saved-book-card:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-        }
-
-        .saved-book-cover {
-            height: 220px;
-            width: 100%;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .saved-book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .saved-book-card:hover .saved-book-cover img {
-            transform: scale(1.05);
-        }
-
-        .saved-book-details {
-            padding: 1rem;
-        }
-
-        .saved-book-title {
-            font-family: 'Lemon Milk', sans-serif;
-            color: var(--pure-white);
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-            line-height: 1.3;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .saved-book-author {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.7rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .saved-book-view-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 0.5rem;
-            background: var(--primary-blue);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .saved-book-view-btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: translateX(-100%);
-            transition: 0.5s;
-        }
-
-        .saved-book-view-btn:hover::after {
-            transform: translateX(100%);
-        }
-
-        .saved-book-view-btn:hover {
-            background: var(--accent-red);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .saved-book-view-btn i {
-            margin-right: 0.3rem;
-        }
-
-        .saved-book-progress {
-            height: 4px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-bottom: 0.8rem;
-            overflow: hidden;
-        }
-
-        .saved-book-progress-bar {
-            height: 100%;
-            background: var(--accent-red);
-            width: 65%;
-            border-radius: 2px;
-            transition: width 0.5s ease;
-        }
-
-        .saved-book-meta {
-            display: flex;
-            justify-content: space-between;
-            color: rgba(255,255,255,0.7);
-            font-size: 0.7rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .saved-book-category {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent-red);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Books Library Container */
-        .library-container {
-            padding: 3rem 2rem;
-            max-width: 1400px;
+        /* Main Content */
+        .container {
+            padding: 20px;
+            max-width: var(--max-width);
             margin: 0 auto;
-            animation: fadeIn 1s ease-out 0.2s both;
         }
 
-        .section-title {
-            font-family: 'Lemon Milk', sans-serif;
-            font-size: 2.5rem;
-            color: var(--pure-white);
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
             position: relative;
-            padding-left: 1.2rem;
-            animation: slideIn 0.8s ease-out;
+            display: inline-block;
+            font-weight: 600;
+            padding-bottom: 8px;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(-50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .section-title::before {
+        .page-title::after {
             content: '';
             position: absolute;
+            bottom: 0;
             left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background: var(--accent-red);
-            border-radius: 5px;
-            animation: grow 0.8s ease-out;
+            width: 60px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 4px;
+            transform-origin: left;
+            animation: scaleIn 0.5s ease-out forwards;
         }
 
-        @keyframes grow {
-            from { height: 0; }
-            to { height: 100%; }
+        @keyframes scaleIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
         }
 
-        /* Square Book Cards */
         .books-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .book-card {
-            background: var(--box-bg);
-            border-radius: 10px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transform: translateY(30px);
+            opacity: 0;
+            animation: cardAppear 0.6s ease forwards;
             display: flex;
             flex-direction: column;
-            opacity: 0;
-            animation: fadeInUp 0.6s ease-out forwards;
-            animation-delay: calc(var(--order) * 0.1s);
-            transform: translateY(20px);
+            height: 100%;
         }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        [data-theme="dark"] .book-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes cardAppear {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .book-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            z-index: 5;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Modified for vertical rectangular covers */
-        .book-cover {
-            height: 450px;
-            width: 100%;
-            background: #f0f0f0;
+        .book-img-container {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #555;
-            position: relative;
-            overflow: hidden;
         }
 
-        .book-cover i {
-            font-size: 4rem;
-            opacity: 0.3;
+        [data-theme="dark"] .book-img-container {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
-        .book-cover img {
-            width: 100%;
+        .book-img {
+            width: auto;
             height: 100%;
             object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
             transition: transform 0.5s ease;
         }
 
-        .book-card:hover .book-cover img {
+        .book-card:hover .book-img {
             transform: scale(1.05);
         }
 
-        .book-details {
-            padding: 1.5rem;
-            flex-grow: 1;
+        .book-info {
+            padding: 15px;
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
 
         .book-title {
-            font-family: 'Lemon Milk', sans-serif;
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .book-author {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-weight: 500;
         }
 
         .book-meta {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .book-meta i {
+            margin-right: 5px;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+        }
+
+        .book-admin-info {
+            font-size: 0.7rem;
+            color: var(--text-muted);
             margin-top: auto;
-            color: #777;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        [data-theme="dark"] .book-admin-info {
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .book-admin-info i {
+            color: var(--primary-color);
             font-size: 0.8rem;
         }
 
         .download-btn {
-            display: block;
-            text-align: center;
-            padding: 0.7rem;
-            background: var(--primary-blue);
+            background: var(--gradient);
             color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.4s;
-            margin-top: 1rem;
+            border: none;
+            padding: 8px 12px;
+            border-radius: var(--border-radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            width: 100%;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.85rem;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-top: 10px;
         }
 
         .download-btn::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: translateX(-100%);
-            transition: 0.5s;
+            top: -50%;
+            left: -60%;
+            width: 40px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
         }
 
         .download-btn:hover::after {
-            transform: translateX(100%);
+            left: 120%;
+        }
+
+        .download-btn i {
+            margin-right: 8px;
+            font-size: 0.8rem;
         }
 
         .download-btn:hover {
-            background: var(--accent-red);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 71, 87, 0.4);
+            background: var(--gradient-light);
         }
 
-        .book-category {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent-red);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        /* Floating action button */
-        .fab {
+        /* Enhanced Profile Page */
+        .profile-page {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            background: var(--accent-red);
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-light);
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow-y: auto;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .profile-page.active {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-back-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            position: absolute;
+            left: 0;
+            top: 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 50%;
+        }
+
+        .profile-back-btn:hover {
+            transform: translateX(-5px);
+            background-color: rgba(255, 71, 87, 0.1);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 15px;
+            background: var(--gradient);
             color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            transition: all 0.5s ease;
+        }
+
+        .profile-avatar:hover::before {
+            transform: rotate(30deg) translateX(50%);
+        }
+
+        .profile-info {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .profile-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            position: relative;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .profile-info h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        .profile-username {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .profile-email {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-email i {
+            margin-right: 8px;
+            font-size: 0.95rem;
+        }
+
+        .profile-bio {
+            margin: 20px 0;
+            color: var(--text-dark);
+            line-height: 1.7;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.95rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .profile-bio {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-bio::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            opacity: 0.1;
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .profile-bio::after {
+            content: '"';
+            position: absolute;
+            bottom: -20px;
+            right: 15px;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            opacity: 0.1;
+            font-family: serif;
+            line-height: 1;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .profile-stats {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            flex: 1;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .stat-item:not(:last-child)::after {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .stat-number::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .profile-books-title {
+            font-size: 1.6rem;
+            margin: 30px 0 20px;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .profile-books-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .edit-profile {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
             cursor: pointer;
-            z-index: 100;
-            transition: all 0.3s;
-            animation: pulse 2s infinite;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            max-width: 200px;
         }
 
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+        .edit-profile::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        @media (max-width: 768px) {
-            .saved-books-container {
-                padding: 7rem 1rem 1rem;
+        .edit-profile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.5);
+            background: var(--gradient-light);
+        }
+
+        .edit-profile:hover::after {
+            opacity: 1;
+        }
+
+        .logout-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .logout-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(47, 53, 66, 0.3);
+            background: var(--secondary-light);
+        }
+
+        .logout-btn:hover::after {
+            opacity: 1;
+        }
+
+        /* Full Page Chat */
+        .chat-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-light);
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .chat-page.active {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: var(--header-height);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-back-btn {
+            position: absolute;
+            left: 15px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .chat-back-btn:hover {
+            transform: translateX(-5px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: messageAppear 0.4s forwards;
+            animation-delay: 0.1s;
+        }
+
+        @keyframes messageAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-            
-            .library-container {
-                padding: 2rem 1rem;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 1rem;
+            line-height: 1.5;
+            word-break: break-word;
+            position: relative;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.sent .message-content {
+            background: var(--message-sent-bg);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+
+        .message.received .message-content {
+            background-color: var(--message-received-bg);
+            color: var(--message-received-text);
+            border-top-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-dark);
+            opacity: 0.7;
+            margin-top: 6px;
+            align-self: flex-end;
+        }
+
+        .message.sent .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-sender {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 15px;
+            background-color: var(--bg-light);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            align-items: center;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .chat-input-container {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--typing-indicator-bg);
+            color: var(--text-dark);
+            outline: none;
+            resize: none;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-right: 12px;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .chat-input {
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-input:focus {
+            box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.3), inset 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .send-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background: var(--gradient-light);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.5);
+        }
+
+        .send-btn:hover::after {
+            opacity: 1;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            background: var(--secondary-light);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--typing-indicator-bg);
+            border-radius: 18px;
+            margin-left: 20px;
+            margin-bottom: 8px;
+            align-self: flex-start;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .typing-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-indicator span {
+            height: 7px;
+            width: 7px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
             }
-            
-            .section-title, .saved-books-title {
-                font-size: 1.8rem;
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* Message status indicators */
+        .message-status {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 0.8rem;
+        }
+
+        .message-status.sent {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-status.delivered {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Message bubble tail effect */
+        .message.sent .message-content::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 0;
+            width: 12px;
+            height: 20px;
+            background: var(--message-sent-bg);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+        }
+
+        .message.received .message-content::after {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 12px;
+            height: 20px;
+            background: var(--message-received-bg);
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-8px); }
+        }
+
+        .empty-state h3 {
+            margin-bottom: 12px;
+            color: var(--text-dark);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 450px;
+            padding: 25px;
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-30px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .modal-content {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.7rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            color: var(--primary-color);
+            transform: rotate(90deg);
+            background-color: rgba(255, 71, 87, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-align: center;
+            position: relative;
+            padding-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .modal-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius-sm);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        [data-theme="dark"] .form-input {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.2);
+        }
+
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-input-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .file-input-btn:hover {
+            background: var(--gradient-light);
+        }
+
+        .file-input-btn:hover::after {
+            opacity: 1;
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-name {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+            background: var(--gradient-light);
+        }
+
+        .submit-btn:hover::after {
+            opacity: 1;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .auth-switch a {
+            color: var(--primary-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* Discover Modal */
+        .discover-list {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .discover-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            align-items: center;
+            cursor: pointer;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 8px;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        [data-theme="dark"] .discover-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .discover-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .discover-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            transform: translateX(5px);
+        }
+
+        [data-theme="dark"] .discover-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .discover-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .discover-content {
+            flex: 1;
+        }
+
+        .discover-title {
+            font-size: 1rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .discover-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius-sm);
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: var(--shadow-xl);
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background-color: #27ae60;
+            border-left-color: #2ecc71;
+        }
+
+        .toast.error {
+            background-color: #e74c3c;
+            border-left-color: #ff4757;
+        }
+
+        .toast.warning {
+            background-color: #f39c12;
+            border-left-color: #f1c40f;
+        }
+
+        .toast.info {
+            background-color: #3498db;
+            border-left-color: #2980b9;
+        }
+
+        .toast i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .toast-close {
+            margin-left: 15px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* Book Status Badges */
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: var(--border-radius-xs);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 1;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-approved {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .status-rejected {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Book Card Hover Overlay */
+        .book-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .book-card:hover .book-overlay {
+            opacity: 1;
+        }
+
+        .book-overlay-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .book-overlay-author {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .book-overlay-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: var(--border-radius-xs);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+        }
+
+        .book-overlay-btn:hover {
+            background: var(--gradient-light);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .container {
+                padding: 20px;
             }
             
             .books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
             }
 
-            .book-cover {
-                height: 350px;
+            .logo {
+                font-size: 1.6rem;
             }
 
-            .saved-book-card {
-                flex: 0 0 150px;
+            .logo i {
+                font-size: 1.3rem;
             }
 
-            .saved-book-cover {
+            .search-container {
+                width: 200px;
+            }
+
+            .search-container.active {
+                width: 250px;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .nav-item {
+                font-size: 1.2rem;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .add-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.6rem;
+            }
+
+            .profile-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stat-item:not(:last-child)::after {
+                display: none;
+            }
+
+            .stat-item {
+                padding: 12px 0;
+            }
+
+            .chat-input {
+                padding: 12px 15px;
+            }
+
+            .send-btn {
+                width: 42px;
+                height: 42px;
+            }
+
+            .book-img-container {
                 height: 180px;
             }
         }
 
-        @media (max-width: 480px) {
-            .saved-books-title, .section-title {
+        @media (max-width: 576px) {
+            .header {
+                padding: 0 10px;
+                height: var(--header-height);
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .logo {
                 font-size: 1.5rem;
             }
 
-            .fab {
-                width: 50px;
-                height: 50px;
+            .logo i {
                 font-size: 1.2rem;
-                bottom: 1.5rem;
-                right: 1.5rem;
+            }
+
+            .header-actions {
+                gap: 10px;
+            }
+
+            .search-container {
+                position: absolute;
+                top: var(--header-height);
+                left: 0;
+                right: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10px;
+                background-color: var(--secondary-color);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+                display: none;
+            }
+
+            [data-theme="dark"] .search-container {
+                background-color: var(--secondary-dark);
+            }
+
+            .search-container.active {
+                display: block;
+                width: 100%;
+            }
+
+            .search-input {
+                display: block;
+                width: 100%;
+                padding: 10px 15px 10px 40px;
+                border-radius: var(--border-radius);
+                background-color: var(--secondary-light);
+            }
+
+            .search-results {
+                top: calc(100% + 10px);
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .book-img-container {
+                height: 150px;
+            }
+
+            .profile-info h2 {
+                font-size: 1.5rem;
+            }
+
+            .profile-bio {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .chat-input-container {
+                padding: 12px;
+            }
+
+            .chat-input {
+                padding: 12px 15px;
+                margin-right: 10px;
+                font-size: 0.95rem;
+            }
+
+            .send-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+
+            .message-content {
+                padding: 10px 14px;
+                font-size: 0.95rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            .modal-title {
+                font-size: 1.5rem;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .edit-profile, .logout-btn {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .page-title {
+                font-size: 1.7rem;
+            }
+            
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info h2 {
+                font-size: 1.4rem;
+            }
+            
+            .profile-bio {
+                padding: 12px;
+            }
+            
+            .chat-input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-content {
+                padding: 15px;
+            }
+
+            .profile-avatar {
+                width: 90px;
+                height: 90px;
+                font-size: 2rem;
             }
         }
     </style>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
+<body data-theme="light">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <a href="#" class="logo" id="logoLink">
+                <i class="fas fa-book-open"></i>
+                <span>EduSparK</span>
+            </a>
         </div>
-        <button class="menu-btn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu">
-            <button class="nav-btn">
-                <i class="fas fa-home"></i>
-                Home
+        
+        <div class="header-actions">
+            <button class="theme-toggle">
+                <i class="fas fa-sun sun"></i>
+                <i class="fas fa-moon moon"></i>
             </button>
-            <button class="nav-btn">
-                <i class="fas fa-book"></i>
-                Books
-            </button>
-            <button class="nav-btn">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn">
-                <i class="fas fa-user"></i>
-                Profile
-            </button>
-        </nav>
+            
+            <div class="user-avatar" id="userAvatar">
+                <span id="avatarInitials">[^]</span>
+            </div>
+        </div>
+
+        <div class="search-container" id="searchContainer">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search books...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
     </header>
-  
-    <br><br>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search books...">
-            <button class="search-btn">
-                <i class="fas fa-search"></i>
-                Search
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="page-title" data-aos="fade-right">Discover Books</h1>
+        <div class="books-grid" id="booksContainer">
+            <!-- Books will be dynamically added here -->
+            <div class="empty-state" id="emptyState">
+                <i class="fas fa-book-open"></i>
+                <h3>No Books Available</h3>
+                <p>Be the first to share a book with the community!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item" id="chatBtn">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        <div class="nav-item active" id="homeBtn">
+            <i class="fas fa-home"></i>
+        </div>
+        <button class="add-btn" id="addBookBtn">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div class="nav-item" id="discoverBtn">
+            <i class="fas fa-compass"></i>
+        </div>
+        <div class="nav-item" id="profileBtn">
+            <i class="fas fa-user"></i>
+        </div>
+    </nav>
+
+    <!-- Full Page Profile -->
+    <div class="profile-page" id="profilePage">
+        <div class="profile-header">
+            <button class="profile-back-btn" id="profileBackBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="profile-avatar" id="profileAvatar">
+                <span id="profileAvatarInitials">U</span>
+            </div>
+            <div class="profile-info">
+                <h2 id="profileName">User</h2>
+                <p class="profile-username" id="profileUsername">@username</p>
+                <p class="profile-email" id="profileEmail"><i class="fas fa-envelope"></i> user@example.com</p>
+            </div>
+        </div>
+        
+        <div class="profile-bio" id="profileBio">
+            No bio available. Edit your profile to add one.
+        </div>
+        
+        <div class="profile-stats">
+            <div class="stat-item">
+                <div class="stat-number" id="booksShared">0</div>
+                <div class="stat-label">Books Shared</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="booksDownloaded">0</div>
+                <div class="stat-label">Books Downloaded</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="memberSince">-</div>
+                <div class="stat-label">Member Since</div>
+            </div>
+        </div>
+        
+        <h3 class="profile-books-title">My Shared Books</h3>
+        <div class="books-grid" id="profileBooksContainer">
+            <div class="empty-state">
+                <i class="fas fa-book"></i>
+                <h3>No Books Shared Yet</h3>
+                <p>Start sharing books with the community!</p>
+            </div>
+        </div>
+        
+        <div class="profile-actions">
+            <button class="edit-profile" id="editProfileBtn">
+                <i class="fas fa-user-edit"></i> Edit Profile
+            </button>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </div>
     </div>
-<br><br><br>
-    <!-- Saved Books Section -->
-    <section class="saved-books-container">
-        <h1 class="saved-books-title">
-            <i class="fas fa-bookmark"></i>
-            Popular Books
-        </h1>
+
+    <!-- Full Page Chat -->
+    <div class="chat-page" id="chatPage">
+        <div class="chat-header">
+            <button class="chat-back-btn" id="chatBackBtn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="chat-title">Live Chat</div>
+        </div>
         
-        <div class="saved-books-slider">
-            <!-- Saved Book 1 -->
-            <div class="saved-book-card">
-                <div class="saved-book-cover">
-                    <span class="saved-book-category">2025</span>
-                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/6a705ddf-a9fc-4bc1-bd77-827f022fbf2c.png" alt="Physics Textbook">
-                </div>
-                <div class="saved-book-details">
-                    <h3 class="saved-book-title">Arjuna Neet</h3>
-                    <p class="saved-book-author">Physics Wallah</p>
-                    <div class="saved-book-progress">
-                       <div class="saved-book-progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <div class="saved-book-meta">
-                        <span>EduSparK</span>
-                        <span>Page 500+</span>
-                    </div>
-                    <a href="/books/arjuna-neet" class="saved-book-view-btn">
-                        <i class="fas fa-eye"></i>
-                        View
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Saved Book 2 -->
-            <div class="saved-book-card">
-                <div class="saved-book-cover">
-                    <span class="saved-book-category">2025</span>
-                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png" alt="Chemistry Textbook">
-                </div>
-                <div class="saved-book-details">
-                    <h3 class="saved-book-title">Arjuna JEE </h3>
-                    <p class="saved-book-author">Physics Wallah</p>
-                    <div class="saved-book-progress">
-                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <div class="saved-book-meta">
-                        <span>EduSparK</span>
-                        <span>Page 450+</span>
-                    </div>
-                    <a href="/books/Arjuna-JEE" class="saved-book-view-btn">
-                        <i class="fas fa-eye"></i>
-                        View
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Saved Book 3 -->
-            <div class="saved-book-card">
-                <div class="saved-book-cover">
-                    <span class="saved-book-category">2025</span>
-                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/0b863a9b-e783-4eda-8549-539ca43eb937.png" alt="Mathematics Textbook">
-                </div>
-                <div class="saved-book-details">
-                    <h3 class="saved-book-title">Lakchay Neet</h3>
-                    <p class="saved-book-author">Physics Wallah</p>
-                    <div class="saved-book-progress">
-                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <div class="saved-book-meta">
-                        <span>EduSparK</span>
-                        <span>Page 550+</span>
-                    </div>
-                    <a href="/books/Lakchay-NEET" class="saved-book-view-btn">
-                        <i class="fas fa-eye"></i>
-                        View
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Saved Book 4 -->
-            <div class="saved-book-card">
-                <div class="saved-book-cover">
-                    <span class="saved-book-category">2025</span>
-                    <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/94e47ae5-37e2-4e11-989a-d8dea1bf8881.png" alt="Biology Textbook">
-                </div>
-                <div class="saved-book-details">
-                    <h3 class="saved-book-title">Lakchay JEE</h3>
-                    <p class="saved-book-author">Physics Wallah</p>
-                    <div class="saved-book-progress">
-                        <div class="saved-book-progress-bar" style="width: 100%;"></div>
-                    </div>
-                    <div class="saved-book-meta">
-                        <span>EduSparK</span>
-                        <span>Page 210+</span>
-                    </div>
-                    <a href="/books/Lakchay-JEE" class="saved-book-view-btn">
-                        <i class="fas fa-eye"></i>
-                        View
-                    </a>
-                </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>No Messages Yet</h3>
+                <p>Start the conversation with the community!</p>
             </div>
         </div>
-    </section>
-
-    <!-- Books Library -->
-    <main class="library-container">
-        <h1 class="section-title">All Books</h1>
         
-        <div class="books-grid">
-            <!-- Book 1 -->
-            <div class="book-card" style="--order: 1;">
-                <div class="book-cover">
-                    <span class="book-category">JEE</span>
-                    <img src="https://m.media-amazon.com/images/I/71TwNgz1CHL._AC_SL1500_.jpg" alt="Physics Textbook">
-                </div>
-                <div class="book-details">
-                    <h3 class="book-title">Arihant JEE PYQ's 20 Years</h3>
-                    <p class="book-author">Arihant</p>
-                    <div class="book-meta">
-                        <span>Grade: 11th</span>
-                        <span>PDF</span>
-                    </div>
-                    <a href="/books/arjuna-neet" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        View
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Book 2 -->
-            <div class="book-card" style="--order: 2;">
-                <div class="book-cover">
-                    <span class="book-category">Class 11th</span>
-                    <img src="https://m.media-amazon.com/images/I/71PvmXosgCL._AC_UF1000,1000_QL80_FMwebp_.jpg" alt="Physics Textbook">
-                </div>
-                <div class="book-details">
-                    <h3 class="book-title">Rd Sharma Class 11th</h3>
-                    <p class="book-author">Rd Sharma</p>
-                    <div class="book-meta">
-                        <span>Grade: 11th</span>
-                        <span>PDF</span>
-                    </div>
-                    <a href="/books/concepts-physics" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        View
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Book 3 -->
-            <div class="book-card" style="--order: 3;">
-                <div class="book-cover">
-                    <span class="book-category">IIT - JEE</span>
-                    <img src="https://m.media-amazon.com/images/I/61V8OaIMjWL._AC_UF1000,1000_QL80_FMwebp_.jpg" alt="Chemistry Textbook">
-                </div>
-                <div class="book-details">
-                    <h3 class="book-title">Arihant 43 Years Pyq's</h3>
-                    <p class="book-author">Morrison & Boyd</p>
-                    <div class="book-meta">
-                        <span>Grade: 12th</span>
-                        <span>PDF</span>
-                    </div>
-                    <a href="/books/organic-chemistry" class="download-btn">
-                        <i class="fas fa-download"></i>
-                        View
-                    </a>
-                </div>
-            </div>
+        <div class="typing-indicator" id="typingIndicator">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
-    </main>
-
-    <!-- Floating Action Button -->
-    <div class="fab">
-        <i class="fas fa-plus"></i>
+        
+        <div class="chat-input-container">
+            <textarea id="chatInput" class="chat-input" placeholder="Type your message..." rows="1"></textarea>
+            <button class="send-btn" id="sendMessageBtn" disabled>
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
     </div>
 
+    <!-- Add Book Modal -->
+    <div class="modal" id="addBookModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeAddBookModal">&times;</button>
+            <h2 class="modal-title">Add New Book</h2>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="bookName" class="form-label">Book Name</label>
+                    <input type="text" id="bookName" class="form-input" placeholder="Enter book name" required>
+                </div>
+              
+                <div class="form-group">
+                    <label for="authorName" class="form-label">Author Name</label>
+                    <input type="text" id="authorName" class="form-input" placeholder="Enter author name" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookCategory" class="form-label">Category</label>
+                    <input type="text" id="bookCategory" class="form-input" placeholder="Enter book category (e.g., Fiction, Science)" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookImageUrl" class="form-label">Cover Image URL (Optional)</label>
+                    <input type="url" id="bookImageUrl" class="form-input" placeholder="Enter image URL for book cover">
+                </div>
+                <div class="form-group">
+                    <label for="driveLink" class="form-label">Google Drive Link</label>
+                    <input type="url" id="driveLink" class="form-input" placeholder="Enter Google Drive link" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookDescription" class="form-label">Description (Optional)</label>
+                    <textarea id="bookDescription" class="form-input" placeholder="Enter a brief description about the book" rows="3"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBookBtn">
+                    <span class="spinner" id="submitSpinner" style="display: none;"></span>
+                    Submit for Approval
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeLoginModal">&times;</button>
+            <h2 class="modal-title">Login to EduSparK</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword" class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="submit-btn" id="loginBtn">
+                    <span class="spinner" id="loginSpinner" style="display: none;"></span>
+                    Login
+                </button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a id="switchToSignup">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeSignupModal">&times;</button>
+            <h2 class="modal-title">Create Account</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName" class="form-label">Full Name</label>
+                    <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupUsername" class="form-label">Username</label>
+                    <input type="text" id="signupUsername" class="form-input" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail" class="form-label">Email</label>
+                    <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword" class="form-label">Password</label>
+                    <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupBio" class="form-label">Bio (Optional)</label>
+                    <textarea id="signupBio" class="form-input" placeholder="Tell us about yourself" rows="3"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="signupBtn">
+                    <span class="spinner" id="signupSpinner" style="display: none;"></span>
+                    Sign Up
+                </button>
+            </form>
+            <div class="auth-switch">
+                Already have an account? <a id="switchToLogin">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeEditProfileModal">&times;</button>
+            <h2 class="modal-title">Edit Profile</h2>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="editProfileName" class="form-label">Full Name</label>
+                    <input type="text" id="editProfileName" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProfileUsername" class="form-label">Username</label>
+                    <input type="text" id="editProfileUsername" class="form-input" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProfileBio" class="form-label">Bio</label>
+                    <textarea id="editProfileBio" class="form-input" placeholder="Tell us about yourself" rows="3"></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="saveProfileBtn">
+                    <span class="spinner" id="saveProfileSpinner" style="display: none;"></span>
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Discover Modal -->
+    <div class="modal" id="discoverModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeDiscoverModal">&times;</button>
+            <h2 class="modal-title">Discover</h2>
+            <div class="discover-list" id="discoverList">
+                <div class="discover-item">
+                    <div class="discover-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="discover-content">
+                        <div class="discover-title">Featured Books</div>
+                        <div class="discover-description">Explore our curated collection of featured books</div>
+                    </div>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="discover-content">
+                        <div class="discover-title">Top Contributors</div>
+                        <div class="discover-description">See who's sharing the most books</div>
+                    </div>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="discover-content">
+                        <div class="discover-title">Popular This Week</div>
+                        <div class="discover-description">Most downloaded books this week</div>
+                    </div>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="discover-content">
+                        <div class="discover-title">New Releases</div>
+                        <div class="discover-description">Recently added books to the platform</div>
+                    </div>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="discover-content">
+                        <div class="discover-title">Educational Resources</div>
+                        <div class="discover-description">Textbooks and academic materials</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Menu Toggle
-        const menuBtn = document.querySelector('.menu-btn');
-        const navMenu = document.querySelector('.nav-menu');
-
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
-                menuBtn.classList.remove('active');
-                navMenu.classList.remove('active');
-            }
-        });
-
-        // Search functionality
-        document.querySelector('.search-input').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const books = document.querySelectorAll('.book-card, .saved-book-card');
-            
-            books.forEach(book => {
-                const title = book.querySelector('.book-title, .saved-book-title').textContent.toLowerCase();
-                const author = book.querySelector('.book-author, .saved-book-author').textContent.toLowerCase();
-                const category = book.querySelector('.book-category, .saved-book-category')?.textContent.toLowerCase() || '';
-                
-                if (title.includes(searchTerm) || author.includes(searchTerm) || category.includes(searchTerm)) {
-                    book.style.display = 'flex';
-                } else {
-                    book.style.display = 'none';
-                }
-            });
-        });
-
-        // Header scroll effect
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            const searchContainer = document.querySelector('.search-container');
-            
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-                searchContainer.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-                searchContainer.classList.remove('scrolled');
-            }
-        });
-
-        // Animate book cards on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.book-card').forEach(card => {
-            observer.observe(card);
-        });
-
-        // Floating action button click
-        document.querySelector('.fab').addEventListener('click', function() {
-            alert('This Feature is Coming Soon!');
-        });
+       const _0x12b89f=_0x34b9;function _0x3bf5(){const _0x28e3d2=['</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','<p\x20class=\x22book-overlay-desc\x22>','getItem','sending','chatBtn','clientHeight','block','.download-btn,\x20.book-overlay-btn','Anonymous','addBookBtn','Please\x20login\x20to\x20add\x20books','G-G6JHCMYZ0X','focus','profileBackBtn','toLowerCase','description','No\x20Name','Please\x20provide\x20a\x20valid\x20Google\x20Drive\x20link','typing','book-card','preventDefault','keydown','fontSize','auth','<div\x20class=\x22book-admin-info\x22><i\x20class=\x22fas\x20fa-user-shield\x22></i>\x20Reviewed\x20by\x20','</p>','initializeApp','var(--text-light)','pending','.theme-toggle','1:977405961718:web:4f9d16cf0a44e1f54e93d7','type','fas\x20fa-search','hidden','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span><i\x20class=\x22fas\x20fa-download\x22></i>\x20','24done=','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-external-link-alt\x22></i>\x20View\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','createUserWithEmailAndPassword','1.2rem','scrollHeight','scrollTop','signInWithEmailAndPassword','.modal','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22download-btn\x22\x20data-link=\x22','set','memberSince','Error\x20fetching\x20user\x20books:','141354aMgLwP','where','<span\x20class=\x22status-badge\x20status-rejected\x22>Rejected</span>','classList','limit','FieldValue','34187186uyBWSn','Book\x20submitted\x20for\x20approval!','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span></span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span></span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span></span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','<span\x20class=\x22status-badge\x20status-pending\x22>Pending</span>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22book-img-container\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22message-content\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','getAttribute','drive.google.com','profilePage','getElementById','cookie','@username','books','switchToSignup','success','toDate','\x22\x20alt=\x22','storage','map','72done=','desc','loginPassword','signupName','className','email','orderBy','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-download\x22></i>\x20Download\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','2-digit','username','search-result-item','authorName','height','setAttribute','innerWidth','key','push','scrolled','style','forEach','.header-actions','signupBtn','div','Login\x20error:','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22toast-close\x22>&times;</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span><i\x20class=\x22fas\x20fa-calendar-alt\x22></i>\x20','highlight','data','fa-info-circle','loginModal','Login\x20failed:\x20','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-external-link-alt\x22></i>\x20View\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','ease-in-out','theme','Error\x20updating\x20profile:\x20','querySelectorAll','auto','addEventListener','profileUsername','users','downloads','https://via.placeholder.com/300x200?text=No+Cover','increment','Error:\x20','message\x20','closeDiscoverModal','editProfileUsername','target','signupUsername','addBookForm','overflow','avatarInitials','approved','closeAddBookModal','<span\x20class=\x22status-badge\x20status-approved\x22>Approved</span>','eduspark-books.firebasestorage.app','message','Rejected\x20by\x20','editProfileBtn','name','body','getDate','exists','booksDownloaded','delivered','searchResults','...','toast\x20','126XqWiCe','966979TQQrKD','emptyState','textContent','submitSpinner','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','Logged\x20out\x20successfully','_blank','firestore','click','closeEditProfileModal','onAuthStateChanged','center','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22book-overlay-btn\x22\x20data-link=\x22','update','Approved\x20by\x20','includes','<div\x20class=\x22no-results\x22>No\x20books\x20found\x20matching\x20your\x20search</div>','scroll','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h4>','userAvatar','Hello\x20World!','fa-search','reviewedBy','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22book-overlay-author\x22>By\x20','booksShared','searchInput','signOut','serverTimestamp','error','filter','scrollTo','received','color','show','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','pointer','submit','querySelector','No\x20bio\x20available.\x20Edit\x20your\x20profile\x20to\x20add\x20one.','senderName','rejected','Profile\x20updated\x20successfully!','<i\x20class=\x22fas\x20fa-envelope\x22></i>\x20','log','trim','821840wayMVf','</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22book-author\x22>By\x20','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','join','category','active','399VpAFHy','editProfileName','\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span>','\x20on\x20','toString','fa-exclamation-circle','submitBookBtn','data-id','innerHTML','smooth','data-theme','children','warning','</div>','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','4lhmmYU','typingIndicator','logoLink','Error\x20updating\x20profile:','value','editProfileModal','11187328Uttmkj','user','48done=','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22empty-state\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-book\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3>No\x20Books\x20Shared\x20Yet</h3>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>Start\x20sharing\x20books\x20with\x20the\x20community!</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','discoverModal','<div\x20class=\x22message-sender\x22>','https://eduspark-books-default-rtdb.asia-southeast1.firebasedatabase.app','Error\x20sending\x20message:','bookName','bookImageUrl','977405961718','editProfileBio','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22book-meta\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span><i\x20class=\x22fas\x20fa-calendar-alt\x22></i>\x20','add','profileBtn','get','Error\x20fetching\x20books:','animationDelay','submittedAt','contains','loginEmail','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22book-meta\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span><i\x20class=\x22fas\x20fa-user\x22></i>\x20','10px','chatBackBtn','messages','signupPassword','href','reset','closest','Error\x20adding\x20book:','bio','collection','reviewedAt','.toast-close','toLocaleTimeString','.header','slice','temp-','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','driveLink','inline-block','profileEmail','profileAvatarInitials','display','saveProfileSpinner','now','insertBefore','setItem','addBookModal','.message-status','User','closeLoginModal','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22book-info\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22book-title\x22>','onSnapshot','signupForm','length','disabled','Logged\x20in\x20successfully!','remove','326616wPEIAW','editProfileForm','createElement','logoutBtn','submittedByName','none','3AxEQlJ','signupBio','createdAt','profileAvatar','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22message-time\x22>','imageUrl','doc','currentTarget','loginForm','saveProfileBtn','uid','discoverList','light','chatInput','status','eduspark-books.firebaseapp.com','switchToLogin','chatMessages','getMonth','docChanges','closeSignupModal','modified','location','added','appendChild','24IYnFxg','data-link','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22fas\x20fa-download\x22></i>\x20Download\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','/login','\x22\x20class=\x22book-img\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22book-overlay\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h3\x20class=\x22book-overlay-title\x22>','profileBooksContainer','input','padStart','sent','6430495zsMPqH','senderId','Signup\x20error:'];_0x3bf5=function(){return _0x28e3d2;};return _0x3bf5();}(function(_0x178019,_0x4d09c9){const _0x15f997=_0x34b9,_0x12b756=_0x178019();while(!![]){try{const _0x32238a=-parseInt(_0x15f997(0x160))/0x1*(-parseInt(_0x15f997(0x1a3))/0x2)+-parseInt(_0x15f997(0xae))/0x3*(-parseInt(_0x15f997(0xa8))/0x4)+parseInt(_0x15f997(0xd0))/0x5+-parseInt(_0x15f997(0x102))/0x6*(-parseInt(_0x15f997(0x194))/0x7)+parseInt(_0x15f997(0x1a9))/0x8+parseInt(_0x15f997(0x15f))/0x9*(parseInt(_0x15f997(0x18e))/0xa)+parseInt(_0x15f997(0x108))/0xb*(-parseInt(_0x15f997(0xc7))/0xc);if(_0x32238a===_0x4d09c9)break;else _0x12b756['push'](_0x12b756['shift']());}catch(_0x1dba07){_0x12b756['push'](_0x12b756['shift']());}}}(_0x3bf5,0xeeb32));function hi(){const _0x53fa46=_0x34b9;console[_0x53fa46(0x18c)](_0x53fa46(0x175));}hi(),AOS['init']({'duration':0x320,'easing':_0x12b89f(0x13b),'once':!![],'offset':0x64});function _0x34b9(_0x2af866,_0x43465b){const _0x3bf546=_0x3bf5();return _0x34b9=function(_0x34b936,_0xa34bab){_0x34b936=_0x34b936-0x96;let _0x372a09=_0x3bf546[_0x34b936];return _0x372a09;},_0x34b9(_0x2af866,_0x43465b);}const firebaseConfig={'apiKey':'AIzaSyASKb2xr27kjYokZICpIbBYULWsRdmBzI0','authDomain':_0x12b89f(0xbd),'databaseURL':_0x12b89f(0x1af),'projectId':'eduspark-books','storageBucket':_0x12b89f(0x152),'messagingSenderId':_0x12b89f(0x1b3),'appId':_0x12b89f(0xf1),'measurementId':_0x12b89f(0xde)};firebase[_0x12b89f(0xed)](firebaseConfig);const auth=firebase[_0x12b89f(0xea)](),db=firebase['firestore'](),storage=firebase[_0x12b89f(0x119)](),themeToggle=document[_0x12b89f(0x186)](_0x12b89f(0xf0)),body=document[_0x12b89f(0x157)],header=document['querySelector'](_0x12b89f(0x1cc)),logoLink=document[_0x12b89f(0x111)](_0x12b89f(0x1a5)),userAvatar=document['getElementById'](_0x12b89f(0x174)),avatarInitials=document[_0x12b89f(0x111)](_0x12b89f(0x14e)),searchContainer=document['getElementById']('searchContainer'),searchInput=document[_0x12b89f(0x111)](_0x12b89f(0x17a)),searchResults=document[_0x12b89f(0x111)](_0x12b89f(0x15c)),addBookBtn=document[_0x12b89f(0x111)](_0x12b89f(0xdc)),addBookModal=document[_0x12b89f(0x111)](_0x12b89f(0x9d)),closeAddBookModal=document[_0x12b89f(0x111)](_0x12b89f(0x150)),addBookForm=document['getElementById'](_0x12b89f(0x14c)),booksContainer=document[_0x12b89f(0x111)]('booksContainer'),emptyState=document[_0x12b89f(0x111)](_0x12b89f(0x161)),profileBtn=document[_0x12b89f(0x111)](_0x12b89f(0x1b7)),profilePage=document[_0x12b89f(0x111)](_0x12b89f(0x110)),profileBackBtn=document[_0x12b89f(0x111)](_0x12b89f(0xe0)),chatBtn=document[_0x12b89f(0x111)](_0x12b89f(0xd7)),chatPage=document[_0x12b89f(0x111)]('chatPage'),chatBackBtn=document[_0x12b89f(0x111)](_0x12b89f(0x1c0)),chatMessages=document[_0x12b89f(0x111)](_0x12b89f(0xbf)),chatInput=document[_0x12b89f(0x111)](_0x12b89f(0xbb)),sendMessageBtn=document[_0x12b89f(0x111)]('sendMessageBtn'),typingIndicator=document[_0x12b89f(0x111)](_0x12b89f(0x1a4)),loginModal=document[_0x12b89f(0x111)](_0x12b89f(0x138)),signupModal=document[_0x12b89f(0x111)]('signupModal'),closeLoginModal=document[_0x12b89f(0x111)](_0x12b89f(0xa0)),closeSignupModal=document['getElementById'](_0x12b89f(0xc2)),loginForm=document[_0x12b89f(0x111)](_0x12b89f(0xb6)),signupForm=document[_0x12b89f(0x111)](_0x12b89f(0xa3)),switchToSignup=document[_0x12b89f(0x111)](_0x12b89f(0x115)),switchToLogin=document[_0x12b89f(0x111)](_0x12b89f(0xbe)),editProfileBtn=document[_0x12b89f(0x111)](_0x12b89f(0x155)),editProfileModal=document['getElementById'](_0x12b89f(0x1a8)),closeEditProfileModal=document['getElementById'](_0x12b89f(0x169)),editProfileForm=document['getElementById'](_0x12b89f(0xa9)),profileName=document[_0x12b89f(0x111)]('profileName'),profileUsername=document[_0x12b89f(0x111)](_0x12b89f(0x141)),profileEmail=document[_0x12b89f(0x111)](_0x12b89f(0x96)),profileBio=document[_0x12b89f(0x111)]('profileBio'),booksShared=document[_0x12b89f(0x111)](_0x12b89f(0x179)),booksDownloaded=document[_0x12b89f(0x111)]('booksDownloaded'),memberSince=document[_0x12b89f(0x111)](_0x12b89f(0x100)),profileBooksContainer=document[_0x12b89f(0x111)](_0x12b89f(0xcc)),discoverBtn=document[_0x12b89f(0x111)]('discoverBtn'),discoverModal=document[_0x12b89f(0x111)](_0x12b89f(0x1ad)),closeDiscoverModal=document[_0x12b89f(0x111)](_0x12b89f(0x148)),discoverList=document['getElementById'](_0x12b89f(0xb9)),logoutBtn=document['getElementById'](_0x12b89f(0xab)),profileAvatar=document[_0x12b89f(0x111)](_0x12b89f(0xb1)),profileAvatarInitials=document['getElementById'](_0x12b89f(0x97));let currentUser=null,userData=null,isTyping=![],typingTimeout=null,lastTypingTime=0x0,allBooks=[];window[_0x12b89f(0x140)](_0x12b89f(0x172),()=>{const _0x588c08=_0x12b89f;window['scrollY']>0x32?header['classList'][_0x588c08(0x1b6)](_0x588c08(0x12c)):header[_0x588c08(0x105)]['remove'](_0x588c08(0x12c));}),themeToggle[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{const _0x2fc5ae=_0x12b89f,_0x3e0fcb=body[_0x2fc5ae(0x10e)](_0x2fc5ae(0x19e)),_0x10ef48=_0x3e0fcb==='light'?'dark':_0x2fc5ae(0xba);body[_0x2fc5ae(0x128)](_0x2fc5ae(0x19e),_0x10ef48),localStorage[_0x2fc5ae(0x9c)](_0x2fc5ae(0x13c),_0x10ef48);});const savedTheme=localStorage[_0x12b89f(0xd5)](_0x12b89f(0x13c));savedTheme&&body[_0x12b89f(0x128)](_0x12b89f(0x19e),savedTheme);searchInput[_0x12b89f(0x140)](_0x12b89f(0xcd),function(){const _0x40ed71=_0x12b89f,_0x272818=this[_0x40ed71(0x1a7)][_0x40ed71(0x18d)]()[_0x40ed71(0xe1)]();if(_0x272818[_0x40ed71(0xa4)]===0x0){searchResults[_0x40ed71(0x12d)][_0x40ed71(0x98)]='none';return;}const _0x5affc0=allBooks[_0x40ed71(0x17e)](_0x1b6624=>_0x1b6624[_0x40ed71(0x1b1)][_0x40ed71(0xe1)]()['includes'](_0x272818)||_0x1b6624[_0x40ed71(0x126)]['toLowerCase']()['includes'](_0x272818)||_0x1b6624[_0x40ed71(0x192)]&&_0x1b6624[_0x40ed71(0x192)]['toLowerCase']()[_0x40ed71(0x170)](_0x272818));renderSearchResults(_0x5affc0);});if(window[_0x12b89f(0x129)]<=0x240){const searchIcon=document[_0x12b89f(0xaa)]('i');searchIcon[_0x12b89f(0x11f)]=_0x12b89f(0xf3),searchIcon['style'][_0x12b89f(0xe9)]=_0x12b89f(0xf9),searchIcon[_0x12b89f(0x12d)][_0x12b89f(0x181)]=_0x12b89f(0xee),searchIcon[_0x12b89f(0x12d)]['cursor']=_0x12b89f(0x184),searchIcon[_0x12b89f(0x12d)]['marginLeft']=_0x12b89f(0x1bf),searchIcon[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{const _0x2f165d=_0x12b89f;searchContainer[_0x2f165d(0x12d)]['display']='block',searchInput[_0x2f165d(0xdf)]();}),document[_0x12b89f(0x186)](_0x12b89f(0x12f))[_0x12b89f(0x9b)](searchIcon,themeToggle),searchContainer[_0x12b89f(0x12d)][_0x12b89f(0x98)]=_0x12b89f(0xad);}function renderSearchResults(_0x84eb7){const _0x3a6bd3=_0x12b89f;searchResults[_0x3a6bd3(0x19c)]='';if(_0x84eb7[_0x3a6bd3(0xa4)]===0x0){searchResults[_0x3a6bd3(0x19c)]=_0x3a6bd3(0x171),searchResults[_0x3a6bd3(0x12d)][_0x3a6bd3(0x98)]=_0x3a6bd3(0xd9);return;}_0x84eb7[_0x3a6bd3(0x1cd)](0x0,0x5)[_0x3a6bd3(0x12e)](_0x4a89e5=>{const _0x3e0ac5=_0x3a6bd3,_0xe39dc9=document[_0x3e0ac5(0xaa)](_0x3e0ac5(0x131));_0xe39dc9['className']=_0x3e0ac5(0x125),_0xe39dc9[_0x3e0ac5(0x19c)]=_0x3e0ac5(0x173)+_0x4a89e5['bookName']+'</h4>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>By\x20'+_0x4a89e5[_0x3e0ac5(0x126)]+(_0x4a89e5[_0x3e0ac5(0x192)]?'\x20•\x20'+_0x4a89e5['category']:'')+_0x3e0ac5(0x190),_0xe39dc9[_0x3e0ac5(0x140)](_0x3e0ac5(0x168),()=>{const _0x43b3e8=_0x3e0ac5,_0x5e53e7=document['querySelector']('.book-card[data-id=\x22'+_0x4a89e5['id']+'\x22]');_0x5e53e7&&(_0x5e53e7['scrollIntoView']({'behavior':_0x43b3e8(0x19d),'block':_0x43b3e8(0x16b)}),_0x5e53e7[_0x43b3e8(0x105)][_0x43b3e8(0x1b6)](_0x43b3e8(0x135)),setTimeout(()=>{const _0x3fb592=_0x43b3e8;_0x5e53e7[_0x3fb592(0x105)][_0x3fb592(0xa7)](_0x3fb592(0x135));},0x7d0)),searchInput[_0x43b3e8(0x1a7)]='',searchResults[_0x43b3e8(0x12d)][_0x43b3e8(0x98)]=_0x43b3e8(0xad),window['innerWidth']<=0x240&&(searchContainer['style'][_0x43b3e8(0x98)]=_0x43b3e8(0xad));}),searchResults[_0x3e0ac5(0xc6)](_0xe39dc9);}),searchResults[_0x3a6bd3(0x12d)][_0x3a6bd3(0x98)]=_0x3a6bd3(0xd9);}document[_0x12b89f(0x140)]('click',_0x25f474=>{const _0x135996=_0x12b89f;!searchContainer[_0x135996(0x1bc)](_0x25f474['target'])&&_0x25f474['target']['className']!==_0x135996(0x176)&&(searchResults[_0x135996(0x12d)][_0x135996(0x98)]=_0x135996(0xad));});function openProfilePage(){const _0x497d09=_0x12b89f;profilePage[_0x497d09(0x105)][_0x497d09(0x1b6)](_0x497d09(0x193)),document[_0x497d09(0x157)][_0x497d09(0x12d)][_0x497d09(0x14d)]=_0x497d09(0xf4),fetchUserBooks();}function closeProfilePage(){const _0x133b11=_0x12b89f;profilePage['classList'][_0x133b11(0xa7)](_0x133b11(0x193)),document[_0x133b11(0x157)][_0x133b11(0x12d)][_0x133b11(0x14d)]=_0x133b11(0x13f);}function openChatPage(){const _0x8dbd69=_0x12b89f;chatPage[_0x8dbd69(0x105)][_0x8dbd69(0x1b6)](_0x8dbd69(0x193)),document[_0x8dbd69(0x157)][_0x8dbd69(0x12d)][_0x8dbd69(0x14d)]=_0x8dbd69(0xf4),chatInput['focus']();}function closeChatPage(){const _0x3e569b=_0x12b89f;chatPage['classList']['remove'](_0x3e569b(0x193)),document['body'][_0x3e569b(0x12d)][_0x3e569b(0x14d)]=_0x3e569b(0x13f);}profileBtn[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{if(!currentUser){openModal(loginModal);return;}openProfilePage();}),profileBackBtn['addEventListener'](_0x12b89f(0x168),closeProfilePage),chatBtn['addEventListener'](_0x12b89f(0x168),()=>{if(!currentUser){openModal(loginModal);return;}openChatPage();}),chatBackBtn[_0x12b89f(0x140)](_0x12b89f(0x168),closeChatPage),userAvatar[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{if(!currentUser){openModal(loginModal);return;}openProfilePage();}),logoLink[_0x12b89f(0x140)]('click',_0x2685e4=>{const _0x3c6639=_0x12b89f;_0x2685e4[_0x3c6639(0xe7)](),window[_0x3c6639(0x17f)]({'top':0x0,'behavior':_0x3c6639(0x19d)});});function openModal(_0xa28c57){const _0x213538=_0x12b89f;_0xa28c57['classList'][_0x213538(0x1b6)](_0x213538(0x193)),document[_0x213538(0x157)]['style'][_0x213538(0x14d)]=_0x213538(0xf4);}function closeModal(_0x415f62){const _0x5f135c=_0x12b89f;_0x415f62['classList']['remove'](_0x5f135c(0x193)),document[_0x5f135c(0x157)][_0x5f135c(0x12d)][_0x5f135c(0x14d)]=_0x5f135c(0x13f);}addBookBtn[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{const _0x157398=_0x12b89f;if(!currentUser){openModal(loginModal);return;}addBookForm[_0x157398(0x1c4)](),openModal(addBookModal);}),closeAddBookModal[_0x12b89f(0x140)](_0x12b89f(0x168),()=>closeModal(addBookModal)),closeLoginModal['addEventListener'](_0x12b89f(0x168),()=>closeModal(loginModal)),closeSignupModal['addEventListener']('click',()=>closeModal(signupModal)),switchToSignup['addEventListener'](_0x12b89f(0x168),()=>{closeModal(loginModal),openModal(signupModal);}),switchToLogin[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{closeModal(signupModal),openModal(loginModal);}),editProfileBtn[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{const _0x25bce5=_0x12b89f;closeProfilePage(),openModal(editProfileModal),document[_0x25bce5(0x111)]('editProfileName')[_0x25bce5(0x1a7)]=userData?.[_0x25bce5(0x156)]||'',document[_0x25bce5(0x111)]('editProfileUsername')[_0x25bce5(0x1a7)]=userData?.[_0x25bce5(0x124)]||'',document[_0x25bce5(0x111)](_0x25bce5(0x1b4))['value']=userData?.[_0x25bce5(0x1c7)]||'';}),closeEditProfileModal['addEventListener']('click',()=>{closeModal(editProfileModal),openProfilePage();}),discoverBtn[_0x12b89f(0x140)](_0x12b89f(0x168),()=>{if(!currentUser){openModal(loginModal);return;}openModal(discoverModal);}),closeDiscoverModal[_0x12b89f(0x140)]('click',()=>closeModal(discoverModal)),document[_0x12b89f(0x13e)](_0x12b89f(0xfd))[_0x12b89f(0x12e)](_0x42c910=>{const _0x158a02=_0x12b89f;_0x42c910[_0x158a02(0x140)]('click',_0x175ee1=>{const _0x13a1db=_0x158a02;_0x175ee1[_0x13a1db(0x14a)]===_0x42c910&&closeModal(_0x42c910);});}),chatInput[_0x12b89f(0x140)]('input',function(){const _0x4c8c5c=_0x12b89f;this['style']['height']='auto',this[_0x4c8c5c(0x12d)][_0x4c8c5c(0x127)]=this[_0x4c8c5c(0xfa)]+'px',sendMessageBtn['disabled']=this['value']['trim']()==='';}),addBookForm[_0x12b89f(0x140)]('submit',async _0x30c225=>{const _0x3fb407=_0x12b89f;_0x30c225[_0x3fb407(0xe7)]();if(!currentUser){showToast(_0x3fb407(0xdd),_0x3fb407(0x17d));return;}const _0x58bb1f=document[_0x3fb407(0x111)](_0x3fb407(0x19a)),_0xb77626=document['getElementById'](_0x3fb407(0x163));_0x58bb1f[_0x3fb407(0xa5)]=!![],_0xb77626[_0x3fb407(0x12d)][_0x3fb407(0x98)]=_0x3fb407(0x1d1);const _0x595ac0=document[_0x3fb407(0x111)](_0x3fb407(0x1b1))[_0x3fb407(0x1a7)],_0x3961c1=document[_0x3fb407(0x111)]('authorName')['value'],_0x50dbcd=document[_0x3fb407(0x111)]('bookCategory')[_0x3fb407(0x1a7)],_0x11fb0e=document[_0x3fb407(0x111)](_0x3fb407(0x1b2))[_0x3fb407(0x1a7)],_0x87f2cb=document['getElementById'](_0x3fb407(0x1d0))[_0x3fb407(0x1a7)],_0x5b74a1=document[_0x3fb407(0x111)]('bookDescription')['value'];try{if(!_0x87f2cb[_0x3fb407(0x170)](_0x3fb407(0x10f)))throw new Error(_0x3fb407(0xe4));await db[_0x3fb407(0x1c8)]('books')[_0x3fb407(0x1b6)]({'bookName':_0x595ac0,'authorName':_0x3961c1,'category':_0x50dbcd,'imageUrl':_0x11fb0e||null,'description':_0x5b74a1,'driveLink':_0x87f2cb,'submittedBy':currentUser[_0x3fb407(0xb8)],'submittedByName':userData?.['name']||_0x3fb407(0xdb),'submittedAt':firebase[_0x3fb407(0x167)]['FieldValue'][_0x3fb407(0x17c)](),'status':_0x3fb407(0xef),'adminNotes':'','reviewedBy':'','reviewedAt':null,'rejectionReason':'','downloads':0x0}),showToast(_0x3fb407(0x109),_0x3fb407(0x116)),addBookForm[_0x3fb407(0x1c4)](),closeModal(addBookModal);}catch(_0x353a35){console[_0x3fb407(0x17d)](_0x3fb407(0x1c6),_0x353a35),showToast(_0x3fb407(0x146)+_0x353a35[_0x3fb407(0x153)],_0x3fb407(0x17d));}finally{_0x58bb1f[_0x3fb407(0xa5)]=![],_0xb77626[_0x3fb407(0x12d)]['display']='none';}});function showToast(_0x46a82a,_0x1323b2='info'){const _0x232897=_0x12b89f,_0x423b95=document[_0x232897(0xaa)](_0x232897(0x131));_0x423b95['className']=_0x232897(0x15e)+_0x1323b2;let _0xd4b8a5='';switch(_0x1323b2){case _0x232897(0x116):_0xd4b8a5='fa-check-circle';break;case'error':_0xd4b8a5=_0x232897(0x199);break;case _0x232897(0x1a0):_0xd4b8a5='fa-exclamation-triangle';break;default:_0xd4b8a5=_0x232897(0x137);}_0x423b95[_0x232897(0x19c)]=_0x232897(0x16c)+_0xd4b8a5+_0x232897(0x196)+_0x46a82a+_0x232897(0x133);const _0x32ccde=_0x423b95[_0x232897(0x186)](_0x232897(0x1ca));_0x32ccde['addEventListener'](_0x232897(0x168),()=>{_0x423b95['remove']();}),document[_0x232897(0x157)][_0x232897(0xc6)](_0x423b95),setTimeout(()=>{const _0x541994=_0x232897;_0x423b95[_0x541994(0x105)][_0x541994(0x1b6)](_0x541994(0x182));},0xa),setTimeout(()=>{const _0x5332ab=_0x232897;_0x423b95[_0x5332ab(0x105)][_0x5332ab(0xa7)]('show'),setTimeout(()=>{const _0x1979e5=_0x5332ab;_0x423b95[_0x1979e5(0xa7)]();},0x12c);},0x1388);}loginForm['addEventListener'](_0x12b89f(0x185),async _0x33ba26=>{const _0x792fe1=_0x12b89f;_0x33ba26[_0x792fe1(0xe7)]();const _0x22e71e=document[_0x792fe1(0x111)]('loginBtn'),_0x331987=document[_0x792fe1(0x111)]('loginSpinner');_0x22e71e[_0x792fe1(0xa5)]=!![],_0x331987['style'][_0x792fe1(0x98)]='inline-block';const _0x33b6f4=document[_0x792fe1(0x111)](_0x792fe1(0x1bd))[_0x792fe1(0x1a7)],_0x466454=document[_0x792fe1(0x111)](_0x792fe1(0x11d))[_0x792fe1(0x1a7)];try{await auth[_0x792fe1(0xfc)](_0x33b6f4,_0x466454),closeModal(loginModal),showToast(_0x792fe1(0xa6),_0x792fe1(0x116));}catch(_0xd43ace){console[_0x792fe1(0x17d)](_0x792fe1(0x132),_0xd43ace),showToast(_0x792fe1(0x139)+_0xd43ace[_0x792fe1(0x153)],'error');}finally{_0x22e71e[_0x792fe1(0xa5)]=![],_0x331987['style'][_0x792fe1(0x98)]=_0x792fe1(0xad);}}),signupForm[_0x12b89f(0x140)](_0x12b89f(0x185),async _0x158335=>{const _0x399ad3=_0x12b89f;_0x158335[_0x399ad3(0xe7)]();const _0x13e133=document['getElementById'](_0x399ad3(0x130)),_0x46bb23=document['getElementById']('signupSpinner');_0x13e133[_0x399ad3(0xa5)]=!![],_0x46bb23['style']['display']=_0x399ad3(0x1d1);const _0x3dc013=document[_0x399ad3(0x111)](_0x399ad3(0x11e))[_0x399ad3(0x1a7)],_0x5a3edc=document[_0x399ad3(0x111)](_0x399ad3(0x14b))['value'],_0x5075fd=document[_0x399ad3(0x111)]('signupEmail')[_0x399ad3(0x1a7)],_0x13543b=document[_0x399ad3(0x111)](_0x399ad3(0x1c2))[_0x399ad3(0x1a7)],_0x707744=document[_0x399ad3(0x111)](_0x399ad3(0xaf))[_0x399ad3(0x1a7)];try{const _0x1a07ef=await auth[_0x399ad3(0xf8)](_0x5075fd,_0x13543b);await db[_0x399ad3(0x1c8)]('users')['doc'](_0x1a07ef[_0x399ad3(0x1aa)]['uid'])[_0x399ad3(0xff)]({'name':_0x3dc013,'username':_0x5a3edc,'email':_0x5075fd,'bio':_0x707744,'createdAt':firebase['firestore'][_0x399ad3(0x107)][_0x399ad3(0x17c)](),'booksShared':0x0,'booksDownloaded':0x0,'role':_0x399ad3(0x1aa),'lastActive':firebase[_0x399ad3(0x167)][_0x399ad3(0x107)][_0x399ad3(0x17c)](),'status':_0x399ad3(0x193)}),closeModal(signupModal),showToast('Account\x20created\x20successfully!',_0x399ad3(0x116));}catch(_0x28d95b){console[_0x399ad3(0x17d)](_0x399ad3(0xd2),_0x28d95b),showToast('Signup\x20failed:\x20'+_0x28d95b[_0x399ad3(0x153)],'error');}finally{_0x13e133['disabled']=![],_0x46bb23[_0x399ad3(0x12d)]['display']='none';}}),editProfileForm[_0x12b89f(0x140)]('submit',async _0x56339a=>{const _0x5f500f=_0x12b89f;_0x56339a[_0x5f500f(0xe7)]();if(!currentUser)return;const _0x3d75f4=document[_0x5f500f(0x111)](_0x5f500f(0xb7)),_0x4ca9f7=document[_0x5f500f(0x111)](_0x5f500f(0x99));_0x3d75f4[_0x5f500f(0xa5)]=!![],_0x4ca9f7[_0x5f500f(0x12d)]['display']=_0x5f500f(0x1d1);const _0x3bcfcf=document['getElementById'](_0x5f500f(0x195))['value'],_0x349507=document['getElementById'](_0x5f500f(0x149))[_0x5f500f(0x1a7)],_0x51ba77=document[_0x5f500f(0x111)]('editProfileBio')[_0x5f500f(0x1a7)];try{const _0x2c86ea={'name':_0x3bcfcf,'username':_0x349507,'bio':_0x51ba77,'updatedAt':firebase[_0x5f500f(0x167)][_0x5f500f(0x107)][_0x5f500f(0x17c)]()};await db['collection'](_0x5f500f(0x142))['doc'](currentUser[_0x5f500f(0xb8)])[_0x5f500f(0x16e)](_0x2c86ea),userData={...userData,..._0x2c86ea},updateProfileUI(),closeModal(editProfileModal),openProfilePage(),showToast(_0x5f500f(0x18a),'success');}catch(_0x21a717){console[_0x5f500f(0x17d)](_0x5f500f(0x1a6),_0x21a717),showToast(_0x5f500f(0x13d)+_0x21a717['message'],_0x5f500f(0x17d));}finally{_0x3d75f4['disabled']=![],_0x4ca9f7[_0x5f500f(0x12d)][_0x5f500f(0x98)]=_0x5f500f(0xad);}}),logoutBtn['addEventListener'](_0x12b89f(0x168),async()=>{const _0x7b63f2=_0x12b89f;try{await auth[_0x7b63f2(0x17b)](),closeProfilePage(),showToast(_0x7b63f2(0x165),'success');}catch(_0x25bb2a){console['error']('Logout\x20error:',_0x25bb2a),showToast('Error\x20logging\x20out',_0x7b63f2(0x17d));}});function updateTyping(){const _0x4c6048=_0x12b89f;if(!currentUser)return;!isTyping&&(isTyping=!![],db[_0x4c6048(0x1c8)](_0x4c6048(0xe5))[_0x4c6048(0xb4)](currentUser['uid'])['set']({'userId':currentUser[_0x4c6048(0xb8)],'userName':userData?.[_0x4c6048(0x156)]||_0x4c6048(0xdb),'typing':!![],'timestamp':firebase[_0x4c6048(0x167)][_0x4c6048(0x107)][_0x4c6048(0x17c)]()})),lastTypingTime=Date['now'](),typingTimeout&&clearTimeout(typingTimeout),typingTimeout=setTimeout(()=>{const _0x2336d8=_0x4c6048,_0x35f457=Date['now'](),_0x4e4f80=_0x35f457-lastTypingTime;_0x4e4f80>=0x7d0&&isTyping&&(db[_0x2336d8(0x1c8)]('typing')[_0x2336d8(0xb4)](currentUser[_0x2336d8(0xb8)])[_0x2336d8(0xff)]({'userId':currentUser[_0x2336d8(0xb8)],'userName':userData?.[_0x2336d8(0x156)]||_0x2336d8(0xdb),'typing':![],'timestamp':firebase['firestore']['FieldValue']['serverTimestamp']()},{'merge':!![]}),isTyping=![]);},0x7d0);}function setupTypingListener(){const _0x9ff317=_0x12b89f;db[_0x9ff317(0x1c8)](_0x9ff317(0xe5))[_0x9ff317(0x103)](_0x9ff317(0xe5),'==',!![])['onSnapshot'](_0x10dbf5=>{const _0x524c4e=_0x9ff317,_0x5837f9=[];_0x10dbf5['forEach'](_0x35d152=>{const _0x27eef=_0x34b9;_0x35d152[_0x27eef(0x136)]()['userId']!==currentUser[_0x27eef(0xb8)]&&_0x5837f9['push'](_0x35d152[_0x27eef(0x136)]());}),_0x5837f9[_0x524c4e(0xa4)]>0x0?(typingIndicator[_0x524c4e(0x105)][_0x524c4e(0x1b6)](_0x524c4e(0x193)),typingIndicator['innerHTML']=_0x524c4e(0x10a)+_0x5837f9[0x0]['userName']+'\x20is\x20typing...\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'):typingIndicator[_0x524c4e(0x105)][_0x524c4e(0xa7)](_0x524c4e(0x193));});}sendMessageBtn[_0x12b89f(0x140)]('click',async()=>{const _0x31b0db=_0x12b89f,_0x526fec=chatInput['value'][_0x31b0db(0x18d)]();if(!_0x526fec||!currentUser)return;const _0x101360=_0x31b0db(0x1ce)+Date[_0x31b0db(0x9a)](),_0x58e83d=createMessageElement({'id':_0x101360,'text':_0x526fec,'senderId':currentUser['uid'],'senderName':userData?.['name']||_0x31b0db(0xdb),'status':_0x31b0db(0xd6),'createdAt':new Date()});chatMessages[_0x31b0db(0xc6)](_0x58e83d),chatInput['value']='',chatInput[_0x31b0db(0x12d)][_0x31b0db(0x127)]=_0x31b0db(0x13f),sendMessageBtn['disabled']=!![],chatMessages[_0x31b0db(0xfb)]=chatMessages['scrollHeight'];try{const _0x46be7d=await db[_0x31b0db(0x1c8)]('messages')[_0x31b0db(0x1b6)]({'text':_0x526fec,'senderId':currentUser[_0x31b0db(0xb8)],'senderName':userData?.[_0x31b0db(0x156)]||_0x31b0db(0xdb),'createdAt':firebase[_0x31b0db(0x167)][_0x31b0db(0x107)][_0x31b0db(0x17c)](),'status':'sent'}),_0x39bd79=document['getElementById'](_0x101360);if(_0x39bd79){_0x39bd79['id']=_0x46be7d['id'];const _0x242ce2=_0x39bd79[_0x31b0db(0x186)](_0x31b0db(0x9e));_0x242ce2&&(_0x242ce2[_0x31b0db(0x162)]='✓',_0x242ce2[_0x31b0db(0x105)][_0x31b0db(0x1b6)]('sent'));}}catch(_0x398ac7){console[_0x31b0db(0x17d)](_0x31b0db(0x1b0),_0x398ac7);const _0x5ecb84=document[_0x31b0db(0x111)](_0x101360);_0x5ecb84&&(_0x5ecb84['querySelector'](_0x31b0db(0x9e))['textContent']='✕');}});function createMessageElement(_0x512f84){const _0x454828=_0x12b89f,_0x3e3359=_0x512f84[_0x454828(0xd1)]===currentUser?.[_0x454828(0xb8)],_0x236e9d=_0x512f84['createdAt']['toDate']?formatTime(_0x512f84[_0x454828(0xb0)]['toDate']()):formatTime(new Date(_0x512f84[_0x454828(0xb0)])),_0x1372c2=document[_0x454828(0xaa)](_0x454828(0x131));return _0x1372c2['className']=_0x454828(0x147)+(_0x3e3359?_0x454828(0xcf):_0x454828(0x180)),_0x1372c2['id']=_0x512f84['id'],_0x1372c2['innerHTML']=_0x454828(0x1a2)+(!_0x3e3359?_0x454828(0x1ae)+_0x512f84[_0x454828(0x188)]+'</div>':'')+_0x454828(0x10d)+_0x512f84['text']+_0x454828(0xb2)+_0x236e9d+_0x454828(0xd3)+(_0x3e3359?'<span\x20class=\x22message-status\x20'+(_0x512f84[_0x454828(0xbc)]||_0x454828(0xcf))+'\x22>'+(_0x512f84[_0x454828(0xbc)]===_0x454828(0xd6)?_0x454828(0x15d):'✓')+'</span>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x1372c2;}function formatTime(_0x1c0fb6){const _0x5bd6e5=_0x12b89f;return _0x1c0fb6[_0x5bd6e5(0x1cb)]([],{'hour':'2-digit','minute':_0x5bd6e5(0x123)});}chatInput[_0x12b89f(0x140)](_0x12b89f(0xe8),_0x1f2bb6=>{const _0x129e23=_0x12b89f;_0x1f2bb6[_0x129e23(0x12a)]==='Enter'&&!_0x1f2bb6['shiftKey']&&(_0x1f2bb6[_0x129e23(0xe7)](),sendMessageBtn[_0x129e23(0x168)]()),updateTyping();});function updateProfileUI(){const _0x41bb97=_0x12b89f;if(!currentUser||!userData){profileName[_0x41bb97(0x162)]=_0x41bb97(0x9f),profileUsername['textContent']=_0x41bb97(0x113),profileEmail['textContent']='user@example.com',profileBio['textContent']=_0x41bb97(0x187),booksShared['textContent']='0',booksDownloaded['textContent']='0',memberSince[_0x41bb97(0x162)]='-',avatarInitials['textContent']='U',profileAvatarInitials['textContent']='U';return;}profileName[_0x41bb97(0x162)]=userData[_0x41bb97(0x156)]||_0x41bb97(0xe3),profileUsername[_0x41bb97(0x162)]='@'+(userData['username']||_0x41bb97(0x1aa)),profileEmail['innerHTML']=_0x41bb97(0x18b)+currentUser[_0x41bb97(0x120)],profileBio[_0x41bb97(0x162)]=userData[_0x41bb97(0x1c7)]||_0x41bb97(0x187),booksShared[_0x41bb97(0x162)]=userData[_0x41bb97(0x179)]||'0',booksDownloaded[_0x41bb97(0x162)]=userData[_0x41bb97(0x15a)]||'0';const _0x4fa9fc=userData[_0x41bb97(0x156)]?userData[_0x41bb97(0x156)]['split']('\x20')[_0x41bb97(0x11a)](_0x560de8=>_0x560de8[0x0])[_0x41bb97(0x191)]('')['toUpperCase']():'U';avatarInitials[_0x41bb97(0x162)]=_0x4fa9fc,profileAvatarInitials[_0x41bb97(0x162)]=_0x4fa9fc;if(userData[_0x41bb97(0xb0)]){const _0x2ed06e=userData['createdAt'][_0x41bb97(0x117)]?userData[_0x41bb97(0xb0)][_0x41bb97(0x117)]():new Date(userData[_0x41bb97(0xb0)]);memberSince[_0x41bb97(0x162)]=_0x2ed06e['getFullYear']();}else memberSince[_0x41bb97(0x162)]='-';}function renderBooks(_0x405d0e){const _0x4c9383=_0x12b89f;allBooks=_0x405d0e;if(_0x405d0e[_0x4c9383(0xa4)]===0x0){emptyState[_0x4c9383(0x12d)][_0x4c9383(0x98)]=_0x4c9383(0xd9),booksContainer['innerHTML']='',booksContainer[_0x4c9383(0xc6)](emptyState);return;}emptyState[_0x4c9383(0x12d)][_0x4c9383(0x98)]=_0x4c9383(0xad),booksContainer['innerHTML']='',_0x405d0e[_0x4c9383(0x12e)]((_0x308165,_0xa2bf03)=>{const _0x24836f=_0x4c9383,_0x577acd=document[_0x24836f(0xaa)]('div');_0x577acd[_0x24836f(0x11f)]=_0x24836f(0xe6),_0x577acd['setAttribute'](_0x24836f(0x19b),_0x308165['id']),_0x577acd['style'][_0x24836f(0x1ba)]=_0xa2bf03*0.1+'s';let _0x83d932='';if(_0x308165[_0x24836f(0xbc)]===_0x24836f(0x14f)&&_0x308165['reviewedBy']&&_0x308165[_0x24836f(0x1c9)]){const _0xa80807=_0x308165['reviewedAt']['toDate']();_0x83d932=_0x24836f(0x16f)+_0x308165[_0x24836f(0x177)]+_0x24836f(0x197)+formatDate(_0xa80807);}else{if(_0x308165[_0x24836f(0xbc)]===_0x24836f(0x189)&&_0x308165[_0x24836f(0x177)]&&_0x308165[_0x24836f(0x1c9)]){const _0x8d411=_0x308165[_0x24836f(0x1c9)][_0x24836f(0x117)]();_0x83d932=_0x24836f(0x154)+_0x308165[_0x24836f(0x177)]+'\x20on\x20'+formatDate(_0x8d411);}}_0x577acd[_0x24836f(0x19c)]=_0x24836f(0x10c)+(_0x308165[_0x24836f(0xb3)]||_0x24836f(0x144))+'\x22\x20alt=\x22'+_0x308165['bookName']+_0x24836f(0xcb)+_0x308165[_0x24836f(0x1b1)]+_0x24836f(0x178)+_0x308165[_0x24836f(0x126)]+_0x24836f(0x183)+(_0x308165[_0x24836f(0xe2)]?_0x24836f(0xd4)+_0x308165['description']+'</p>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22book-overlay-btn\x22\x20data-link=\x22'+_0x308165[_0x24836f(0x1d0)]+_0x24836f(0xc9)+(_0x308165[_0x24836f(0xbc)]===_0x24836f(0xef)?_0x24836f(0x10b):'')+_0x24836f(0x1cf)+(_0x308165[_0x24836f(0xbc)]===_0x24836f(0x189)?_0x24836f(0x104):'')+_0x24836f(0x1cf)+(_0x308165[_0x24836f(0xbc)]===_0x24836f(0x14f)?_0x24836f(0x151):'')+_0x24836f(0xa1)+_0x308165['bookName']+_0x24836f(0x18f)+_0x308165['authorName']+_0x24836f(0x1be)+(_0x308165[_0x24836f(0xac)]||_0x24836f(0xdb))+_0x24836f(0x134)+(_0x308165[_0x24836f(0x1bb)]?formatDate(_0x308165[_0x24836f(0x1bb)][_0x24836f(0x117)]()):'N/A')+_0x24836f(0x164)+(_0x83d932?'<div\x20class=\x22book-admin-info\x22><i\x20class=\x22fas\x20fa-user-shield\x22></i>\x20'+_0x83d932+_0x24836f(0x1a1):'')+_0x24836f(0xfe)+_0x308165[_0x24836f(0x1d0)]+_0x24836f(0x122),booksContainer[_0x24836f(0xc6)](_0x577acd);}),document[_0x4c9383(0x13e)](_0x4c9383(0xda))[_0x4c9383(0x12e)](_0x439cb5=>{const _0x419161=_0x4c9383;_0x439cb5[_0x419161(0x140)]('click',_0x4b3443=>{const _0x769afb=_0x419161;if(!currentUser){openModal(loginModal);return;}const _0x3a56f9=_0x4b3443[_0x769afb(0xb5)][_0x769afb(0x10e)](_0x769afb(0xc8));window['open'](_0x3a56f9,'_blank');if(currentUser){db['collection']('users')[_0x769afb(0xb4)](currentUser[_0x769afb(0xb8)])['update']({'booksDownloaded':firebase[_0x769afb(0x167)][_0x769afb(0x107)][_0x769afb(0x145)](0x1)});const _0x2aa27d=_0x4b3443['currentTarget'][_0x769afb(0x1c5)]('.book-card')?.[_0x769afb(0x10e)](_0x769afb(0x19b));_0x2aa27d&&db[_0x769afb(0x1c8)](_0x769afb(0x114))['doc'](_0x2aa27d)[_0x769afb(0x16e)]({'downloads':firebase[_0x769afb(0x167)][_0x769afb(0x107)][_0x769afb(0x145)](0x1)});}});});}function renderUserBooks(_0x4a196e){const _0x122d8a=_0x12b89f;if(_0x4a196e['length']===0x0){profileBooksContainer['innerHTML']=_0x122d8a(0x1ac);return;}profileBooksContainer[_0x122d8a(0x19c)]='',_0x4a196e[_0x122d8a(0x12e)](_0x5e416e=>{const _0x5199f1=_0x122d8a,_0x4cf3aa=document[_0x5199f1(0xaa)](_0x5199f1(0x131));_0x4cf3aa['className']=_0x5199f1(0xe6),_0x4cf3aa[_0x5199f1(0x19c)]=_0x5199f1(0x10c)+(_0x5e416e['imageUrl']||_0x5199f1(0x144))+_0x5199f1(0x118)+_0x5e416e['bookName']+_0x5199f1(0xcb)+_0x5e416e[_0x5199f1(0x1b1)]+_0x5199f1(0x178)+_0x5e416e[_0x5199f1(0x126)]+_0x5199f1(0x183)+(_0x5e416e[_0x5199f1(0xe2)]?_0x5199f1(0xd4)+_0x5e416e[_0x5199f1(0xe2)]+_0x5199f1(0xec):'')+_0x5199f1(0x16d)+_0x5e416e['driveLink']+_0x5199f1(0xf7)+(_0x5e416e[_0x5199f1(0xbc)]==='pending'?_0x5199f1(0x10b):'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x5e416e[_0x5199f1(0xbc)]==='rejected'?_0x5199f1(0x104):'')+_0x5199f1(0x1cf)+(_0x5e416e['status']===_0x5199f1(0x14f)?_0x5199f1(0x151):'')+_0x5199f1(0xa1)+_0x5e416e[_0x5199f1(0x1b1)]+_0x5199f1(0x18f)+_0x5e416e[_0x5199f1(0x126)]+_0x5199f1(0x1b5)+(_0x5e416e['submittedAt']?formatDate(_0x5e416e['submittedAt'][_0x5199f1(0x117)]()):'Pending')+_0x5199f1(0xf5)+(_0x5e416e[_0x5199f1(0x143)]||0x0)+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(_0x5e416e[_0x5199f1(0x177)]?_0x5199f1(0xeb)+_0x5e416e[_0x5199f1(0x177)]+_0x5199f1(0x1a1):'')+_0x5199f1(0xfe)+_0x5e416e['driveLink']+_0x5199f1(0x13a),profileBooksContainer[_0x5199f1(0xc6)](_0x4cf3aa);}),document[_0x122d8a(0x13e)](_0x122d8a(0xda))[_0x122d8a(0x12e)](_0x190c0a=>{const _0xb99f47=_0x122d8a;_0x190c0a[_0xb99f47(0x140)](_0xb99f47(0x168),_0x246714=>{const _0x237c26=_0xb99f47,_0x351e0d=_0x246714[_0x237c26(0xb5)][_0x237c26(0x10e)]('data-link');window['open'](_0x351e0d,_0x237c26(0x166));});});}function fetchUserBooks(){const _0x47306a=_0x12b89f;if(!currentUser)return;db['collection'](_0x47306a(0x114))['where']('submittedBy','==',currentUser['uid'])[_0x47306a(0x121)](_0x47306a(0x1bb),'desc')[_0x47306a(0xa2)](_0x16d82d=>{const _0x191d89=_0x47306a,_0x1f472c=[];_0x16d82d[_0x191d89(0x12e)](_0x5c9c45=>{const _0x5e91b4=_0x191d89;_0x1f472c[_0x5e91b4(0x12b)]({'id':_0x5c9c45['id'],..._0x5c9c45['data']()});}),renderUserBooks(_0x1f472c);},_0x112675=>{const _0x250f40=_0x47306a;console[_0x250f40(0x17d)](_0x250f40(0x101),_0x112675);});}function formatDate(_0x22a6ed){const _0x5d4b4d=_0x12b89f,_0x172b48=_0x22a6ed[_0x5d4b4d(0x158)]()[_0x5d4b4d(0x198)]()[_0x5d4b4d(0xce)](0x2,'0'),_0x3d071a=(_0x22a6ed[_0x5d4b4d(0xc0)]()+0x1)['toString']()['padStart'](0x2,'0'),_0x32c025=_0x22a6ed['getFullYear']();return _0x172b48+'/'+_0x3d071a+'/'+_0x32c025;}function fetchBooks(){const _0x5a75ef=_0x12b89f;db['collection'](_0x5a75ef(0x114))[_0x5a75ef(0x103)]('status','==','approved')[_0x5a75ef(0x121)]('approvedAt',_0x5a75ef(0x11c))[_0x5a75ef(0xa2)](_0x579997=>{const _0x323445=_0x5a75ef,_0x196c08=[];_0x579997[_0x323445(0x12e)](_0x74895e=>{const _0x29c583=_0x323445;_0x196c08[_0x29c583(0x12b)]({'id':_0x74895e['id'],..._0x74895e['data']()});}),renderBooks(_0x196c08);},_0x10189e=>{const _0x388905=_0x5a75ef;console[_0x388905(0x17d)](_0x388905(0x1b9),_0x10189e);});}auth[_0x12b89f(0x16a)](async _0x57d202=>{const _0x45931a=_0x12b89f;currentUser=_0x57d202;if(_0x57d202){const _0x34b595=await db[_0x45931a(0x1c8)]('users')[_0x45931a(0xb4)](_0x57d202['uid'])[_0x45931a(0x1b8)]();userData=_0x34b595[_0x45931a(0x159)]?_0x34b595['data']():null,updateProfileUI(),fetchBooks(),setupTypingListener(),db['collection'](_0x45931a(0x1c1))['orderBy'](_0x45931a(0xb0))[_0x45931a(0x106)](0x32)[_0x45931a(0xa2)](_0x2a04e8=>{const _0x46ce85=_0x45931a;chatMessages[_0x46ce85(0x19f)][_0x46ce85(0xa4)]===0x0&&(chatMessages[_0x46ce85(0x19c)]=''),_0x2a04e8[_0x46ce85(0xc1)]()[_0x46ce85(0x12e)](_0x5b4ca4=>{const _0x24ba14=_0x46ce85;if(_0x5b4ca4[_0x24ba14(0xf2)]===_0x24ba14(0xc5)){const _0x297b4d=_0x5b4ca4[_0x24ba14(0xb4)][_0x24ba14(0x136)](),_0x4b0941=_0x297b4d[_0x24ba14(0xd1)]===_0x57d202[_0x24ba14(0xb8)];if(!document[_0x24ba14(0x111)](_0x5b4ca4[_0x24ba14(0xb4)]['id'])){const _0x2da604=createMessageElement({'id':_0x5b4ca4[_0x24ba14(0xb4)]['id'],..._0x297b4d});chatMessages[_0x24ba14(0xc6)](_0x2da604);const _0x91b005=chatMessages[_0x24ba14(0xfa)]-chatMessages[_0x24ba14(0xd8)]<=chatMessages[_0x24ba14(0xfb)]+0x32;(_0x91b005||_0x4b0941)&&setTimeout(()=>{const _0x3abb22=_0x24ba14;chatMessages['scrollTop']=chatMessages[_0x3abb22(0xfa)];},0x32);}}else{if(_0x5b4ca4[_0x24ba14(0xf2)]===_0x24ba14(0xc3)){const _0x20d277=document['getElementById'](_0x5b4ca4['doc']['id']);if(_0x20d277){const _0x9511aa=_0x20d277[_0x24ba14(0x186)](_0x24ba14(0x9e));_0x9511aa&&(_0x9511aa[_0x24ba14(0x162)]='✓✓',_0x9511aa['classList'][_0x24ba14(0x1b6)](_0x24ba14(0x15b)));}}}});}),db[_0x45931a(0x1c8)](_0x45931a(0x142))[_0x45931a(0xb4)](_0x57d202[_0x45931a(0xb8)])[_0x45931a(0x16e)]({'lastActive':firebase[_0x45931a(0x167)][_0x45931a(0x107)][_0x45931a(0x17c)]()});}else userData=null,updateProfileUI();}),fetchBooks();!document['cookie']['includes'](_0x12b89f(0xf6))&&!document[_0x12b89f(0x112)][_0x12b89f(0x170)](_0x12b89f(0x1ab))&&!document['cookie'][_0x12b89f(0x170)](_0x12b89f(0x11b))&&(window[_0x12b89f(0xc4)][_0x12b89f(0x1c3)]=_0x12b89f(0xca));
     </script>
 </body>
 </html>
