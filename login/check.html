@@ -257,15 +257,15 @@
     setTimeout(() => {
         if (getCookie('24key')) {
             deleteCookie('24key');
-            setSuccessCookie('24done', 24); // 24 hours
+            setSuccessCookie('24done', 6); // 24 hours
             window.location.href = "/courses";
         } else if (getCookie('24key')) {
             deleteCookie('48key');
-            setSuccessCookie('48done', 48); // 48 hours
+            setSuccessCookie('48done', 6); // 48 hours
             window.location.href = "/courses";
         } else if (getCookie('72key')) {
             deleteCookie('72key');
-            setSuccessCookie('72done', 72); // 72 hours
+            setSuccessCookie('72done', 6); // 72 hours
             window.location.href = "/courses";
         } else {
             window.location.href = "/login";
