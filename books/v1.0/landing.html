@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSparK - Ignite Your Learning Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #b0bec5; /* Slightly lighter muted text */
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --gradient-hover: linear-gradient(135deg, #ff6666, #ff3333);
+            --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.45);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+            --border-radius: 12px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --font-heading: 'Raleway', sans-serif;
+            --font-body: 'Nunito Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px; /* Base font size */
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        .landing-header {
+            background-color: rgba(12, 12, 12, 0.8); /* Darker, more subtle glass */
+            backdrop-filter: blur(18px) saturate(200%);
+            -webkit-backdrop-filter: blur(18px) saturate(200%);
+            padding: 18px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255, 51, 51, 0.15);
+            transition: padding 0.3s ease, background-color 0.3s ease;
+        }
+        .landing-header.scrolled {
+            padding: 12px 0;
+            background-color: rgba(12, 12, 12, 0.9);
+        }
+
+        .landing-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .landing-logo {
+            font-family: var(--font-heading);
+            font-size: 2rem; /* Slightly larger logo */
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        .landing-logo:hover {
+            transform: scale(1.05);
+        }
+        .landing-logo i {
+            margin-right: 12px;
+            font-size: 1.8rem;
+        }
+
+        .landing-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px; /* Increased gap */
+        }
+
+        .landing-nav ul li a {
+            font-family: var(--font-heading);
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600; /* Bolder nav links */
+            font-size: 1rem;
+            transition: color 0.3s ease;
+            padding: 8px 0; /* Added padding for larger click area */
+            position: relative;
+        }
+        .landing-nav ul li a:hover, .landing-nav ul li a.active {
+            color: var(--primary-light);
+        }
+        .landing-nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px; /* Thicker underline */
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .landing-nav ul li a:hover::after, .landing-nav ul li a.active::after {
+            width: 100%;
+        }
+
+
+        .btn {
+            padding: 12px 30px; /* Standardized padding */
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-weight: 700; /* Bolder buttons */
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-block;
+            text-align: center;
+            border: 2px solid transparent; /* Base for outline button */
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 51, 51, 0.35);
+        }
+        .btn-primary:hover {
+            background: var(--gradient-hover);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 51, 51, 0.5);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 102, 102, 0.3);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding-top: 160px; /* Increased space for header */
+            padding-bottom: 100px;
+            min-height: 100vh; /* Full viewport height */
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center content */
+            background: linear-gradient(rgba(18,18,18,0.92), rgba(18,18,18,0.75)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGlicmFyeXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+            position: relative;
+            overflow: hidden;
+        }
+         .hero-section::before {
+            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+            background-image: radial-gradient(circle, rgba(255,51,51,0.05) 1px, transparent 1px);
+            background-size: 20px 20px; /* Subtle dot pattern */
+            opacity: 0.5; z-index: 0;
+        }
+
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: 4rem; /* Larger heading */
+            font-weight: 800; /* Extra bold */
+            color: var(--text-light);
+            margin-bottom: 25px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            line-height: 1.2;
+            animation: textFocusIn 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+        }
+        .hero-content h1 span {
+            color: var(--primary-color);
+            display: inline-block; /* Allows transform on span */
+        }
+        .hero-content p {
+            font-size: 1.25rem; /* Slightly larger paragraph */
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInFromBottom 1s ease-out 0.5s;
+            animation-fill-mode: backwards;
+        }
+        .hero-cta {
+            animation: fadeInFromBottom 1s ease-out 0.8s;
+            animation-fill-mode: backwards;
+        }
+        .hero-cta .btn {
+            margin: 0 12px;
+            padding: 14px 35px; /* Larger CTA buttons */
+            font-size: 1.1rem;
+        }
+        
+        .hero-book-animation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 250px;
+            perspective: 1200px;
+            z-index: 0;
+            opacity: 0.15; /* More subtle */
+            animation: floatAndRotate 10s ease-in-out infinite;
+        }
+        .hero-book {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+        }
+        .hero-book-cover, .hero-book-back, .hero-book-spine, .hero-book-pages {
+            position: absolute; background-color: var(--primary-dark); border: 1px solid var(--primary-color);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .hero-book-cover { width: 100%; height: 100%; transform: translateZ(12.5px); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color:white; background: var(--gradient); }
+        .hero-book-back { width: 100%; height: 100%; transform: rotateY(180deg) translateZ(12.5px); }
+        .hero-book-spine { width: 25px; height: 100%; left: -12.5px; transform: rotateY(-90deg) translateX(-12.5px); background-color: var(--primary-dark); }
+        .hero-book-pages { width: calc(100% - 8px); height: calc(100% - 8px); top: 4px; left: 4px; background-color: #e0e0e0; transform: translateZ(0px); box-shadow: inset 0 0 8px rgba(0,0,0,0.2); }
+
+        @keyframes floatAndRotate {
+            0% { transform: translateX(-50%) translateY(0px) rotateY(-25deg) rotateX(10deg); }
+            25% { transform: translateX(-50%) translateY(-15px) rotateY(-15deg) rotateX(5deg); }
+            50% { transform: translateX(-50%) translateY(0px) rotateY(0deg) rotateX(0deg); }
+            75% { transform: translateX(-50%) translateY(-10px) rotateY(15deg) rotateX(-5deg); }
+            100% { transform: translateX(-50%) translateY(0px) rotateY(-25deg) rotateX(10deg); }
+        }
+        @keyframes textFocusIn {0%{filter:blur(12px);opacity:0}100%{filter:blur(0);opacity:1}}
+        @keyframes fadeInFromBottom {0%{opacity:0;transform:translateY(50px)}100%{opacity:1;transform:translateY(0)}}
+
+
+        /* Section Styling */
+        .landing-section {
+            padding: 90px 0;
+        }
+        .landing-section.bg-alternate { /* New class for alternating bg */
+            background-color: var(--bg-light);
+        }
+        .section-title {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 2.8rem; /* Larger section titles */
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 60px; /* Increased margin */
+            position: relative;
+            padding-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px; /* Wider underline */
+            height: 5px; /* Thicker underline */
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+
+        /* Features Section with Animated Book */
+        .features-content {
+            display: flex;
+            align-items: center;
+            gap: 60px; /* Increased gap */
+        }
+        .features-list {
+            flex: 1.2; /* Give slightly more space to text */
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        .feature-item-icon {
+            font-size: 2rem; /* Larger icons */
+            color: var(--primary-color);
+            margin-top: 8px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255,51,51,0.1);
+            border-radius: 50%;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .feature-item:hover .feature-item-icon {
+            transform: scale(1.1) rotate(-10deg);
+            background-color: rgba(255,51,51,0.2);
+        }
+        .feature-item-text h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        .feature-item-text p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .animated-book-container {
+            flex: 1;
+            perspective: 1800px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 450px;
+        }
+
+        .animated-book {
+            width: 300px;
+            height: 420px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+        }
+        
+        .book-cover, .book-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.3s ease;
+            box-shadow: 8px 8px 20px rgba(0,0,0,0.4);
+        }
+        .book-cover:hover, .book-page:hover {
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .book-cover {
+            background: var(--gradient);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .book-cover i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .book-cover h3 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .book-cover p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .features-section.aos-animate .book-cover {
+            transform: rotateY(-150deg) translateZ(10px); /* Wider open, slight Z for depth */
+        }
+
+        .book-page {
+            background-color: var(--bg-light); /* Darker page for contrast */
+            z-index: 5;
+            padding: 35px;
+            overflow-y: auto; /* Scroll if content too long */
+            color: var(--text-dark);
+            border-left: 3px solid var(--primary-dark); /* Accent */
+        }
+        .book-page h4 {
+            font-family: var(--font-heading);
+            color: var(--primary-light);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,51,51,0.2);
+            padding-bottom: 8px;
+        }
+        .book-page ul {
+            list-style: none;
+            padding-left: 5px;
+        }
+        .book-page ul li {
+            margin-bottom: 12px; /* Increased spacing */
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.5;
+        }
+        .book-page ul li i {
+            color: var(--primary-color);
+            margin-right: 12px;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .book-page.page-1 { z-index: 8; background-color: #2a2a2a; } /* Slightly different page colors for depth */
+        .book-page.page-2 { z-index: 7; background-color: #262626; }
+        .book-page.page-3 { z-index: 6; background-color: #222222; }
+
+        .features-section.aos-animate .book-page.page-1 { transform: rotateY(-35deg) translateZ(5px); transition-delay: 0.25s; }
+        .features-section.aos-animate .book-page.page-2 { transform: rotateY(-30deg) translateZ(3px); transition-delay: 0.35s; }
+        .features-section.aos-animate .book-page.page-3 { transform: rotateY(-25deg) translateZ(1px); transition-delay: 0.45s; }
+        
+        .book-page .page-content {
+            opacity: 0;
+            transform: translateX(-25px);
+            transition: opacity 0.6s ease-out 0.9s, transform 0.6s ease-out 0.9s;
+        }
+        .features-section.aos-animate .book-page .page-content {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+
+        /* About and Goal Sections */
+        .about-content, .goal-content {
+            max-width: 850px;
+            margin: 0 auto;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .about-content p, .goal-content p {
+            margin-bottom: 20px;
+            font-size: 1.1rem; /* Slightly larger text */
+        }
+        .about-content .highlight, .goal-content .highlight {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+        .goal-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .goal-list-item {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            flex-basis: calc(33.333% - 20px); /* Three items per row */
+            min-width: 280px; /* Minimum width for smaller screens */
+            text-align: left;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+        .goal-list-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .goal-list-item i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+        .goal-list-item h4 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .landing-footer {
+            background-color: var(--secondary-color);
+            padding: 60px 0 30px; /* More padding */
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-top: 3px solid var(--primary-dark);
+        }
+        .footer-logo {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: block;
+        }
+        .footer-logo i { margin-right: 10px; }
+        .footer-cta-section { /* Renamed for clarity */
+            margin: 40px 0;
+        }
+        .footer-cta-section h3 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .footer-links {
+            margin-bottom: 25px;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 18px;
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            opacity: 0.7;
+            z-index: 1001;
+            font-weight: 600;
+            background-color: rgba(12,12,12,0.8);
+            padding: 4px 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Keyframe Animations (already defined, can add more if needed) */
+
+        /* Responsive */
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        @media (max-width: 992px) {
+            html { font-size: 15px; } /* Adjust base font size for smaller screens */
+            .hero-content h1 { font-size: 3.2rem; }
+            .features-content { flex-direction: column; gap: 40px; }
+            .animated-book-container { margin-top: 50px; min-height: 400px; }
+            .animated-book { width: 280px; height: 390px; }
+            .goal-list-item { flex-basis: calc(50% - 15px); } /* Two items per row */
+        }
+
+        @media (max-width: 768px) {
+            .landing-nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: rgba(25, 25, 25, 0.98); /* More opaque for mobile nav */
+                padding: 25px;
+                box-shadow: var(--shadow-md);
+                border-top: 1px solid rgba(255,51,51,0.1);
+                z-index: -1; /* Below header content */
+            }
+            .landing-nav.active {
+                display: block;
+            }
+            .landing-nav ul {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center; /* Center mobile nav items */
+            }
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { font-size: 1.1rem; }
+            .hero-cta .btn { font-size: 1rem; padding: 12px 30px; }
+            .hero-book-animation { width: 140px; height: 190px; bottom: 10px;}
+            .section-title { font-size: 2.2rem; }
+            .features-content { text-align: center; }
+            .feature-item { flex-direction: column; align-items: center; }
+            .feature-item-icon { margin-bottom: 10px;}
+            .animated-book-container { transform: scale(0.95); }
+            .goal-list-item { flex-basis: 100%; } /* One item per row */
+        }
+         @media (max-width: 480px) {
+            html { font-size: 14px; }
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+            .hero-cta { display: flex; flex-direction: column; gap: 18px; align-items: center; }
+            .hero-book-animation { display: none; }
+            .section-title { font-size: 1.9rem; }
+            .animated-book-container { transform: scale(0.85); }
+            .animated-book { width: 240px; height: 330px; }
+            .book-page { padding: 25px; }
+            .book-page h4 { font-size: 1.15rem; }
+            .book-page ul li { font-size: 0.9rem; }
+            .btn-primary, .btn-secondary { width: 100%; max-width: 300px; }
+            .landing-logo {font-size: 1.7rem;}
+            .landing-logo i {font-size: 1.5rem;}
+        }
+    </style>
+</head>
+<body>
+
+    <header class="landing-header" id="landingHeader">
+        <div class="container">
+            <a href="#" class="landing-logo"><i class="fas fa-book-reader"></i> EduSparK</a>
+            <nav class="landing-nav" id="mainNav">
+                <ul>
+                    <li><a href="#hero" class="active">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#goal">Our Goal</a></li>
+                    <li><a href="https://edusparkk.xyz/books/v1.0/book.html" class="btn btn-primary" style="padding: 10px 22px; margin-left:15px; font-size: 0.9rem;">Launch App</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <section id="hero" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Ignite Your Learning Journey with <span>EduSparK</span></h1>
+                <p>A collaborative platform to share, discover, and absorb knowledge. Access a vast library of books and notes, contribute your own, and get rewarded. Education, unchained.</p>
+                <div class="hero-cta">
+                    <a href="https://edusparkk.xyz/books/v1.0/book.html" class="btn btn-primary">Explore Collection</a>
+                    <a href="#features" class="btn btn-secondary">Discover Features</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-book-animation">
+            <div class="hero-book">
+                <div class="hero-book-cover"><i class="fas fa-brain"></i></div>
+                <div class="hero-book-back"></div>
+                <div class="hero-book-spine"></div>
+                <div class="hero-book-pages"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="landing-section features-section" data-aos="fade-up">
+        <div class="container">
+            <h2 class="section-title">Unlock the Power of EduSparK</h2>
+            <div class="features-content">
+                <div class="features-list">
+                    <div class="feature-item" data-aos="fade-right" data-aos-delay="100">
+                        <div class="feature-item-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <div class="feature-item-text">
+                            <h3>Seamless Sharing</h3>
+                            <p>Effortlessly upload your books, notes, and study materials. Our intuitive interface makes sharing knowledge simple and quick.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" data-aos="fade-right" data-aos-delay="200">
+                        <div class="feature-item-icon"><i class="fas fa-search-plus"></i></div>
+                        <div class="feature-item-text">
+                            <h3>Intelligent Discovery</h3>
+                            <p>Find exactly what you need with powerful search, category filters, and a "Popular Now" section highlighting trending content.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" data-aos="fade-right" data-aos-delay="300">
+                        <div class="feature-item-icon"><i class="fas fa-award"></i></div>
+                        <div class="feature-item-text">
+                            <h3>Rewarding Contributions</h3>
+                            <p>Earn points for sharing approved books and for every download your content receives. Redeem points for cash or rewards!</p>
+                        </div>
+                    </div>
+                     <div class="feature-item" data-aos="fade-right" data-aos-delay="400">
+                        <div class="feature-item-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div class="feature-item-text">
+                            <h3>Secure & Moderated</h3>
+                            <p>All shared content undergoes an approval process to ensure quality and relevance, creating a trusted learning environment.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="animated-book-container" data-aos="zoom-in-left" data-aos-delay="200">
+                    <div class="animated-book">
+                        <div class="book-cover">
+                            <i class="fas fa-book-open"></i>
+                            <h3>Inside EduSparK</h3>
+                            <p>(Scroll to Reveal)</p>
+                        </div>
+                        <div class="book-page page-1">
+                           <div class="page-content">
+                                <h4><i class="fas fa-share-alt"></i> Share & Earn</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Upload books via Google Drive links.</li>
+                                    <li><i class="fas fa-check-circle"></i> Get +10 Points for each approved book.</li>
+                                    <li><i class="fas fa-check-circle"></i> Earn +1 Point every time your book is downloaded.</li>
+                                    <li><i class="fas fa-check-circle"></i> Daily login bonus for +20 Credits.</li>
+                                </ul>
+                           </div>
+                        </div>
+                        <div class="book-page page-2">
+                            <div class="page-content">
+                                <h4><i class="fas fa-book-reader"></i> Discover & Learn</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Browse diverse categories (9th-12th, NEET, JEE, UPSC, etc.).</li>
+                                    <li><i class="fas fa-check-circle"></i> Download books using earned Credits (-10 Credits/download).</li>
+                                    <li><i class="fas fa-check-circle"></i> View detailed book information and user feedback.</li>
+                                    <li><i class="fas fa-check-circle"></i> Search books by title, author, or keywords.</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <div class="book-page page-3">
+                            <div class="page-content">
+                                <h4><i class="fas fa-users"></i> Community & Profile</h4>
+                                <ul>
+                                    <li><i class="fas fa-check-circle"></i> Personalized user profiles with activity stats.</li>
+                                    <li><i class="fas fa-check-circle"></i> Track your shared books and their status (Pending, Approved, Rejected).</li>
+                                    <li><i class="fas fa-check-circle"></i> Manage withdrawal requests for earned points.</li>
+                                    <li><i class="fas fa-check-circle"></i> Receive notifications for important activities.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="landing-section bg-alternate" data-aos="fade-up">
+        <div class="container">
+            <h2 class="section-title">About EduSparK</h2>
+            <div class="about-content" data-aos="fade-in" data-aos-delay="100">
+                <p data-aos="fade-up" data-aos-delay="200">EduSparK is a vibrant, community-driven platform meticulously crafted by <strong class="highlight">Learn Hub</strong>. We are fueled by the conviction that knowledge is a beacon that shines brightest when shared. Our mission is to dismantle the barriers to education, creating an open and accessible space where students, educators, and avid learners can connect, contribute, and cultivate their intellectual curiosity.</p>
+                <p data-aos="fade-up" data-aos-delay="300">Born from a desire to simplify the search for quality educational resources, EduSparK empowers users to not only find what they need but also to become active participants in a growing ecosystem of shared wisdom. We are more than just a repository of books; we are a dynamic community dedicated to the collective pursuit of learning and academic excellence.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="goal" class="landing-section" data-aos="fade-up">
+        <div class="container">
+            <h2 class="section-title">Our Vision & Commitment</h2>
+            <div class="goal-content" data-aos="fade-in" data-aos-delay="100">
+                <p data-aos="fade-up" data-aos-delay="200">At the heart of EduSparK lies a singular, powerful vision: to <strong class="highlight">revolutionize how educational content is accessed and exchanged</strong>. We are committed to building a self-sustaining, global network where learning knows no bounds and every contribution is valued.</p>
+                <ul class="goal-list">
+                    <li class="goal-list-item" data-aos="zoom-in-up" data-aos-delay="300">
+                        <i class="fas fa-globe-asia"></i>
+                        <h4>Universal Access</h4>
+                        <p>To provide a free, central hub for diverse learning materials, supporting students across all academic levels and competitive exams.</p>
+                    </li>
+                    <li class="goal-list-item" data-aos="zoom-in-up" data-aos-delay="400">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Empowered Community</h4>
+                        <p>To foster a culture of sharing and mutual support, where users are recognized and rewarded for enriching our collective knowledge base.</p>
+                    </li>
+                    <li class="goal-list-item" data-aos="zoom-in-up" data-aos-delay="500">
+                        <i class="fas fa-cogs"></i>
+                        <h4>Continuous Innovation</h4>
+                        <p>To constantly evolve EduSparK with cutting-edge features and improvements, driven by user feedback and the dynamic landscape of education.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <div class="container">
+            <a href="#" class="footer-logo"><i class="fas fa-book-reader"></i> EduSparK</a>
+            <div class="footer-cta-section" data-aos="fade-up">
+                <h3>Ready to Join the Knowledge Revolution?</h3>
+                <a href="https://edusparkk.xyz/books/v1.0/book.html" class="btn btn-primary btn-lg">Launch EduSparK App</a>
+            </div>
+            <div class="footer-links" data-aos="fade-up" data-aos-delay="100">
+                <a href="#hero">Home</a> |
+                <a href="#features">Features</a> |
+                <a href="#about">About</a> |
+                <a href="mailto:support@eduspark.app">Contact Support</a> <!-- Example mailto -->
+            </div>
+            <p data-aos="fade-up" data-aos-delay="200">&copy; <span id="currentYear"></span> EduSparK by Learn Hub. All Rights Reserved.</p>
+            <p data-aos="fade-up" data-aos-delay="250">Empowering learners, one share at a time.</p>
+        </div>
+    </footer>
+
+    <div class="watermark">Made by Learn Hub ⚡</div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 900, /* Slightly longer default duration */
+            easing: 'ease-out-quart', /* Smoother easing */
+            once: true,
+            offset: 80, /* Trigger animations a bit earlier */
+        });
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav');
+        if (menuToggle && mainNav) {
+            menuToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+                menuToggle.querySelector('i').classList.toggle('fa-bars');
+                menuToggle.querySelector('i').classList.toggle('fa-times');
+            });
+            // Close mobile nav on link click
+            mainNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (mainNav.classList.contains('active') && !link.classList.contains('btn-primary')) { // Don't close for app launch button
+                        mainNav.classList.remove('active');
+                        menuToggle.querySelector('i').classList.remove('fa-times');
+                        menuToggle.querySelector('i').classList.add('fa-bars');
+                    }
+                });
+            });
+        }
+
+        const landingHeader = document.getElementById('landingHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                landingHeader.classList.add('scrolled');
+            } else {
+                landingHeader.classList.remove('scrolled');
+            }
+
+            // Active Nav Link Scrolling
+            let current = 'hero'; // Default to hero
+            document.querySelectorAll('section[id]').forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 85) { // 85 for header height + offset
+                    current = section.getAttribute('id');
+                }
+            });
+
+            mainNav.querySelectorAll('a').forEach(link => {
+                link.classList.remove('active');
+                // Check if href exists and is not just '#'
+                if (link.getAttribute('href') && link.getAttribute('href') !== '#') {
+                    const linkSectionId = link.getAttribute('href').substring(1);
+                     if (linkSectionId === current) {
+                        link.classList.add('active');
+                    }
+                }
+            });
+             // Ensure hero is active at top even if no section explicitly matches
+            if (pageYOffset < document.getElementById('features').offsetTop - 85) {
+                const heroLink = mainNav.querySelector('a[href="#hero"]');
+                if (heroLink) heroLink.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
