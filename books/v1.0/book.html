@@ -5,23 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Add Content Security Policy Meta Tag - Customize as needed -->
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
-                   script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net;
-                   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
-                   font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-                   img-src 'self' data: https: http://via.placeholder.com;
-                   connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com;
-                   object-src 'none';
-                   base-uri 'self';
-                   form-action 'self';">
+      content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
+               script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/api.js https://*.google.com https://www.gstatic.com/recaptcha/;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: https: http://via.placeholder.com;
+               connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://firebaseappcheck.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
     <title>EduSparK - Share Knowledge</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script> <!-- Firebase App Check SDK -->
+
 
     <style>
         :root {
@@ -332,9 +337,9 @@
 
         /* Status Badges */
         .status-badge { position: absolute; top: 10px; right: 10px; padding: 4px 9px; border-radius: var(--border-radius-xs); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.3); backdrop-filter: blur(3px); }
-        .status-approved { background-color: rgba(39, 174, 96, 0.85); color: white; }
-        .status-pending { background-color: rgba(243, 156, 18, 0.85); color: white; }
-        .status-rejected { background-color: rgba(231, 76, 60, 0.85); color: white; }
+        .status-badge.status-approved { background-color: rgba(39, 174, 96, 0.85); color: white; } /* Added .status-badge */
+        .status-badge.status-pending { background-color: rgba(243, 156, 18, 0.85); color: white; } /* Added .status-badge */
+        .status-badge.status-rejected { background-color: rgba(231, 76, 60, 0.85); color: white; } /* Added .status-badge */
 
 
         /* --- Bottom Navigation --- */
@@ -366,7 +371,7 @@
 
         .page-back-btn { /* Generalized for profile and notifications */
             background: rgba(0, 0, 0, 0.4); border: none; color: var(--primary-light); font-size: 1.3rem;
-            position: absolute; left: 15px; top: calc(15px + (var(--header-height) - 60px) / 2);
+            position: absolute; left: 15px; top: calc(15px + (var(--header-height) - 60px) / 2); /* Adjusted top for consistency */
             cursor: pointer; transition: transform 0.3s ease, background-color 0.3s ease;
             width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
             border-radius: 50%; backdrop-filter: blur(5px); z-index: 5;
@@ -413,7 +418,7 @@
         .profile-dashboard-item h3 { font-size: 1.3rem; color: var(--primary-light); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
         .points-amount-large { font-size: 3.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; line-height: 1.1; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .profile-dashboard-item p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-        .withdraw-btn-large { width: 100%; font-size: 1rem; padding: 12px 20px; }
+        .withdraw-btn-large { width: 100%; font-size: 1rem; padding: 12px 20px; } /* Relies on .action-btn */
 
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
         .stat-card { background-color: rgba(255,255,255,0.05); padding: 15px; border-radius: var(--border-radius-sm); text-align: center; border: 1px solid rgba(255,255,255,0.1); }
@@ -452,10 +457,11 @@
         .withdrawal-method { font-size: 0.85rem; color: var(--text-light); margin-bottom: 5px; word-break: break-all; }
         .withdrawal-date { font-size: 0.8rem; color: var(--text-muted); }
         .withdrawal-status { padding: 6px 12px; border-radius: var(--border-radius-xs); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; flex-shrink: 0; text-align: center; min-width: 80px; }
-        --status-pending-bg: #f39c12; --status-completed-bg: #27ae60; --status-rejected-bg: #e74c3c;
-        .status-pending { background-color: var(--status-pending-bg); color: white; }
-        .status-completed { background-color: var(--status-completed-bg); color: white; }
-        .status-rejected { background-color: var(--status-rejected-bg); color: white; }
+        /* Using CSS variables for withdrawal statuses for consistency */
+        .withdrawal-status.status-pending { background-color: var(--status-pending-bg, #f39c12); color: white; }
+        .withdrawal-status.status-completed { background-color: var(--status-completed-bg, #27ae60); color: white; }
+        .withdrawal-status.status-rejected { background-color: var(--status-rejected-bg, #e74c3c); color: white; }
+
 
         .point-system-info-tabbed { background-color: rgba(255, 255, 255, 0.04); border-radius: var(--border-radius); padding: 25px; margin-top:20px; border: 1px solid rgba(255, 255, 255, 0.1); }
         .point-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.15); }
@@ -466,12 +472,12 @@
         .profile-actions-footer { display: flex; gap: 15px; margin-top: 40px; justify-content: center; padding-bottom: 20px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.1); padding-top:30px;}
         .profile-action-btn { color: white; border: none; padding: 12px 25px; border-radius: var(--border-radius-sm); font-size: 1rem; cursor: pointer; transition: var(--transition); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; flex: 1; min-width: 180px; max-width: 220px; }
         .profile-action-btn::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.1); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-        .profile-action-btn:hover { transform: translateY(-3px); }
-        .profile-action-btn:hover::after { opacity: 1; }
+        .profile-action-btn:hover:not(:disabled) { transform: translateY(-3px); } /* :not(:disabled) added */
+        .profile-action-btn:hover:not(:disabled)::after { opacity: 1; } /* :not(:disabled) added */
         .edit-profile { background: var(--gradient); }
-        .edit-profile:hover { background: var(--gradient-light); box-shadow: 0 8px 20px rgba(255, 51, 51, 0.5); }
+        .edit-profile:hover:not(:disabled) { background: var(--gradient-light); box-shadow: 0 8px 20px rgba(255, 51, 51, 0.5); } /* :not(:disabled) added */
         .logout-btn { background: var(--secondary-light); }
-        .logout-btn:hover { background: #333; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+        .logout-btn:hover:not(:disabled) { background: #333; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); } /* :not(:disabled) added */
         /* End of Profile Redesign */
 
 
@@ -499,7 +505,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0; position: relative;
         }
-        .notifications-title { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.5px; }
+        /* .notifications-title removed as per previous notes, handled by tabs or implied */
         .notifications-actions {
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
         }
@@ -610,6 +616,7 @@
         .notification-message {
             font-size: 0.9rem; color: var(--text-muted);
             line-height: 1.5; margin-bottom: 8px;
+            word-break: break-word; /* Added for long messages */
         }
         .notification-timestamp {
             font-size: 0.75rem; color: var(--text-muted); opacity: 0.8;
@@ -641,15 +648,18 @@
         .submit-btn .spinner, .tutorial-btn .spinner, .profile-action-btn .spinner, .load-more-btn .spinner, .withdraw-btn .spinner, .withdraw-btn-large .spinner, .action-btn .spinner {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
         }
-        .submit-btn span:not(.spinner), .tutorial-btn span:not(.spinner), .profile-action-btn span:not(.spinner), .load-more-btn span:not(.spinner), .withdraw-btn span:not(.spinner), .withdraw-btn-large span:not(.spinner), .action-btn span:not(.spinner) {
+        .submit-btn > span:not(.spinner), .tutorial-btn > span:not(.spinner), .profile-action-btn > span:not(.spinner), .load-more-btn > span:not(.spinner), .withdraw-btn > span:not(.spinner), .withdraw-btn-large > span:not(.spinner), .action-btn > span:not(.spinner) {
             transition: opacity 0.2s ease;
+            display: inline-flex; /* To allow gap with icon */
+            align-items: center;
+            gap: 8px; /* Consistent gap */
         }
-        .submit-btn.loading span:not(.spinner), .tutorial-btn.loading span:not(.spinner), .profile-action-btn.loading span:not(.spinner), .load-more-btn.loading span:not(.spinner), .withdraw-btn.loading span:not(.spinner), .withdraw-btn-large.loading span:not(.spinner), .action-btn.loading span:not(.spinner) {
+        .submit-btn.loading > span:not(.spinner), .tutorial-btn.loading > span:not(.spinner), .profile-action-btn.loading > span:not(.spinner), .load-more-btn.loading > span:not(.spinner), .withdraw-btn.loading > span:not(.spinner), .withdraw-btn-large.loading > span:not(.spinner), .action-btn.loading > span:not(.spinner) {
             opacity: 0;
         }
 
 
-        .submit-btn, .tutorial-btn { color: white; border: none; padding: 12px 18px; border-radius: var(--border-radius-sm); font-size: 1rem; font-weight: 500; cursor: pointer; width: 100%; transition: var(--transition); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+        .submit-btn, .tutorial-btn { color: white; border: none; padding: 12px 18px; border-radius: var(--border-radius-sm); font-size: 1rem; font-weight: 500; cursor: pointer; width: 100%; transition: var(--transition); margin-top: 10px; display: flex; align-items: center; justify-content: center; /* gap: 8px; already handled by child span */ box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
         .submit-btn { background: var(--gradient); }
         .tutorial-btn { background: var(--secondary-light); }
         .submit-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 51, 51, 0.5); background: var(--gradient-light); }
@@ -709,9 +719,9 @@
         .book-detail-meta { display: flex; gap: 20px; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
         .book-detail-meta span { display: flex; align-items: center; gap: 6px; }
         .book-detail-meta i { color: var(--primary-color); font-size: 1rem; }
-        .book-detail-description { margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.04); border-radius: var(--border-radius-sm); line-height: 1.7; font-size: 0.95rem; max-height: 150px; overflow-y: auto; color: var(--text-light); border-left: 3px solid var(--primary-color); }
+        .book-detail-description { margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.04); border-radius: var(--border-radius-sm); line-height: 1.7; font-size: 0.95rem; max-height: 150px; overflow-y: auto; color: var(--text-light); border-left: 3px solid var(--primary-color); word-break: break-word; } /* Added word-break */
         .book-detail-actions { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
-        .detail-download-btn { flex-grow: 1; }
+        .detail-download-btn { flex-grow: 1; } /* Relies on .action-btn */
         .feedback-separator { height: 1px; background: rgba(255,255,255,0.1); margin: 30px 0; }
 
         .feedback-section { margin-top: 25px; }
@@ -726,7 +736,7 @@
         .rating-stars .stars > i.hovered { color: var(--star-color); transform: scale(1.1); }
 
         #feedbackComment { margin-bottom: 15px; }
-        #submitFeedbackBtn { width: auto; padding: 10px 25px; }
+        #submitFeedbackBtn { width: auto; padding: 10px 25px; } /* Relies on .submit-btn */
 
         .comments-list { margin-top: 25px; max-height: 250px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 15px; }
         .comment-item { background-color: rgba(255, 255, 255, 0.04); padding: 15px; border-radius: var(--border-radius-sm); border-left: 3px solid var(--secondary-light); }
@@ -747,7 +757,8 @@
 
 
         /* Toast Notifications */
-        .toast { position: fixed; top: 25px; right: 25px; padding: 15px 25px; border-radius: var(--border-radius-sm); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-xl); transform: translateX(calc(100% + 30px)); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 3000; display: flex; align-items: center; max-width: 380px; border-left: 5px solid var(--primary-color); }
+        #toastContainer { position: fixed; top: 25px; right: 25px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { /* position, top, right moved to #toastContainer */ padding: 15px 25px; border-radius: var(--border-radius-sm); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-xl); transform: translateX(calc(100% + 30px)); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; max-width: 380px; border-left: 5px solid var(--primary-color); }
         .toast.show { transform: translateX(0); }
         .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
         .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
@@ -798,7 +809,7 @@
             .withdrawal-status { align-self: flex-start; }
             .profile-action-btn { min-width: 150px; }
             .category-filter-item { padding: 7px 15px; font-size: 0.85rem;}
-            .notifications-title { font-size: 1.1rem; }
+            /* .notifications-title { font-size: 1.1rem; } */
             .notifications-tabs { padding: 0 5px;}
             .notification-tab-btn { font-size: 0.9rem; padding: 10px 8px;}
         }
@@ -837,8 +848,8 @@
             .book-detail-author { font-size: 0.9rem; }
             .rating-stars .stars > i { font-size: 1.4rem; }
             .notifications-header { height: var(--header-height); padding: 0 10px;}
-            .notifications-title { font-size: 1rem; }
-            .page-back-btn { width: 35px; height: 35px; font-size: 1.2rem;} /* For profile and notifications */
+            /* .notifications-title { font-size: 1rem; } */
+            .page-back-btn { width: 35px; height: 35px; font-size: 1.2rem; top: calc(12.5px + (var(--header-height) - 60px) / 2); } /* For profile and notifications */
             .notification-item { padding: 12px; }
             .notification-icon { width: 32px; height: 32px; font-size: 1.2rem; margin-right: 12px; }
             .notification-title { font-size: 0.95rem; }
@@ -1083,7 +1094,7 @@
             <button class="page-back-btn" id="notificationsBackBtn" aria-label="Go Back">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <div class="notifications-title"></div> <!-- Title might be dynamic or removed if tabs handle it -->
+            <!-- <div class="notifications-title">Notifications</div> -->
             <div class="notifications-actions">
                 <button class="mark-all-read-btn" id="markAllNotificationsReadBtn" disabled>
                     <i class="fas fa-check-double"></i> Mark All Read
@@ -1373,8 +1384,8 @@
             once: true,
             offset: 50,
         });
-
-        const firebaseConfig = {
+        
+        const firebaseConfig = { // KEEP YOUR CONFIG HERE
             apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
             authDomain: "eduspark-new.firebaseapp.com",
             projectId: "eduspark-new",
@@ -1383,23 +1394,44 @@
             appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
             measurementId: "G-NM2SE3DE7J"
         };
+        
         firebase.initializeApp(firebaseConfig);
+
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
+        const appCheck = firebase.appCheck();
+
+        // Activate App Check
+        // YOU MUST REPLACE 'YOUR_RECAPTCHA_V3_SITE_KEY' with your actual reCAPTCHA v3 site key
+        // Also ensure you've registered your app in Firebase Console for App Check (reCAPTCHA v3 provider)
+        // And enabled ENFORCEMENT for Firestore, Storage, and Auth in Firebase Console App Check settings.
+        try {
+            appCheck.activate(
+                '6LdCDD8rAAAAAFET7BKL-XPqoKR1Wl2IiMzjSpW4', // REPLACE THIS
+                true // Set to true to automatically get a token if none is present.
+            );
+            console.log("Firebase App Check activated.");
+        } catch (error) {
+            console.error("Error activating Firebase App Check:", error);
+            // Handle error appropriately, maybe show a message to the user
+            // For example, the app might not work correctly if App Check fails to activate
+            // and enforcement is turned on in the Firebase console.
+        }
+
 
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
 
         const elements = {
-            loadingOverlay: $('#loadingOverlay'), loadingMessage: $('#loadingMessage'), // Changed from loadingQuote
+            loadingOverlay: $('#loadingOverlay'), loadingMessage: $('#loadingMessage'),
             body: document.body, header: $('.header'), logoLink: $('#logoLink'),
             userAvatar: $('#userAvatar'), avatarInitials: $('#avatarInitials'),
             searchContainer: $('#searchContainer'), searchInput: $('#searchInput'),
             searchResults: $('#searchResults'), searchToggleBtn: $('#searchToggleBtn'),
             addBookBtn: $('#addBookBtn'), booksContainer: $('#booksContainer'),
-            booksGridLoadingIndicator: $('#booksGridLoadingIndicator'), // New for infinite scroll
-            emptyStateBooks: $('#emptyStateBooks'), // Renamed for clarity
+            booksGridLoadingIndicator: $('#booksGridLoadingIndicator'),
+            emptyStateBooks: $('#emptyStateBooks'),
             categoryFilterContainer: $('#categoryFilterContainer'),
             bottomNavItems: $$('.bottom-nav .nav-item'), popularBooksCarousel: $('#popularBooksCarousel'),
             headerCreditsContainer: $('#headerCreditsContainer'), headerCreditsAmount: $('#headerCreditsAmount'),
@@ -1427,7 +1459,7 @@
             loadMoreBooksBtn: $('#loadMoreBooksBtn'), loadMoreContainer: $('#loadMoreContainer'),
             withdrawalHistoryContainer: $('#withdrawalHistoryContainer'), emptyWithdrawalHistory: $('#emptyWithdrawalHistory'),
             editProfileBtn: $('#editProfileBtn'), logoutBtn: $('#logoutBtn'),
-            pointSystemInfoTabbed: $('.point-system-info-tabbed'),
+            // pointSystemInfoTabbed: $('.point-system-info-tabbed'), // Not directly used in JS logic, but for completeness
             // Withdrawal Modal
             withdrawalOptionsContainer: $('#withdrawalModal .withdrawal-options'),
             amountOptionsContainer: $('#withdrawalModal .amount-selection'),
@@ -1441,40 +1473,40 @@
             // Notifications
             notificationsBtn: $('#notificationsBtn'), notificationsPage: $('#notificationsPage'),
             notificationsBackBtn: $('#notificationsBackBtn'),
-            personalNotificationsListContainer: $('#personalNotificationsListContainer'), // New
-            adminAnnouncementsListContainer: $('#adminAnnouncementsListContainer'), // New
-            notificationTabsContainer: $('.notifications-tabs'), // New
-            notificationTabBtns: $$('.notification-tab-btn'), // New
-            emptyPersonalNotificationsState: $('#emptyPersonalNotificationsState'), // New
-            emptyAdminAnnouncementsState: $('#emptyAdminAnnouncementsState'), // New
+            personalNotificationsListContainer: $('#personalNotificationsListContainer'),
+            adminAnnouncementsListContainer: $('#adminAnnouncementsListContainer'),
+            notificationTabsContainer: $('.notifications-tabs'),
+            notificationTabBtns: $$('.notification-tab-btn'),
+            emptyPersonalNotificationsState: $('#emptyPersonalNotificationsState'),
+            emptyAdminAnnouncementsState: $('#emptyAdminAnnouncementsState'),
             unreadNotificationsBadge: $('#unreadNotificationsBadge'),
             markAllNotificationsReadBtn: $('#markAllNotificationsReadBtn'),
             // Book Detail
             bookDetailModal: $('#bookDetailModal'), closeBookDetailModal: $('#closeBookDetailModal'), bookDetailContent: $('#bookDetailContent'),
-            toastContainer: $('#toastContainer') || document.body
+            toastContainer: $('#toastContainer')
         };
 
         // State variables
-        let currentUser = null, userData = null, allBooksCache = [], // Cache for search, not for display
-            displayedBooksMain = [], // For main grid display with infinite scroll
+        let currentUser = null, userData = null, allBooksCache = [],
+            displayedBooksMain = [],
             popularBooksData = [], currentCategory = 'All',
             lastUserBookSnapshot = null, hasMoreUserBooks = true,
             selectedWithdrawalMethod = null, selectedWithdrawalAmount = null, selectedWithdrawalRs = null,
             isFetchingMoreUserBooks = false, currentBookDetailId = null,
             unreadNotificationsCount = 0,
-            lastVisibleBookMain = null, // For main book list infinite scroll
-            isLoadingBooksMain = false, // For main book list infinite scroll
-            hasMoreBooksMain = true; // For main book list infinite scroll
+            lastVisibleBookMain = null,
+            isLoadingBooksMain = false,
+            hasMoreBooksMain = true;
 
 
         // Firestore listeners object
-        let listeners = { user: null, withdrawals: null, /* booksMain: null, // Handled by pagination now */ popularBooks: null, userBooks: null, bookApproval: null, userNotifications: null, adminAnnouncements: null }; // Added adminAnnouncements
+        let listeners = { user: null, withdrawals: null, popularBooks: null, userBooks: null, bookApproval: null, userNotifications: null, adminAnnouncements: null };
 
-        const BOOK_DOWNLOAD_COST = 30; // New constant
-        const BOOKS_PER_PAGE_MAIN = 12; // Books per page for infinite scroll
+        const BOOK_DOWNLOAD_COST = 30;
+        const BOOKS_PER_PAGE_MAIN = 12;
 
         const bookCategories = ['All', '9th', '10th', '11th', '12th', 'NEET', 'JEE', 'UPSC', 'Coding', 'Computer Science', 'Fiction', 'Non-Fiction', 'Other'];
-        const loadingMessages = [ // New loading messages
+        const loadingMessages = [
             "Loading EduSparK Library...", "Unpacking Knowledge...", "Igniting Minds...",
             "Connecting to the Grid...", "Brewing Fresh Ideas...", "Preparing Your Journey..."
         ];
@@ -1488,6 +1520,10 @@
         }
 
         function showToast(message, type = "info", duration = 3500) {
+            if (!elements.toastContainer) {
+                console.warn("Toast container not found. Toast not shown:", message);
+                return;
+            }
             const toastId = 'toast-' + Date.now();
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
@@ -1504,13 +1540,13 @@
             const closeBtn = toast.querySelector('.toast-close');
             closeBtn.onclick = () => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 500);
+                setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500);
             };
 
             setTimeout(() => {
-                if(document.getElementById(toastId)){ // check if still exists
+                if(document.getElementById(toastId)){
                     toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 500);
+                    setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500);
                 }
             }, duration);
         }
@@ -1524,7 +1560,9 @@
         function closeModal(modalElement) {
             if (!modalElement) return;
             modalElement.classList.remove('active');
-            if (!$$('.modal.active').length && !$$('.profile-page.active, .notifications-page.active').length) {
+            const anyModalActive = $$('.modal.active').length > 0;
+            const anyPageActive = $$('.profile-page.active, .notifications-page.active').length > 0;
+            if (!anyModalActive && !anyPageActive) {
                  elements.body.style.overflow = 'auto';
             }
         }
@@ -1539,31 +1577,39 @@
         function formatDate(ts, format = { year: 'numeric', month: 'short', day: 'numeric' }) {
             if (!ts) return 'N/A';
             const date = ts.toDate ? ts.toDate() : new Date(ts);
-            return date.toLocaleDateString(undefined, format);
+            try {
+                return date.toLocaleDateString(undefined, format);
+            } catch (e) {
+                console.warn("Error formatting date:", ts, e);
+                return 'Invalid Date';
+            }
         }
         function formatTime(ts) {
             if (!ts) return '';
             const date = ts.toDate ? ts.toDate() : new Date(ts);
-            return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+             try {
+                return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
+            } catch (e) {
+                console.warn("Error formatting time:", ts, e);
+                return 'Invalid Time';
+            }
         }
         function toggleSpinner(btn, show) {
             if (!btn) return;
             const spinner = btn.querySelector('.spinner');
-            const textSpan = btn.querySelector('span:not(.spinner)'); // ensure to select first span that is not spinner
-            const icon = btn.querySelector('i');
+            // Query for direct child span that is not a spinner
+            const textSpan = btn.querySelector(':scope > span:not(.spinner)');
 
             if (show) {
                 btn.classList.add('loading');
                 btn.disabled = true;
                 if (spinner) spinner.style.display = 'inline-block';
                 if (textSpan) textSpan.style.opacity = '0';
-                if (icon && textSpan) icon.style.opacity = '0'; // Hide icon if text is hidden
             } else {
                 btn.classList.remove('loading');
                 btn.disabled = false;
                 if (spinner) spinner.style.display = 'none';
                 if (textSpan) textSpan.style.opacity = '1';
-                 if (icon && textSpan) icon.style.opacity = '1';
             }
         }
 
@@ -1592,7 +1638,7 @@
         function hideLoadingOverlay() {
             elements.loadingOverlay.classList.add('hidden');
         }
-        function showRandomLoadingMessage() { // Renamed
+        function showRandomLoadingMessage() {
             const randomIndex = Math.floor(Math.random() * loadingMessages.length);
             elements.loadingMessage.textContent = loadingMessages[randomIndex];
         }
@@ -1616,18 +1662,21 @@
                         enableWithdrawalIfQualified();
                         setupBookApprovalListener();
                         setupUserNotificationsListener();
-                        setupAdminAnnouncementsListener(); // New
+                        setupAdminAnnouncementsListener();
                         if (!elements.loadingOverlay.classList.contains('hidden')) {
                            hideLoadingOverlay();
                         }
-                    } else {
-                        const tempSignupData = JSON.parse(sessionStorage.getItem('tempSignupData')) || {};
+                    } else { // User exists in Auth, but not in Firestore (e.g., first signup)
+                        const tempSignupData = JSON.parse(sessionStorage.getItem('tempSignupData') || '{}');
                         sessionStorage.removeItem('tempSignupData');
                         try {
+                            console.log("User document doesn't exist, creating one...");
                             await createUserDocument(user, tempSignupData.name, tempSignupData.username, tempSignupData.bio);
+                            // The onSnapshot listener will pick up the newly created document.
                         } catch (error) {
-                            console.error("Error creating user document:", error);
-                            showToast("Error setting up your profile. Please try logging out and in.", "error");
+                            console.error("Fatal error creating user document:", error);
+                            showToast("Critical error setting up your profile. Please contact support.", "error", 10000);
+                            auth.signOut().catch(e => console.error("Error signing out after profile creation failure", e));
                             if (!elements.loadingOverlay.classList.contains('hidden')) {
                                hideLoadingOverlay();
                             }
@@ -1635,7 +1684,7 @@
                     }
                 }, (error) => {
                     console.error("Error listening to user data:", error);
-                    showToast("Could not load your profile data.", "error");
+                    showToast("Could not load your profile data. Please refresh.", "error");
                     userData = null;
                     updateProfileUI(); updateAvatar(); updateHeaderCredits();
                     if (!elements.loadingOverlay.classList.contains('hidden')) {
@@ -1645,27 +1694,33 @@
 
                 try {
                     await userDocRef.update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() });
-                } catch (warn) { console.warn("Could not update last active time:", warn); }
+                } catch (warn) { console.warn("Could not update last active time (might be new user):", warn.message); }
 
                 initializeDataFetching();
             } else { // User is logged out
                 userData = null;
+                currentUser = null;
                 elements.body.classList.remove('logged-in');
                 elements.body.classList.add('logged-out');
                 elements.headerCreditsContainer.style.display = 'none';
-                updateProfileUI();
-                updateAvatar();
-                updateHeaderCredits();
-                updateUnreadBadge(0);
-                showLoginPromptInsteadOfContent();
+                updateProfileUI(); // Clears profile UI
+                updateAvatar(); // Resets avatar
+                updateHeaderCredits(); // Resets credits
+                updateUnreadBadge(0); // Clears notification badge
+                showLoginPromptInsteadOfContent(); // Shows login prompts
                 closeAllPagesAndModals();
                 resetNavigation();
+                // Clear dynamic content areas
                 ['popularBooksCarousel', 'profileBooksContainer', 'withdrawalHistoryContainer', 'personalNotificationsListContainer', 'adminAnnouncementsListContainer', 'booksContainer'].forEach(elKey => {
                     if (elements[elKey]) elements[elKey].innerHTML = '';
                 });
                  if (elements.categoryFilterContainer) elements.categoryFilterContainer.innerHTML = '';
+                // Reset caches and pagination states
                 allBooksCache = []; displayedBooksMain = []; popularBooksData = [];
                 lastVisibleBookMain = null; hasMoreBooksMain = true; isLoadingBooksMain = false;
+                lastUserBookSnapshot = null; hasMoreUserBooks = true; isFetchingMoreUserBooks = false;
+                currentCategory = 'All';
+
                 if (!elements.loadingOverlay.classList.contains('hidden')) {
                     hideLoadingOverlay();
                 }
@@ -1674,42 +1729,56 @@
 
         async function createUserDocument(user, nameFromSignup, usernameFromSignup, bioFromSignup) {
             const name = nameFromSignup || user.displayName || "Anonymous User";
-            const username = usernameFromSignup || user.email.split('@')[0].replace(/[^a-z0-9_.]/gi, '').toLowerCase() || `user${Date.now().toString().slice(-5)}`;
+            let username = usernameFromSignup || user.email.split('@')[0].replace(/[^a-z0-9_.]/gi, '').toLowerCase() || `user${Date.now().toString().slice(-5)}`;
+            // Ensure username uniqueness again, just in case (though primarily handled at signup form)
+            try {
+                const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
+                if (!usernameSnapshot.empty) {
+                    username = `user${Date.now().toString().slice(-5)}`; // Fallback to a more unique username
+                }
+            } catch (e) { console.warn("Error re-checking username during doc creation:", e); }
+
             const bio = bioFromSignup || "EduSparK enthusiast!";
             const userRef = db.collection('users').doc(user.uid);
             const initialUserData = {
                 uid: user.uid, email: user.email, name: name, username: username, bio: bio,
-                points: 0, credits: 50,
+                points: 0, credits: 50, // Initial credits
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastActive: firebase.firestore.FieldValue.serverTimestamp(),
                 booksSharedCount: 0, booksDownloadedCount: 0, lastDailyCreditClaim: null,
                 totalBookDownloads: 0, totalFeedbackGiven: 0,
-                processedBookActions: {},
+                processedBookActions: {}, // To track points/notifications for book actions
             };
             try {
                 await userRef.set(initialUserData);
-                await createNotification(user.uid, "Welcome to EduSparK!", "Your profile is set up and you've received 50 starting credits.", "success", null, "fas fa-hand-sparkles");
+                // Notification for welcome and starting credits
+                await createNotification(user.uid, "Welcome to EduSparK!", `Your profile is set up. You've received ${initialUserData.credits} starting credits!`, "success", null, "fas fa-hand-sparkles");
                 showToast("Welcome to EduSparK! Your profile is set up.", "success");
             } catch (error) {
-                console.error("Error creating user document: ", error);
-                showToast("Error setting up profile. Please try again.", "error");
-                throw error;
+                console.error("Critical error creating user document in Firestore: ", error);
+                // This is a serious issue; the user might be authenticated but without a profile document.
+                // Consider how to handle this - perhaps force logout or show a persistent error.
+                showToast("Major error setting up your account. Please contact support.", "error", 10000);
+                throw error; // Re-throw to be caught by the caller if needed
             }
         }
 
         function showLoginPromptInsteadOfContent() {
-             elements.booksContainer.innerHTML = '';
-             elements.emptyStateBooks.innerHTML = `<i class="fas fa-sign-in-alt"></i><h3>Login to Discover Books</h3><p>Join EduSparK to share, download, and engage!</p><button class="submit-btn" style="margin-top:20px;max-width:200px;" id="loginPromptBtnMain">Login / Sign Up</button>`;
-             elements.emptyStateBooks.style.display = 'flex';
-             const loginPromptBtn = $('#loginPromptBtnMain');
-             if (loginPromptBtn) loginPromptBtn.onclick = () => openModal(elements.loginModal);
-
-             elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-lock"></i><p style="font-size:0.9rem;">Login to see popular books.</p></div>`;
+             if (elements.booksContainer) {
+                elements.booksContainer.innerHTML = ''; // Clear any skeletons
+                elements.emptyStateBooks.innerHTML = `<i class="fas fa-sign-in-alt"></i><h3>Login to Discover Books</h3><p>Join EduSparK to share, download, and engage!</p><button class="submit-btn" style="margin-top:20px;max-width:200px;" id="loginPromptBtnMain">Login / Sign Up</button>`;
+                elements.emptyStateBooks.style.display = 'flex';
+                const loginPromptBtn = $('#loginPromptBtnMain');
+                if (loginPromptBtn) loginPromptBtn.onclick = () => openModal(elements.loginModal);
+             }
+             if (elements.popularBooksCarousel) {
+                elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-lock"></i><p style="font-size:0.9rem;">Login to see popular books.</p></div>`;
+             }
 
              if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'flex';
              if(elements.emptyWithdrawalHistory) elements.emptyWithdrawalHistory.style.display = 'flex';
              if(elements.emptyPersonalNotificationsState) elements.emptyPersonalNotificationsState.style.display = 'flex';
              if(elements.emptyAdminAnnouncementsState) elements.emptyAdminAnnouncementsState.style.display = 'flex';
-             renderCategoryFilters();
+             renderCategoryFilters(); // Render categories even if logged out
         }
 
         elements.loginForm.addEventListener('submit', async (e) => {
@@ -1727,6 +1796,7 @@
                 showToast(error.message, "error");
             } finally {
                 toggleSpinner(btn, false);
+                elements.loginForm.reset();
             }
         });
 
@@ -1739,33 +1809,41 @@
             const bio = $('#signupBio').value;
 
             if (!/^[a-z0-9_.]{3,15}$/.test(username)) {
-                showToast("Username must be 3-15 chars, lowercase, numbers, underscores, or periods.", "error", 5000);
+                showToast("Username: 3-15 chars, lowercase, numbers, '_', '.'", "error", 5000);
                 return;
             }
+            if (password.length < 6) {
+                showToast("Password must be at least 6 characters.", "error");
+                return;
+            }
+
+            const btn = $('#signupBtn');
+            toggleSpinner(btn, true);
 
             try {
                 const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
                 if (!usernameSnapshot.empty) {
                     showToast("Username already taken. Please choose another.", "error");
-                    return;
+                    toggleSpinner(btn, false); return;
                 }
-            } catch (error) {
-                console.error("Error checking username:", error);
-                showToast("Error checking username. Please try again.", "error"); return;
-            }
+                 // Check if email is already in use by Firebase Auth
+                const methods = await auth.fetchSignInMethodsForEmail(email);
+                if (methods.length > 0) {
+                    showToast("This email address is already in use.", "error");
+                    toggleSpinner(btn, false); return;
+                }
 
-            const btn = $('#signupBtn');
-            toggleSpinner(btn, true);
-            try {
                 sessionStorage.setItem('tempSignupData', JSON.stringify({ name, username, bio }));
                 await auth.createUserWithEmailAndPassword(email, password);
-                closeModal(elements.signupModal);
+                // onAuthStateChanged will handle creating the user document and closing modal indirectly
+                // closeModal(elements.signupModal); // This might be too soon if onAuthStateChanged is slow
             } catch (error) {
                 console.error("Signup error:", error);
                 showToast(error.message, "error");
-                sessionStorage.removeItem('tempSignupData');
+                sessionStorage.removeItem('tempSignupData'); // Clean up if signup fails
             } finally {
                 toggleSpinner(btn, false);
+                // elements.signupForm.reset(); // Reset form only on success, or handled by onAuthStateChanged logic
             }
         });
 
@@ -1773,8 +1851,7 @@
             toggleSpinner(elements.logoutBtn, true);
             try {
                 await auth.signOut();
-                closeAllPagesAndModals();
-                resetNavigation();
+                // onAuthStateChanged will handle UI reset, closing pages, etc.
                 showToast("Logged out successfully.", "info");
             } catch (error) {
                 console.error("Logout error:", error);
@@ -1798,7 +1875,7 @@
                 elements.booksDownloadedLarge.textContent = userData.booksDownloadedCount || 0;
                 elements.totalBookDownloadsLarge.textContent = userData.totalBookDownloads || 0;
                 elements.totalFeedbackLarge.textContent = userData.totalFeedbackGiven || 0;
-            } else {
+            } else { // Reset profile UI elements
                 elements.profileAvatarInitialsLarge.textContent = 'U';
                 elements.profileNameLarge.textContent = 'User Loading...';
                 elements.profileUsernameLarge.textContent = '@loading';
@@ -1808,10 +1885,14 @@
                 ['userPointsLarge', 'booksSharedLarge', 'booksDownloadedLarge', 'totalBookDownloadsLarge', 'totalFeedbackLarge'].forEach(elId => {
                     if (elements[elId]) elements[elId].textContent = '0';
                 });
-                if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'flex';
-                if(elements.emptyWithdrawalHistory) elements.emptyWithdrawalHistory.style.display = 'flex';
-                elements.profileBooksContainer.innerHTML = '';
-                elements.withdrawalHistoryContainer.innerHTML = '';
+                if(elements.emptyProfileBooks) {
+                    elements.profileBooksContainer.innerHTML = ''; // Clear books before showing empty state
+                    elements.emptyProfileBooks.style.display = 'flex';
+                }
+                if(elements.emptyWithdrawalHistory) {
+                    elements.withdrawalHistoryContainer.innerHTML = ''; // Clear history
+                    elements.emptyWithdrawalHistory.style.display = 'flex';
+                }
             }
         }
         function updateAvatar() {
@@ -1822,7 +1903,7 @@
         }
 
         elements.editProfileBtn.addEventListener('click', () => {
-            if (userData) {
+            if (userData && currentUser) {
                 $('#editProfileName').value = userData.name || '';
                 $('#editProfileUsername').value = userData.username || '';
                 $('#editProfileBio').value = userData.bio || '';
@@ -1832,7 +1913,7 @@
                 openModal(elements.loginModal);
             }
         });
-        elements.closeEditProfileModal.onclick = () => closeModal(elements.editProfileModal);
+        if(elements.closeEditProfileModal) elements.closeEditProfileModal.onclick = () => closeModal(elements.editProfileModal);
 
         elements.editProfileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1842,7 +1923,7 @@
             const newBio = $('#editProfileBio').value;
 
             if (!/^[a-z0-9_.]{3,15}$/.test(newUsername)) {
-                showToast("Username must be 3-15 chars, lowercase, numbers, underscores, or periods.", "error", 5000);
+                showToast("Username: 3-15 chars, lowercase, numbers, '_', '.'", "error", 5000);
                 return;
             }
 
@@ -1872,17 +1953,19 @@
             }
         });
 
-        elements.profileTabs.addEventListener('click', (e) => {
-            const targetTabBtn = e.target.closest('.profile-tab-btn');
-            if (!targetTabBtn) return;
-            elements.profileTabBtns.forEach(btn => btn.classList.remove('active'));
-            targetTabBtn.classList.add('active');
-            const tabId = targetTabBtn.dataset.tab;
-            elements.profileTabContents.forEach(content => {
-                content.classList.toggle('active', content.id === `tab-${tabId}`);
+        if(elements.profileTabs) {
+            elements.profileTabs.addEventListener('click', (e) => {
+                const targetTabBtn = e.target.closest('.profile-tab-btn');
+                if (!targetTabBtn) return;
+                elements.profileTabBtns.forEach(btn => btn.classList.remove('active'));
+                targetTabBtn.classList.add('active');
+                const tabId = targetTabBtn.dataset.tab;
+                elements.profileTabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === `tab-${tabId}`);
+                });
+                AOS.refresh(); // Refresh AOS for new tab content
             });
-            AOS.refresh();
-        });
+        }
 
 
         // --- Book Data Fetching & Display ---
@@ -1891,14 +1974,13 @@
              fetchBooksMain(false); // Initial fetch for main grid
              fetchPopularBooks();
              renderCategoryFilters();
-             fetchAllBooksForSearch(); // Fetch all books for search cache
+             fetchAllBooksForSearch();
         }
 
         function renderSkeletonLoaders(container, count, type = 'book') {
             if (!container) return;
-            // Don't clear if it's for an append operation (like infinite scroll's loading indicator)
             if (container !== elements.booksGridLoadingIndicator) {
-                 container.innerHTML = '';
+                 container.innerHTML = ''; // Clear only if not the loading indicator itself
             }
             let skeletonHTML = '';
             for (let i = 0; i < count; i++) {
@@ -1912,18 +1994,21 @@
                     skeletonHTML += `<div class="skeleton-notification-item"><div class="skeleton-icon"></div><div class="skeleton-content"><div class="skeleton-text title"></div><div class="skeleton-text message"></div><div class="skeleton-text timestamp"></div></div></div>`;
                 }
             }
-            if (container !== elements.booksGridLoadingIndicator) {
+            if (container !== elements.booksGridLoadingIndicator) { // Append to loading indicator, replace for others
                 container.innerHTML = skeletonHTML;
             }
         }
 
         function createBookCardHTML(book, target = 'main') {
-             const isAdmin = target === 'profile';
+             const isAdmin = target === 'profile'; // 'profile' implies it's user's own book list
              const defaultImage = 'https://via.placeholder.com/300x220/333/888?text=No+Cover';
              const imageUrl = book.imageUrl || defaultImage;
              let statusBadge = '';
-             if (isAdmin && book.status === 'pending') statusBadge = '<span class="status-badge status-pending">Pending</span>';
-             else if (isAdmin && book.status === 'rejected') statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+             if (isAdmin) { // Only show status badges on the user's own profile book list
+                 if (book.status === 'pending') statusBadge = '<span class="status-badge status-pending">Pending</span>';
+                 else if (book.status === 'rejected') statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+                 // Approved status can be inferred or subtly shown if needed, but often not as a prominent badge
+             }
 
              return `
                 <div class="book-card" data-id="${book.id}" style="animation-delay: ${Math.random() * 0.2}s" data-aos="fade-up">
@@ -1938,7 +2023,7 @@
                             <span><i class="fas fa-user"></i> ${escapeHTML(book.submittedByName || 'Anon')}</span>
                             <span><i class="fas fa-calendar-alt"></i> ${formatDate(book.submittedAt)}</span>
                         </div>
-                         ${isAdmin && (book.status === 'approved' || book.status === 'rejected') ? `<div class="book-admin-info"><i class="fas fa-user-shield"></i> ${book.status === 'approved' ? `Approved ${book.reviewedBy ? `by ${escapeHTML(book.reviewedBy)}` : ''} on ${formatDate(book.approvedAt)}` : `Rejected ${book.reviewedBy ? `by ${escapeHTML(book.reviewedBy)}` : ''} on ${formatDate(book.reviewedAt)}`}</div>` : ''}
+                         ${isAdmin && (book.status === 'approved' || book.status === 'rejected') ? `<div class="book-admin-info"><i class="fas fa-user-shield"></i> ${book.status === 'approved' ? `Approved ${book.reviewedBy ? `by ${escapeHTML(book.reviewedBy)}` : ''} on ${book.approvedAt ? formatDate(book.approvedAt) : '-'}` : `Rejected ${book.reviewedBy ? `by ${escapeHTML(book.reviewedBy)}` : ''} on ${book.reviewedAt ? formatDate(book.reviewedAt) : '-'}`}</div>` : ''}
                          ${isAdmin && book.status === 'rejected' && book.rejectionReason ? `<div class="book-admin-info" style="color:var(--primary-dark);border-color:var(--primary-dark);"><i class="fas fa-times-circle"></i> Reason: ${escapeHTML(book.rejectionReason)}</div>` : ''}
                         <button class="action-btn view-btn" data-action="view" data-book-id="${book.id}">
                             <span class="spinner" style="display: none;"></span>
@@ -1965,23 +2050,29 @@
 
         async function fetchBooksMain(loadMore = false) {
             if (!currentUser || isLoadingBooksMain) return;
-            if (!hasMoreBooksMain && loadMore) return;
+            if (!hasMoreBooksMain && loadMore) {
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
+                return;
+            }
 
             isLoadingBooksMain = true;
             if (loadMore) {
-                elements.booksGridLoadingIndicator.style.display = 'block';
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'block';
             } else {
                 lastVisibleBookMain = null;
                 hasMoreBooksMain = true;
-                displayedBooksMain = [];
-                elements.booksContainer.innerHTML = ''; // Clear for new filter/initial load
+                displayedBooksMain = []; // Clear main displayed books array
+                if(elements.booksContainer) elements.booksContainer.innerHTML = '';
                 renderSkeletonLoaders(elements.booksContainer, BOOKS_PER_PAGE_MAIN, 'book');
-                elements.emptyStateBooks.style.display = 'none';
+                if(elements.emptyStateBooks) elements.emptyStateBooks.style.display = 'none';
             }
 
             let query = db.collection('books').where('status', '==', 'approved');
             if (currentCategory !== 'All') {
-                query = query.where('category', '==', currentCategory); // Using '==' for exact match or adjust based on how categories are stored
+                // For more flexible category matching, consider array-contains if categories are stored as an array
+                // or use multiple '==' queries if categories are single strings and you want to combine.
+                // For this setup, it's an exact match.
+                query = query.where('category', '==', currentCategory);
             }
             query = query.orderBy('approvedAt', 'desc').limit(BOOKS_PER_PAGE_MAIN);
 
@@ -1991,78 +2082,85 @@
 
             try {
                 const snapshot = await query.get();
-                if (!loadMore) elements.booksContainer.innerHTML = ''; // Clear skeletons
+                if (!loadMore && elements.booksContainer) elements.booksContainer.innerHTML = ''; // Clear skeletons only if not loading more
 
                 const newBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                displayedBooksMain = displayedBooksMain.concat(newBooks);
-
+                
                 if (newBooks.length > 0) {
                     newBooks.forEach(book => {
-                        elements.booksContainer.innerHTML += createBookCardHTML(book);
+                        displayedBooksMain.push(book); // Add to main array
+                        if(elements.booksContainer) elements.booksContainer.innerHTML += createBookCardHTML(book);
                     });
                     lastVisibleBookMain = snapshot.docs[snapshot.docs.length - 1];
                 }
 
                 hasMoreBooksMain = newBooks.length === BOOKS_PER_PAGE_MAIN;
 
-                if (displayedBooksMain.length === 0 && !loadMore) {
+                if (displayedBooksMain.length === 0 && !loadMore && elements.emptyStateBooks) {
                     elements.emptyStateBooks.innerHTML = `<i class="fas fa-search-minus"></i><h3>No Books Found</h3><p>No books match the category '${escapeHTML(currentCategory)}'. Try 'All' or another category.</p>`;
                     elements.emptyStateBooks.style.display = 'flex';
-                } else {
+                } else if (elements.emptyStateBooks) {
                     elements.emptyStateBooks.style.display = 'none';
                 }
-                AOS.refreshHard();
+                AOS.refreshHard(); // Use refreshHard as DOM structure changes
 
             } catch (error) {
                 console.error("Error fetching books for main grid:", error);
-                showToast("Could not load books.", "error");
-                if (!loadMore) {
-                    elements.booksContainer.innerHTML = '';
+                showToast("Could not load books. Please check your connection.", "error");
+                if (!loadMore && elements.emptyStateBooks) {
+                    if(elements.booksContainer) elements.booksContainer.innerHTML = ''; // Clear skeletons
                     elements.emptyStateBooks.innerHTML = `<i class="fas fa-exclamation-triangle"></i><h3>Error Loading Books</h3><p>Please refresh or try again later.</p>`;
                     elements.emptyStateBooks.style.display = 'flex';
                 }
             } finally {
                 isLoadingBooksMain = false;
-                elements.booksGridLoadingIndicator.style.display = 'none';
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
             }
         }
 
-        async function fetchAllBooksForSearch() { // For search functionality
-            if (!currentUser) return;
+        async function fetchAllBooksForSearch() {
+            if (!currentUser) { allBooksCache = []; return; } // Clear cache if logged out
             try {
                 const snapshot = await db.collection('books').where('status', '==', 'approved').get();
                 allBooksCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             } catch (error) {
                 console.error("Error fetching all books for search:", error);
-                // Search might be less effective but app continues
+                showToast("Search functionality might be limited due to a network error.", "warning");
             }
         }
 
 
         function fetchPopularBooks() {
-             if (!currentUser) return;
-             if (listeners.popularBooks) listeners.popularBooks();
+             if (!currentUser) {
+                 if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-lock"></i><p style="font-size:0.9rem;">Login to see popular books.</p></div>`;
+                 return;
+             }
+             if (listeners.popularBooks) listeners.popularBooks(); // Detach previous listener
              renderSkeletonLoaders(elements.popularBooksCarousel, 5, 'popular');
 
              listeners.popularBooks = db.collection('books').where('status', '==', 'approved')
                                        .orderBy('downloads', 'desc').orderBy('approvedAt', 'desc').limit(10)
                                        .onSnapshot(snapshot => {
                  popularBooksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                 elements.popularBooksCarousel.innerHTML = '';
+                 if (elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = ''; // Clear skeletons
+                 
                  if (popularBooksData.length === 0) {
-                     elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-sad-tear"></i><p style="font-size:0.9rem;">No popular books yet.</p></div>`;
+                     if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-sad-tear"></i><p style="font-size:0.9rem;">No popular books yet.</p></div>`;
                  } else {
-                     popularBooksData.forEach(book => elements.popularBooksCarousel.innerHTML += createPopularBookCardHTML(book));
+                     popularBooksData.forEach(book => {
+                         if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML += createPopularBookCardHTML(book);
+                     });
                  }
-                 AOS.refreshHard();
+                 AOS.refreshHard(); // Use refreshHard as DOM structure changes
              }, error => {
                  console.error("Error fetching popular books:", error);
                  showToast("Could not load popular books.", "error");
-                 elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-exclamation-triangle"></i><p style="font-size:0.9rem;">Error loading.</p></div>`;
+                 if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-exclamation-triangle"></i><p style="font-size:0.9rem;">Error loading.</p></div>`;
              });
         }
 
         function renderCategoryFilters() {
+             if (!elements.categoryFilterContainer) return;
              elements.categoryFilterContainer.innerHTML = bookCategories.map(cat => `
                 <button class="category-filter-item ${cat === currentCategory ? 'active' : ''}" data-category="${escapeHTML(cat)}">
                     ${escapeHTML(cat)}
@@ -2070,20 +2168,25 @@
             `).join('');
         }
 
-        elements.categoryFilterContainer.addEventListener('click', (e) => {
-            const target = e.target.closest('.category-filter-item');
-            if (target) {
-                currentCategory = target.dataset.category;
-                $$('.category-filter-item').forEach(i => i.classList.remove('active'));
-                target.classList.add('active');
-                fetchBooksMain(false); // Fetch new set of books for the category
-            }
-        });
+        if(elements.categoryFilterContainer) {
+            elements.categoryFilterContainer.addEventListener('click', (e) => {
+                const target = e.target.closest('.category-filter-item');
+                if (target && currentUser) { // Only allow filter change if logged in
+                    currentCategory = target.dataset.category;
+                    $$('#categoryFilterContainer .category-filter-item').forEach(i => i.classList.remove('active'));
+                    target.classList.add('active');
+                    fetchBooksMain(false);
+                } else if (!currentUser) {
+                    showToast("Please login to browse categories.", "info");
+                    openModal(elements.loginModal);
+                }
+            });
+        }
 
 
         elements.addBookForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser || !userData) { showToast("Login to share books.", "error"); return; }
+            if (!currentUser || !userData) { showToast("Login to share books.", "error"); openModal(elements.loginModal); return; }
 
             const bookName = $('#bookName').value.trim();
             const authorName = $('#authorName').value.trim();
@@ -2095,8 +2198,9 @@
             if (!bookName || !authorName || !category || !imageUrl || !driveLink) {
                 showToast("Please fill all required fields.", "warning"); return;
             }
-            if (!imageUrl.match(/^https?:\/\/.+/)) { showToast("Image URL must be a valid link.", "warning"); return; }
-            if (!driveLink.match(/^https?:\/\/.+/)) { showToast("Drive link must be a valid link.", "warning"); return; }
+            try { new URL(imageUrl); } catch (_) { showToast("Image URL must be a valid link.", "warning"); return; }
+            try { new URL(driveLink); } catch (_) { showToast("Drive link must be a valid link.", "warning"); return; }
+
 
             const btn = $('#submitBookBtn');
             toggleSpinner(btn, true);
@@ -2105,7 +2209,7 @@
                 bookName, authorName, category, imageUrl, driveLink, description,
                 submittedBy: currentUser.uid,
                 submittedByName: userData.name || "Anonymous",
-                submittedByUsername: userData.username || "anon",
+                submittedByUsername: userData.username || "anon_username", // Ensure username exists
                 submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 status: "pending", downloads: 0, avgRating: 0, ratingCount: 0,
                 approvedAt: null, reviewedAt: null, reviewedBy: null, rejectionReason: '', adminNotes: '',
@@ -2113,6 +2217,7 @@
 
             try {
                 await db.collection('books').add(bookData);
+                // Increment shared count using a transaction or server-side update for reliability
                 await db.collection('users').doc(currentUser.uid).update({
                     booksSharedCount: firebase.firestore.FieldValue.increment(1)
                 });
@@ -2133,38 +2238,41 @@
 
             listeners.bookApproval = db.collection('books')
                 .where('submittedBy', '==', currentUser.uid)
-                .onSnapshot(snapshot => {
-                    snapshot.docChanges().forEach(async change => {
+                .onSnapshot(async (snapshot) => { // Added async here
+                    for (const change of snapshot.docChanges()) { // Use for...of for async operations inside loop
                         if (change.type === 'modified') {
                             const book = {id: change.doc.id, ...change.doc.data()};
                             const userRef = db.collection('users').doc(currentUser.uid);
-                            const userDoc = await userRef.get();
-                            const currentLocalUserData = userDoc.exists ? userDoc.data() : userData;
+                            
+                            try {
+                                const userDoc = await userRef.get(); // Get fresh user data
+                                if (!userDoc.exists) {
+                                    console.warn("User document not found during book approval processing for UID:", currentUser.uid);
+                                    continue; // Skip if user doc is missing
+                                }
+                                const currentLocalUserData = userDoc.data();
+                                const processedActions = currentLocalUserData.processedBookActions || {};
 
-                            const processedActions = currentLocalUserData.processedBookActions || {};
-
-                            if (book.status === 'approved' && (!processedActions[book.id] || !processedActions[book.id].approval)) {
-                                showToast(`Your book "${escapeHTML(book.bookName)}" has been approved! +10 points.`, "success", 7000);
-                                try {
+                                if (book.status === 'approved' && (!processedActions[book.id] || !processedActions[book.id].approval)) {
+                                    showToast(`Your book "${escapeHTML(book.bookName)}" has been approved! +10 points.`, "success", 7000);
                                     await userRef.update({
                                         points: firebase.firestore.FieldValue.increment(10),
                                         [`processedBookActions.${book.id}.approval`]: true
                                     });
-                                    await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", null, "fas fa-book-reader");
+                                    await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", `/#bookDetail/${book.id}`, "fas fa-book-reader");
                                     await createNotification(currentUser.uid, "Points Awarded!", `You received +10 points for sharing "${escapeHTML(book.bookName)}".`, "success", null, "fas fa-coins");
-                                } catch (e) { console.error("Error updating points/notification for approval:", e); }
-
-                            } else if (book.status === 'rejected' && (!processedActions[book.id] || !processedActions[book.id].rejection)) {
-                                showToast(`Your book "${escapeHTML(book.bookName)}" was rejected. Reason: ${escapeHTML(book.rejectionReason || 'Not specified')}.`, "warning", 7000);
-                                try {
+                                } else if (book.status === 'rejected' && (!processedActions[book.id] || !processedActions[book.id].rejection)) {
+                                    showToast(`Your book "${escapeHTML(book.bookName)}" was rejected. Reason: ${escapeHTML(book.rejectionReason || 'Not specified')}.`, "warning", 7000);
                                     await userRef.update({
                                         [`processedBookActions.${book.id}.rejection`]: true
                                     });
                                     await createNotification(currentUser.uid, "Book Submission Update", `Your book "${escapeHTML(book.bookName)}" was rejected. Reason: ${escapeHTML(book.rejectionReason || 'Not specified')}.`, "warning", null, "fas fa-times-circle");
-                                } catch (e) { console.error("Error updating notification for rejection:", e); }
+                                }
+                            } catch (e) {
+                                console.error("Error processing book approval/rejection for user:", currentUser.uid, "book:", book.id, e);
                             }
                         }
-                    });
+                    }
                 }, error => {
                     console.error("Error in book approval listener:", error);
                 });
@@ -2174,7 +2282,7 @@
         [elements.booksContainer, elements.profileBooksContainer, elements.popularBooksCarousel].forEach(container => {
             if(container) {
                 container.addEventListener('click', async (e) => {
-                    const targetButton = e.target.closest('.action-btn, .popular-book-card[data-action="view"], .book-img-container[data-action="view"]');
+                    const targetButton = e.target.closest('.action-btn[data-action="view"], .popular-book-card[data-action="view"], .book-img-container[data-action="view"]');
                     if (!targetButton) return;
 
                     if (!currentUser || !userData) { openModal(elements.loginModal); return; }
@@ -2191,16 +2299,24 @@
         async function handleBookDownload(bookId, link, fromModal = false, buttonElement = null) {
             if (!currentUser || !userData) { openModal(elements.loginModal); return; }
 
-            if (userData.credits < BOOK_DOWNLOAD_COST) {
-                showToast(`Need ${BOOK_DOWNLOAD_COST} credits. You have ${userData.credits}. Earn more or claim daily bonus!`, "warning", 5000);
-                openModal(elements.creditModal);
-                return;
-            }
-
             const btn = buttonElement || (fromModal ? $(`#bookDetailModal [data-action="download"][data-book-id="${bookId}"]`) : null);
             if (btn) toggleSpinner(btn, true);
 
             try {
+                 // Get fresh userData, especially credits, right before transaction
+                const userDocFresh = await db.collection('users').doc(currentUser.uid).get();
+                if (!userDocFresh.exists) {
+                    throw new Error("User data not found. Please try again.");
+                }
+                const freshUserData = userDocFresh.data();
+
+                if (freshUserData.credits < BOOK_DOWNLOAD_COST && bookId && (await db.collection('books').doc(bookId).get()).data().submittedBy !== currentUser.uid) { // Check if not owner
+                    showToast(`Need ${BOOK_DOWNLOAD_COST} credits. You have ${freshUserData.credits}. Earn more or claim daily bonus!`, "warning", 5000);
+                    openModal(elements.creditModal);
+                    if (btn) toggleSpinner(btn, false);
+                    return;
+                }
+
                 const userRef = db.collection('users').doc(currentUser.uid);
                 const bookRef = db.collection('books').doc(bookId);
 
@@ -2209,9 +2325,8 @@
                 let isOwner = false;
 
                 await db.runTransaction(async (transaction) => {
-                    // --- STAGE 1: READS ---
-                    const userDoc = await transaction.get(userRef);
-                    const bookDoc = await transaction.get(bookRef);
+                    const userDoc = await transaction.get(userRef); // Read within transaction
+                    const bookDoc = await transaction.get(bookRef); // Read within transaction
 
                     if (!userDoc.exists) throw new Error("User not found during transaction.");
                     if (!bookDoc.exists) throw new Error("Book not found during transaction.");
@@ -2221,55 +2336,55 @@
                     bookNameForNotification = bookDoc.data().bookName;
                     isOwner = currentUser.uid === bookOwnerIdForNotification;
 
-                    // --- STAGE 2: VALIDATIONS (based on read data) ---
                     if (!isOwner && currentCredits < BOOK_DOWNLOAD_COST) {
-                        throw new Error(`Insufficient credits. Need ${BOOK_DOWNLOAD_COST}, have ${currentCredits}.`);
+                        throw new Error(`Insufficient credits. Need ${BOOK_DOWNLOAD_COST}, have ${currentCredits}. Please refresh.`);
                     }
 
-                    // --- STAGE 3: WRITES ---
                     if (!isOwner) {
                         transaction.update(userRef, {
                             credits: firebase.firestore.FieldValue.increment(-BOOK_DOWNLOAD_COST),
                             booksDownloadedCount: firebase.firestore.FieldValue.increment(1)
                         });
                     }
-                    // Always increment book download count
                     transaction.update(bookRef, { downloads: firebase.firestore.FieldValue.increment(1) });
 
-                    // Increment points for book owner (if not self)
                     if (bookOwnerIdForNotification && !isOwner) {
                         const submitterRef = db.collection('users').doc(bookOwnerIdForNotification);
-                        // Note: We are not reading submitterDoc again here to avoid read-after-write issues.
-                        // This assumes submitterRef exists. A more robust solution might pre-fetch or handle error.
+                        // Check if submitterRef exists before updating (optional, but good practice)
+                        // const submitterDoc = await transaction.get(submitterRef);
+                        // if (submitterDoc.exists) {
                         transaction.update(submitterRef, {
                             points: firebase.firestore.FieldValue.increment(1),
                             totalBookDownloads: firebase.firestore.FieldValue.increment(1)
                         });
+                        // }
                     }
                 });
 
-                // Transaction successful, now open link and send notifications
                 window.open(link, '_blank');
-                showToast(`-${BOOK_DOWNLOAD_COST} credits. Opening download...`, "info", 3000);
-
-                // Update local userData immediately if credits were deducted
                 if (!isOwner) {
-                    userData.credits -= BOOK_DOWNLOAD_COST; // Update local cache
+                  showToast(`-${BOOK_DOWNLOAD_COST} credits. Opening download...`, "info", 3000);
+                } else {
+                  showToast(`Opening download... (This is your book, no credits deducted)`, "info", 3000);
+                }
+
+
+                // Update local userData immediately if credits were deducted for responsiveness
+                if (!isOwner && userData) { // Check if userData exists
+                    userData.credits = (userData.credits || 0) - BOOK_DOWNLOAD_COST;
                     updateHeaderCredits();
                 }
 
-                // Create notification for book owner (if applicable)
                 if (bookOwnerIdForNotification && !isOwner && bookNameForNotification) {
-                    await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", null, "fas fa-arrow-down");
+                    await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
                 }
-                // Optional: Create a notification for the downloader
-                // await createNotification(currentUser.uid, "Book Download Started", `You started downloading "${escapeHTML(bookNameForNotification)}".`, "info", null, "fas fa-download");
+                // Optionally, notify downloader
+                // await createNotification(currentUser.uid, "Download Started", `Downloading "${escapeHTML(bookNameForNotification)}"`, "info", `/#bookDetail/${bookId}`, "fas fa-download");
 
 
             } catch (error) {
                 console.error("Error during download transaction:", error);
                 showToast(`Download failed: ${error.message || 'Please try again.'}`, "error");
-                 // Revert local credit count if transaction failed and it was deducted optimistically (less common now with transaction fix)
             } finally {
                 if (btn) toggleSpinner(btn, false);
             }
@@ -2278,52 +2393,66 @@
 
         // --- User Profile Books & Withdrawals ---
         function fetchUserBooks(loadMore = false, forceRefresh = false) {
-            if (!currentUser || isFetchingMoreUserBooks) return;
-            if (forceRefresh) { lastUserBookSnapshot = null; hasMoreUserBooks = true; elements.profileBooksContainer.innerHTML = ''; elements.emptyProfileBooks.style.display = 'none'; }
-            if (!hasMoreUserBooks && loadMore) return;
+            if (!currentUser || (isFetchingMoreUserBooks && !forceRefresh) ) return;
+            if (forceRefresh) {
+                lastUserBookSnapshot = null; hasMoreUserBooks = true;
+                if(elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
+                if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
+            }
+            if (!hasMoreUserBooks && loadMore) {
+                if(elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false); // Ensure spinner stops
+                return;
+            }
 
             isFetchingMoreUserBooks = true;
-            if (loadMore) toggleSpinner(elements.loadMoreBooksBtn, true);
-            else if (!elements.profileBooksContainer.querySelector('.book-card')) { renderSkeletonLoaders(elements.profileBooksContainer, 3); }
+            if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, true);
+            else if (!forceRefresh && elements.profileBooksContainer && !elements.profileBooksContainer.querySelector('.book-card')) {
+                renderSkeletonLoaders(elements.profileBooksContainer, 3);
+            }
 
             let query = db.collection('books').where('submittedBy', '==', currentUser.uid)
                           .orderBy('submittedAt', 'desc').limit(6);
             if (loadMore && lastUserBookSnapshot) { query = query.startAfter(lastUserBookSnapshot); }
 
-            if (listeners.userBooks) listeners.userBooks(); // Detach previous listener if any
+            if (listeners.userBooks) listeners.userBooks();
             listeners.userBooks = query.onSnapshot(snapshot => {
-                if (!loadMore && !forceRefresh && snapshot.metadata.hasPendingWrites && !snapshot.empty) return; // Avoid race conditions on initial load with pending writes unless it's an empty result
-                if (!loadMore) elements.profileBooksContainer.innerHTML = ''; // Clear for new results unless appending
+                // Avoid quick updates if it's just local pending writes on initial load/refresh
+                if (!loadMore && !forceRefresh && snapshot.metadata.hasPendingWrites && !snapshot.empty) return;
 
-                if (snapshot.empty && elements.profileBooksContainer.innerHTML === '') { // Check if container is truly empty after clearing
-                    elements.emptyProfileBooks.style.display = 'flex'; hasMoreUserBooks = false;
+                if (!loadMore && elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
+
+                if (snapshot.empty && (!elements.profileBooksContainer || elements.profileBooksContainer.innerHTML === '')) {
+                    if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'flex';
+                    hasMoreUserBooks = false;
                 } else {
-                    elements.emptyProfileBooks.style.display = 'none';
+                    if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
                     snapshot.docs.forEach(doc => {
-                        const existingCard = elements.profileBooksContainer.querySelector(`.book-card[data-id="${doc.id}"]`);
-                        if(!existingCard) { // Only add if not already present
+                        const existingCard = elements.profileBooksContainer ? elements.profileBooksContainer.querySelector(`.book-card[data-id="${doc.id}"]`) : null;
+                        if(!existingCard && elements.profileBooksContainer) {
                            elements.profileBooksContainer.innerHTML += createBookCardHTML({ id: doc.id, ...doc.data() }, 'profile');
-                        } else { // If card exists, potentially update it (more complex, for now just ensure no duplicates)
-                            // console.log("Book card already exists, skipping duplicate add:", doc.id);
                         }
                     });
-                    lastUserBookSnapshot = snapshot.docs[snapshot.docs.length - 1];
+                    lastUserBookSnapshot = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
                     hasMoreUserBooks = snapshot.docs.length === 6;
                 }
-                elements.loadMoreBooksBtn.style.display = hasMoreUserBooks ? 'inline-flex' : 'none';
-                if (loadMore) toggleSpinner(elements.loadMoreBooksBtn, false);
+
+                if(elements.loadMoreBooksBtn) elements.loadMoreBooksBtn.style.display = hasMoreUserBooks ? 'inline-flex' : 'none';
+                if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
                 isFetchingMoreUserBooks = false;
                 AOS.refreshHard();
             }, error => {
                 console.error("Error fetching user books:", error);
                 showToast("Could not load your shared books.", "error");
-                if (loadMore) toggleSpinner(elements.loadMoreBooksBtn, false);
+                if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
                 isFetchingMoreUserBooks = false;
-                elements.emptyProfileBooks.style.display = 'flex';
+                if(elements.emptyProfileBooks && elements.profileBooksContainer) {
+                    elements.profileBooksContainer.innerHTML = '';
+                    elements.emptyProfileBooks.style.display = 'flex';
+                }
             });
         }
 
-        elements.loadMoreBooksBtn.addEventListener('click', () => fetchUserBooks(true));
+        if(elements.loadMoreBooksBtn) elements.loadMoreBooksBtn.addEventListener('click', () => fetchUserBooks(true));
 
         function enableWithdrawalIfQualified() {
             const btn = elements.withdrawBtnLarge;
@@ -2335,44 +2464,50 @@
                     elements.withdrawalModalPoints.textContent = userData.points || 0;
                     selectedWithdrawalMethod = null; selectedWithdrawalAmount = null; selectedWithdrawalRs = null;
                     $$('#withdrawalModal .withdrawal-option, #withdrawalModal .amount-option').forEach(o => o.classList.remove('active'));
-                    elements.paymentDetails.classList.remove('active');
-                    elements.withdrawalForm.reset();
+                    if(elements.paymentDetails) elements.paymentDetails.classList.remove('active');
+                    if(elements.withdrawalForm) elements.withdrawalForm.reset();
                     updatePaymentDetailsUI();
                     openModal(elements.withdrawalModal);
-                } else { showToast("You need at least 500 points to withdraw.", "warning"); }
+                } else { showToast(`You need at least 500 points to withdraw. Your balance: ${userData?.points || 0}`, "warning"); }
             };
         }
-        elements.closeWithdrawalModal.onclick = () => closeModal(elements.withdrawalModal);
+        if(elements.closeWithdrawalModal) elements.closeWithdrawalModal.onclick = () => closeModal(elements.withdrawalModal);
 
         function setupWithdrawalListeners() {
-            elements.withdrawalOptionsContainer.addEventListener('click', (e) => {
-                const option = e.target.closest('.withdrawal-option');
-                if (!option) return;
-                $$('#withdrawalModal .withdrawal-option').forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                selectedWithdrawalMethod = option.dataset.method;
-                updatePaymentDetailsUI();
-                if (selectedWithdrawalAmount) elements.paymentDetails.classList.add('active');
-            });
-            elements.amountOptionsContainer.addEventListener('click', (e) => {
-                 const option = e.target.closest('.amount-option');
-                 if (!option) return;
-                 const amt = parseInt(option.dataset.amount);
-                 if (userData && userData.points >= amt) {
-                     $$('#withdrawalModal .amount-option').forEach(o => o.classList.remove('active'));
-                     option.classList.add('active');
-                     selectedWithdrawalAmount = amt;
-                     selectedWithdrawalRs = parseInt(option.dataset.rs);
-                     if (selectedWithdrawalMethod) elements.paymentDetails.classList.add('active');
-                 } else { showToast(`Need ${amt} pts. Your balance: ${userData?.points || 0}`, "warning"); }
-            });
+            if(elements.withdrawalOptionsContainer) {
+                elements.withdrawalOptionsContainer.addEventListener('click', (e) => {
+                    const option = e.target.closest('.withdrawal-option');
+                    if (!option) return;
+                    $$('#withdrawalModal .withdrawal-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    selectedWithdrawalMethod = option.dataset.method;
+                    updatePaymentDetailsUI();
+                    if (selectedWithdrawalAmount && elements.paymentDetails) elements.paymentDetails.classList.add('active');
+                });
+            }
+            if(elements.amountOptionsContainer) {
+                elements.amountOptionsContainer.addEventListener('click', (e) => {
+                     const option = e.target.closest('.amount-option');
+                     if (!option) return;
+                     const amt = parseInt(option.dataset.amount);
+                     if (userData && userData.points >= amt) {
+                         $$('#withdrawalModal .amount-option').forEach(o => o.classList.remove('active'));
+                         option.classList.add('active');
+                         selectedWithdrawalAmount = amt;
+                         selectedWithdrawalRs = parseInt(option.dataset.rs);
+                         if (selectedWithdrawalMethod && elements.paymentDetails) elements.paymentDetails.classList.add('active');
+                     } else { showToast(`Need ${amt} pts. Your balance: ${userData?.points || 0}`, "warning"); }
+                });
+            }
         }
         function updatePaymentDetailsUI() {
-            if (!selectedWithdrawalMethod) { elements.paymentDetails.classList.remove('active'); return; }
+            if (!selectedWithdrawalMethod || !elements.paymentDetails) { if(elements.paymentDetails) elements.paymentDetails.classList.remove('active'); return; }
             const paymentIdLabel = elements.paymentMethodLabel;
             const paymentIdField = elements.paymentIdInput;
             const accountNameFieldGroup = elements.accountNameGroup;
             const accountNameField = elements.accountNameInput;
+
+            if(!paymentIdLabel || !paymentIdField || !accountNameFieldGroup || !accountNameField) return; // Safety check
 
             paymentIdField.placeholder = "Enter details";
             accountNameFieldGroup.style.display = 'none';
@@ -2383,57 +2518,61 @@
             else if (selectedWithdrawalMethod === 'bank') { paymentIdLabel.textContent = 'Account Number *'; paymentIdField.placeholder = 'Enter Account Number'; accountNameFieldGroup.style.display = 'block'; accountNameField.required = true; }
             else if (selectedWithdrawalMethod === 'paytm' || selectedWithdrawalMethod === 'phonepe') { paymentIdLabel.textContent = `${selectedWithdrawalMethod.charAt(0).toUpperCase() + selectedWithdrawalMethod.slice(1)} Number *`; paymentIdField.placeholder = 'Enter registered mobile number'; }
         }
-        elements.withdrawalForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser || !userData || !selectedWithdrawalMethod || !selectedWithdrawalAmount) { showToast("Please select method and amount.", "warning"); return; }
-            if (userData.points < selectedWithdrawalAmount) { showToast("Insufficient points for selected amount.", "error"); return; }
+        if(elements.withdrawalForm) {
+            elements.withdrawalForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentUser || !userData || !selectedWithdrawalMethod || !selectedWithdrawalAmount) { showToast("Please select method and amount.", "warning"); return; }
+                if (userData.points < selectedWithdrawalAmount) { showToast("Insufficient points for selected amount.", "error"); return; }
 
-            const paymentIdValue = elements.paymentIdInput.value.trim();
-            const accountNameValue = elements.accountNameInput.value.trim();
+                const paymentIdValue = elements.paymentIdInput.value.trim();
+                const accountNameValue = elements.accountNameInput.value.trim();
 
-            if (!paymentIdValue || (elements.accountNameGroup.style.display === 'block' && !accountNameValue)) { showToast("Please fill all required payment details.", "warning"); return; }
+                if (!paymentIdValue || (elements.accountNameGroup.style.display === 'block' && !accountNameValue)) { showToast("Please fill all required payment details.", "warning"); return; }
 
-            const btn = elements.submitWithdrawalBtn;
-            toggleSpinner(btn, true);
+                const btn = elements.submitWithdrawalBtn;
+                toggleSpinner(btn, true);
 
-            const withdrawalData = {
-                userId: currentUser.uid, userName: userData.name, userEmail: userData.email,
-                pointsWithdrawn: selectedWithdrawalAmount, amountRs: selectedWithdrawalRs, method: selectedWithdrawalMethod,
-                paymentIdentifier: paymentIdValue, accountHolderName: selectedWithdrawalMethod === 'bank' ? accountNameValue : null,
-                status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                processedAt: null, adminNotes: ''
-            };
+                const withdrawalData = {
+                    userId: currentUser.uid, userName: userData.name || "N/A", userEmail: userData.email,
+                    pointsWithdrawn: selectedWithdrawalAmount, amountRs: selectedWithdrawalRs, method: selectedWithdrawalMethod,
+                    paymentIdentifier: paymentIdValue, accountHolderName: (selectedWithdrawalMethod === 'bank' && accountNameValue) ? accountNameValue : null,
+                    status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    processedAt: null, adminNotes: ''
+                };
 
-            try {
-                const userRef = db.collection('users').doc(currentUser.uid);
-                await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userRef);
-                    if (!userDoc.exists) throw new Error("User not found.");
-                    const currentPoints = userDoc.data().points || 0;
-                    if (currentPoints < selectedWithdrawalAmount) { throw new Error("Insufficient points. Please refresh."); }
-                    transaction.update(userRef, { points: firebase.firestore.FieldValue.increment(-selectedWithdrawalAmount) });
-                    const withdrawalRef = db.collection('withdrawals').doc();
-                    transaction.set(withdrawalRef, withdrawalData);
-                });
-                await createNotification(currentUser.uid, "Withdrawal Request Submitted", `Your request to withdraw ${selectedWithdrawalAmount} points is pending.`, "info", null, "fas fa-hourglass-half");
-                showToast("Withdrawal request submitted successfully!", "success");
-                elements.withdrawalForm.reset();
-                closeModal(elements.withdrawalModal);
-            } catch (error) {
-                console.error("Error submitting withdrawal:", error);
-                showToast(`Failed to submit request: ${error.message}`, "error");
-            } finally {
-                toggleSpinner(btn, false);
-            }
-        });
+                try {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    await db.runTransaction(async (transaction) => {
+                        const userDoc = await transaction.get(userRef);
+                        if (!userDoc.exists) throw new Error("User not found.");
+                        const currentPoints = userDoc.data().points || 0;
+                        if (currentPoints < selectedWithdrawalAmount) { throw new Error("Insufficient points. Please refresh."); }
+                        transaction.update(userRef, { points: firebase.firestore.FieldValue.increment(-selectedWithdrawalAmount) });
+                        const withdrawalRef = db.collection('withdrawals').doc(); // Auto-generate ID
+                        transaction.set(withdrawalRef, withdrawalData);
+                    });
+                    await createNotification(currentUser.uid, "Withdrawal Request Submitted", `Your request to withdraw ${selectedWithdrawalAmount} points (₹${selectedWithdrawalRs}) is pending.`, "info", null, "fas fa-hourglass-half");
+                    showToast("Withdrawal request submitted successfully!", "success");
+                    elements.withdrawalForm.reset();
+                    closeModal(elements.withdrawalModal);
+                } catch (error) {
+                    console.error("Error submitting withdrawal:", error);
+                    showToast(`Failed to submit request: ${error.message}`, "error");
+                } finally {
+                    toggleSpinner(btn, false);
+                }
+            });
+        }
 
         function fetchWithdrawalHistory() {
             if (!currentUser || listeners.withdrawals) return;
+            if(!elements.withdrawalHistoryContainer || !elements.emptyWithdrawalHistory) return;
+
             renderSkeletonLoaders(elements.withdrawalHistoryContainer, 3, 'history');
             elements.emptyWithdrawalHistory.style.display = 'none';
 
             listeners.withdrawals = db.collection('withdrawals').where('userId', '==', currentUser.uid)
-                .orderBy('requestedAt', 'desc').limit(10)
+                .orderBy('requestedAt', 'desc').limit(10) // Consider pagination for long histories
                 .onSnapshot(snapshot => {
                     elements.withdrawalHistoryContainer.innerHTML = '';
                     if (snapshot.empty) { elements.emptyWithdrawalHistory.style.display = 'flex'; }
@@ -2465,13 +2604,18 @@
 
         // --- Credits & Survey ---
         async function handleDailyCreditClaim() {
-            if (!currentUser || !userData) return;
+            if (!currentUser || !userData) { showToast("Please login to claim credits.", "info"); openModal(elements.loginModal); return; }
             const btn = elements.claimDailyCreditBtn;
             toggleSpinner(btn, true);
 
             try {
+                 // Fetch fresh user data to check last claim accurately
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (!userDoc.exists) throw new Error("User data not found.");
+                const freshUserData = userDoc.data();
+
                 const today = new Date().toISOString().split('T')[0];
-                if (userData.lastDailyCreditClaim === today) {
+                if (freshUserData.lastDailyCreditClaim === today) {
                     showToast("You've already claimed your daily bonus today!", "warning");
                     toggleSpinner(btn, false); return;
                 }
@@ -2483,40 +2627,46 @@
                 });
                 await createNotification(currentUser.uid, "Daily Bonus Claimed!", `You received +${creditsToAward} daily credits. Come back tomorrow!`, "success", null, "fas fa-gift");
                 showToast(`+${creditsToAward} daily credits claimed! Come back tomorrow.`, "success");
+                // userData.credits will be updated by the onSnapshot listener
             } catch (error) {
                 console.error("Error claiming daily credit:", error);
-                showToast("Failed to claim daily credit. Please try again.", "error");
+                showToast("Failed to claim daily credit. " + error.message, "error");
             } finally {
                 toggleSpinner(btn, false);
             }
         }
 
-        elements.headerCreditsContainer.onclick = () => {
+        if(elements.headerCreditsContainer) elements.headerCreditsContainer.onclick = () => {
              if (!currentUser) { openModal(elements.loginModal); return; }
-             elements.creditModalUserCredits.innerHTML = `${userData?.credits || 0} <i class="fas fa-coins" style="color: var(--credit-color);"></i>`;
+             if(elements.creditModalUserCredits) elements.creditModalUserCredits.innerHTML = `${userData?.credits || 0} <i class="fas fa-coins" style="color: var(--credit-color);"></i>`;
              openModal(elements.creditModal);
         };
-        elements.closeCreditModal.onclick=()=>closeModal(elements.creditModal);
-        elements.claimDailyCreditBtn.onclick=handleDailyCreditClaim;
-        elements.conductSurveyBtn.onclick = () => {
+        if(elements.closeCreditModal) elements.closeCreditModal.onclick=()=>closeModal(elements.creditModal);
+        if(elements.claimDailyCreditBtn) elements.claimDailyCreditBtn.onclick=handleDailyCreditClaim;
+        if(elements.conductSurveyBtn) elements.conductSurveyBtn.onclick = () => {
             if (!currentUser) { openModal(elements.loginModal); return; }
             showToast("Redirecting to survey... Complete it to earn credits!", "info");
-            window.open("https://forms.gle/gXz2QJt5k7Yc8XFp9", "_blank"); // Placeholder link
+            window.open("https://forms.gle/gXz2QJt5k7Yc8XFp9", "_blank"); // Placeholder survey link
             createNotification(currentUser.uid, "Survey Link Opened", "You've opened the survey link. Complete it to earn rewards!", "info", null, "fas fa-poll-h");
         };
 
 
         // --- Book Detail Modal Logic ---
         async function openBookDetailModal(bookId) {
-            if (!bookId || !currentUser) { if(!currentUser) openModal(elements.loginModal); return; }
+            if (!bookId) { console.warn("openBookDetailModal called without bookId"); return; }
+            if (!currentUser) { openModal(elements.loginModal); return; }
+
             currentBookDetailId = bookId;
             openModal(elements.bookDetailModal);
-            elements.bookDetailContent.innerHTML = `<div style="text-align:center; padding: 50px 0;"><div class="spinner" style="width: 30px; height: 30px; border-width: 4px;"></div><p style="margin-top: 15px; color: var(--text-muted);">Loading details...</p></div>`;
+            if(elements.bookDetailContent) elements.bookDetailContent.innerHTML = `<div style="text-align:center; padding: 50px 0;"><div class="spinner" style="width: 30px; height: 30px; border-width: 4px;"></div><p style="margin-top: 15px; color: var(--text-muted);">Loading details...</p></div>`;
 
             try {
                 const bookDoc = await db.collection('books').doc(bookId).get();
-                if (!bookDoc.exists) {
-                    showToast("Book details not found.", "error"); closeModal(elements.bookDetailModal); currentBookDetailId = null; return;
+                if (!bookDoc.exists || bookDoc.data().status !== 'approved') { // Ensure book is approved
+                    showToast("Book details not found or not available.", "error");
+                    closeModal(elements.bookDetailModal);
+                    currentBookDetailId = null;
+                    return;
                 }
                 const bookData = { id: bookDoc.id, ...bookDoc.data() };
                 renderBookDetailContent(bookData);
@@ -2524,14 +2674,16 @@
             } catch (error) {
                 console.error("Error fetching book details:", error);
                 showToast("Failed to load book details.", "error");
-                elements.bookDetailContent.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 30px;">Could not load details. Please try again.</p>`;
+                if(elements.bookDetailContent) elements.bookDetailContent.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 30px;">Could not load details. Please try again.</p>`;
             }
         }
 
         function renderBookDetailContent(book) {
+            if (!elements.bookDetailContent) return;
             const defaultImage = 'https://via.placeholder.com/200x280/333/888?text=No+Cover';
             const imageUrl = book.imageUrl || defaultImage;
-            const downloadCostText = book.submittedBy === currentUser?.uid ? 'Free - Your Book' : `${BOOK_DOWNLOAD_COST} <i class="fas fa-coins" style="color:var(--credit-color);font-size:0.8em;"></i>`;
+            const isOwner = book.submittedBy === currentUser?.uid;
+            const downloadCostText = isOwner ? 'Free - Your Book' : `${BOOK_DOWNLOAD_COST} <i class="fas fa-coins" style="color:var(--credit-color);font-size:0.8em;"></i>`;
 
 
             elements.bookDetailContent.innerHTML = `
@@ -2606,20 +2758,21 @@
         function highlightStars(starsNodeList, rating, isHovering) {
              starsNodeList.forEach(s => {
                  const starValue = parseInt(s.dataset.value);
-                 s.classList.remove('fas', 'far', 'selected', 'hovered');
+                 s.classList.remove('fas', 'far', 'selected', 'hovered'); // Reset classes
                  if (starValue <= rating) {
-                     s.classList.add('fas');
+                     s.classList.add('fas'); // Filled star
                      if (!isHovering) s.classList.add('selected');
                      if (isHovering) s.classList.add('hovered');
                  } else {
-                     s.classList.add('far');
+                     s.classList.add('far'); // Empty star
                  }
              });
         }
 
          async function handleFeedbackSubmit(event, bookId) {
             event.preventDefault();
-            if (!currentUser || !userData || !bookId) return;
+            if (!currentUser || !userData || !bookId) { showToast("Please login to submit feedback.", "info"); if(!currentUser) openModal(elements.loginModal); return; }
+
 
             const rating = parseInt($('#feedbackRating').value);
             const comment = $('#feedbackComment').value.trim();
@@ -2630,8 +2783,11 @@
             toggleSpinner(btn, true);
 
             const feedbackData = {
-                userId: currentUser.uid, userName: userData.name || "Anonymous",
-                rating: rating, comment: comment,
+                userId: currentUser.uid,
+                userName: userData.name || "Anonymous",
+                userAvatarInitials: getInitials(userData.name || "Anonymous"), // For potential future display
+                rating: rating,
+                comment: comment,
                 submittedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -2640,11 +2796,13 @@
                 const bookRef = db.collection('books').doc(bookId);
                 const userRef = db.collection('users').doc(currentUser.uid);
 
+                // Transaction to update book's average rating and user's feedback count
                 await db.runTransaction(async (transaction) => {
                     const bookDoc = await transaction.get(bookRef);
-                    const userDoc = await transaction.get(userRef);
+                    const userDoc = await transaction.get(userRef); // Also get user doc for totalFeedbackGiven
                     if (!bookDoc.exists) throw new Error("Book not found for rating update.");
-                    if (!userDoc.exists) throw new Error("User not found for stat update.");
+                    if (!userDoc.exists) throw new Error("User data not found for stat update.");
+
 
                     const currentRatingCount = bookDoc.data().ratingCount || 0;
                     const currentAvgRating = bookDoc.data().avgRating || 0;
@@ -2654,20 +2812,29 @@
                     transaction.update(bookRef, { ratingCount: newRatingCount, avgRating: newAvgRating });
                     transaction.update(userRef, { totalFeedbackGiven: firebase.firestore.FieldValue.increment(1) });
                 });
-                await createNotification(currentUser.uid, "Feedback Submitted", `Your feedback for "${escapeHTML((await bookRef.get()).data().bookName)}" has been recorded.`, "success", null, "fas fa-comment-dots");
-                showToast("Thank you! Your feedback has been submitted.", "success");
-                $('#feedbackForm').reset(); $('#feedbackRating').value = 0;
-                highlightStars($$('#feedbackStars i'), 0, false);
-                loadFeedbackComments(bookId);
+                
+                const bookSnapshot = await bookRef.get(); // Get book name after transaction
+                const bookNameForNotif = bookSnapshot.exists ? bookSnapshot.data().bookName : "this book";
+                await createNotification(currentUser.uid, "Feedback Submitted", `Your feedback for "${escapeHTML(bookNameForNotif)}" has been recorded.`, "success", `/#bookDetail/${bookId}`, "fas fa-comment-dots");
 
+                showToast("Thank you! Your feedback has been submitted.", "success");
+                if($('#feedbackForm')) $('#feedbackForm').reset();
+                if($('#feedbackRating')) $('#feedbackRating').value = 0;
+                if ($$('#feedbackStars i').length > 0) highlightStars($$('#feedbackStars i'), 0, false);
+                loadFeedbackComments(bookId); // Refresh comments list
+
+                // Update book detail meta in real-time
                 const bookDocAfterRating = await db.collection('books').doc(bookId).get();
-                if(bookDocAfterRating.exists) {
+                if(bookDocAfterRating.exists && elements.bookDetailContent) {
                     const updatedBookData = bookDocAfterRating.data();
-                    const avgRatingSpan = elements.bookDetailContent.querySelector('.book-detail-meta span:nth-child(3)');
+                    const avgRatingSpan = elements.bookDetailContent.querySelector('.book-detail-meta span:nth-child(3)'); // Assuming rating is 3rd
                     if (avgRatingSpan && avgRatingSpan.querySelector('.fa-star, .far.fa-star')) {
                         avgRatingSpan.innerHTML = `<i class="fas fa-star" style="color:var(--star-color);"></i> ${updatedBookData.avgRating.toFixed(1)} (${updatedBookData.ratingCount || 0} ratings)`;
                     }
+                     const downloadCountSpan = elements.bookDetailContent.querySelector('#detailDownloadCount');
+                     if(downloadCountSpan) downloadCountSpan.textContent = updatedBookData.downloads || 0;
                 }
+
 
             } catch (error) {
                 console.error("Error submitting feedback:", error);
@@ -2687,7 +2854,7 @@
                     .orderBy('submittedAt', 'desc').limit(15).get();
                 if (snapshot.empty) { commentsList.innerHTML = '<div class="no-comments" style="padding: 20px 0;">Be the first to leave feedback for this book!</div>'; return; }
 
-                commentsList.innerHTML = '';
+                commentsList.innerHTML = ''; // Clear loading/previous comments
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let starsHTML = '';
@@ -2710,12 +2877,12 @@
 
         // --- Notification System ---
         async function createNotification(userId, title, message, type = 'info', actionLink = null, icon = null) {
-            if (!userId) return;
+            if (!userId) { console.warn("createNotification called without userId"); return; }
             try {
                 await db.collection('users').doc(userId).collection('notifications').add({
                     title: title, message: message, type: type,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    read: false, actionLink: actionLink,
+                    read: false, actionLink: actionLink, // Can be like '/#bookDetail/bookId123' or external URL
                     icon: icon || getDefaultIconForType(type)
                 });
             } catch (error) { console.error("Error creating notification:", error); }
@@ -2731,27 +2898,39 @@
         }
         function updateUnreadBadge(count) {
             unreadNotificationsCount = count;
-            if (count > 0) {
-                elements.unreadNotificationsBadge.textContent = count > 9 ? '9+' : count;
-                elements.unreadNotificationsBadge.style.display = 'flex';
-            } else {
-                elements.unreadNotificationsBadge.style.display = 'none';
+            if (elements.unreadNotificationsBadge) {
+                if (count > 0) {
+                    elements.unreadNotificationsBadge.textContent = count > 9 ? '9+' : count;
+                    elements.unreadNotificationsBadge.style.display = 'flex';
+                } else {
+                    elements.unreadNotificationsBadge.style.display = 'none';
+                }
             }
-             // Enable/disable based on currently active tab's unread items
-            const activeTab = elements.notificationTabsContainer.querySelector('.notification-tab-btn.active').dataset.tab;
-            if (activeTab === 'personal') {
-                elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
-            } else {
-                elements.markAllNotificationsReadBtn.disabled = true; // No "mark all read" for announcements
+            // Update "Mark all read" button state based on active tab
+            if (elements.notificationTabsContainer && elements.markAllNotificationsReadBtn) {
+                const activeTabBtn = elements.notificationTabsContainer.querySelector('.notification-tab-btn.active');
+                if (activeTabBtn) {
+                    const activeTab = activeTabBtn.dataset.tab;
+                    if (activeTab === 'personal') {
+                        elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
+                    } else {
+                        elements.markAllNotificationsReadBtn.disabled = true; // Announcements are not "markable" by user
+                    }
+                } else {
+                     elements.markAllNotificationsReadBtn.disabled = true; // Default if no tab active (should not happen)
+                }
             }
         }
 
         function setupUserNotificationsListener() {
             if (!currentUser || listeners.userNotifications) return;
+            if(!elements.personalNotificationsListContainer || !elements.emptyPersonalNotificationsState) return;
+
             renderSkeletonLoaders(elements.personalNotificationsListContainer, 5, 'notification');
 
             listeners.userNotifications = db.collection('users').doc(currentUser.uid).collection('notifications')
                 .orderBy('timestamp', 'desc')
+                .limit(50) // Limit to avoid performance issues with too many notifications
                 .onSnapshot(snapshot => {
                     let unreadCount = 0;
                     const notificationsByDate = {};
@@ -2771,13 +2950,10 @@
                         elements.emptyPersonalNotificationsState.style.display = 'flex';
                     } else {
                         elements.emptyPersonalNotificationsState.style.display = 'none';
-                        // Sort date groups (keys of notificationsByDate) chronologically descending
                         const sortedDateGroups = Object.keys(notificationsByDate).sort((a, b) => {
-                            // This is a bit tricky because "Today", "Yesterday" need custom sorting logic.
-                            // A robust way is to convert them to actual dates for sorting.
                             const dateA = a === "Today" ? new Date() : (a === "Yesterday" ? new Date(Date.now() - 86400000) : new Date(a));
                             const dateB = b === "Today" ? new Date() : (b === "Yesterday" ? new Date(Date.now() - 86400000) : new Date(b));
-                            return dateB - dateA;
+                            return dateB - dateA; // Sort descending
                         });
 
                         sortedDateGroups.forEach(dateGroup => {
@@ -2800,16 +2976,18 @@
         }
 
         function setupAdminAnnouncementsListener() {
-            if (listeners.adminAnnouncements) listeners.adminAnnouncements(); // Detach previous listener
+            if (listeners.adminAnnouncements) listeners.adminAnnouncements();
+            if(!elements.adminAnnouncementsListContainer || !elements.emptyAdminAnnouncementsState) return;
+
             renderSkeletonLoaders(elements.adminAnnouncementsListContainer, 3, 'notification');
 
             listeners.adminAnnouncements = db.collection('adminAnnouncements')
                 .orderBy('timestamp', 'desc')
-                .limit(20) // Limit to recent announcements
+                .limit(20)
                 .onSnapshot(snapshot => {
                     const announcementsByDate = {};
                     snapshot.forEach(doc => {
-                        const announcement = { id: doc.id, ...doc.data(), type: 'announcement' }; // Force type for styling
+                        const announcement = { id: doc.id, ...doc.data(), type: 'announcement' };
                         const dateStr = formatRelativeDate(announcement.timestamp);
                         if (!announcementsByDate[dateStr]) announcementsByDate[dateStr] = [];
                         announcementsByDate[dateStr].push(announcement);
@@ -2830,7 +3008,7 @@
                             groupDiv.className = 'notification-group';
                             groupDiv.innerHTML = `<h3 class="notification-group-date">${escapeHTML(dateGroup)}</h3>`;
                             announcementsByDate[dateGroup].forEach(notif => {
-                                groupDiv.innerHTML += createNotificationItemHTML(notif); // Use same HTML structure
+                                groupDiv.innerHTML += createNotificationItemHTML(notif);
                             });
                             elements.adminAnnouncementsListContainer.appendChild(groupDiv);
                         });
@@ -2846,8 +3024,21 @@
 
 
         function createNotificationItemHTML(notification) {
+            // Construct actionLink URL carefully, especially if it's internal hash-based routing
+            let fullActionLink = '';
+            if (notification.actionLink) {
+                if (notification.actionLink.startsWith('/#')) { // Internal hash link
+                    fullActionLink = window.location.origin + window.location.pathname + notification.actionLink.substring(1);
+                } else if (notification.actionLink.startsWith('http')) { // External link
+                    fullActionLink = notification.actionLink;
+                }
+            }
+
             return `
-                <div class="notification-item ${notification.read ? '' : 'unread'} type-${notification.type}" data-id="${notification.id}" data-action-link="${escapeHTML(notification.actionLink || '')}">
+                <div class="notification-item ${notification.read ? '' : 'unread'} type-${notification.type}" 
+                     data-id="${notification.id}" 
+                     data-action-link="${escapeHTML(fullActionLink || '')}"
+                     data-internal-route="${escapeHTML(notification.actionLink && notification.actionLink.startsWith('/#') ? notification.actionLink : '')}">
                     <div class="notification-icon"><i class="${escapeHTML(notification.icon || getDefaultIconForType(notification.type))}"></i></div>
                     <div class="notification-content">
                         <h4 class="notification-title">${escapeHTML(notification.title)}</h4>
@@ -2856,104 +3047,126 @@
                     </div>
                 </div>`;
         }
-        // Event listener for both notification containers
+
         [elements.personalNotificationsListContainer, elements.adminAnnouncementsListContainer].forEach(container => {
-            container.addEventListener('click', async (e) => {
-                const item = e.target.closest('.notification-item');
-                if (item && item.dataset.id) {
+            if (container) {
+                container.addEventListener('click', async (e) => {
+                    const item = e.target.closest('.notification-item');
+                    if (!item || !item.dataset.id) return;
+                    if (!currentUser) { openModal(elements.loginModal); return; }
+
+
                     const notifId = item.dataset.id;
-                    const actionLink = item.dataset.actionLink;
-                    // Only mark personal notifications as read
+                    const actionLink = item.dataset.actionLink; // Full URL or empty
+                    const internalRoute = item.dataset.internalRoute; // Like /#bookDetail/ID
+
                     if (container === elements.personalNotificationsListContainer && item.classList.contains('unread')) {
                         try {
                             await db.collection('users').doc(currentUser.uid).collection('notifications').doc(notifId).update({ read: true });
+                            // Badge will update via listener
                         } catch (error) { console.error("Error marking notification as read:", error); }
                     }
-                    if (actionLink && actionLink !== 'null') {
-                        if (actionLink.startsWith('#bookDetail/')) {
-                            const bookId = actionLink.split('/')[1];
-                            closePage(elements.notificationsPage);
-                            openBookDetailModal(bookId);
-                        } else if (actionLink.startsWith('http')) {
-                            window.open(actionLink, '_blank');
-                        }
+
+                    if (internalRoute && internalRoute.startsWith('/#bookDetail/')) {
+                        const bookId = internalRoute.split('/')[2]; // Get bookId from /#bookDetail/ID
+                        closePage(elements.notificationsPage); // Close current notifications page
+                        activateNavItem(elements.homeBtn); // Visually switch to home section before opening modal
+                        openBookDetailModal(bookId);
+                    } else if (actionLink && actionLink.startsWith('http')) { // External link
+                        window.open(actionLink, '_blank');
                     }
+                    // If no action link, clicking just marks as read (if personal & unread)
+                });
+            }
+        });
+
+
+        if(elements.markAllNotificationsReadBtn) {
+            elements.markAllNotificationsReadBtn.addEventListener('click', async () => {
+                if (!currentUser || unreadNotificationsCount === 0) return;
+                const activeTabBtn = elements.notificationTabsContainer.querySelector('.notification-tab-btn.active');
+                if (!activeTabBtn || activeTabBtn.dataset.tab !== 'personal') return;
+
+                toggleSpinner(elements.markAllNotificationsReadBtn, true);
+                try {
+                    const batch = db.batch();
+                    const unreadNotifsSnapshot = await db.collection('users').doc(currentUser.uid).collection('notifications').where('read', '==', false).get();
+                    unreadNotifsSnapshot.forEach(doc => {
+                        batch.update(doc.ref, { read: true });
+                    });
+                    await batch.commit();
+                    showToast("All personal notifications marked as read.", "success");
+                    // Badge and UI will update via onSnapshot listener
+                } catch (error) {
+                    console.error("Error marking all notifications as read:", error);
+                    showToast("Failed to mark all as read.", "error");
+                } finally {
+                    toggleSpinner(elements.markAllNotificationsReadBtn, false);
                 }
             });
-        });
+        }
 
-        elements.markAllNotificationsReadBtn.addEventListener('click', async () => {
-            if (!currentUser || unreadNotificationsCount === 0) return;
-            // Only applies if personal tab is active and has unread items
-            const activeTab = elements.notificationTabsContainer.querySelector('.notification-tab-btn.active').dataset.tab;
-            if (activeTab !== 'personal') return;
+        if(elements.notificationTabsContainer) {
+            elements.notificationTabsContainer.addEventListener('click', (e) => {
+                const targetTabBtn = e.target.closest('.notification-tab-btn');
+                if (!targetTabBtn) return;
+                elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
+                targetTabBtn.classList.add('active');
+                const tabId = targetTabBtn.dataset.tab;
 
-            toggleSpinner(elements.markAllNotificationsReadBtn, true);
-            try {
-                const batch = db.batch();
-                const unreadNotifsSnapshot = await db.collection('users').doc(currentUser.uid).collection('notifications').where('read', '==', false).get();
-                unreadNotifsSnapshot.forEach(doc => {
-                    batch.update(doc.ref, { read: true });
-                });
-                await batch.commit();
-                showToast("All personal notifications marked as read.", "success");
-            } catch (error) {
-                console.error("Error marking all notifications as read:", error);
-                showToast("Failed to mark all as read.", "error");
-            } finally {
-                toggleSpinner(elements.markAllNotificationsReadBtn, false);
-            }
-        });
+                if(elements.personalNotificationsListContainer) elements.personalNotificationsListContainer.classList.toggle('active', tabId === 'personal');
+                if(elements.adminAnnouncementsListContainer) elements.adminAnnouncementsListContainer.classList.toggle('active', tabId === 'announcements');
 
-        elements.notificationTabsContainer.addEventListener('click', (e) => {
-            const targetTabBtn = e.target.closest('.notification-tab-btn');
-            if (!targetTabBtn) return;
-            elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
-            targetTabBtn.classList.add('active');
-            const tabId = targetTabBtn.dataset.tab;
-
-            elements.personalNotificationsListContainer.classList.toggle('active', tabId === 'personal');
-            elements.adminAnnouncementsListContainer.classList.toggle('active', tabId === 'announcements');
-
-            if (tabId === 'personal') {
-                elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
-            } else {
-                elements.markAllNotificationsReadBtn.disabled = true; // No "mark all read" for announcements
-            }
-            AOS.refresh();
-        });
+                // Update mark all read button state
+                if (tabId === 'personal') {
+                    if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
+                } else {
+                    if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = true;
+                }
+                AOS.refresh();
+            });
+        }
 
 
         // --- General Navigation & Event Listeners ---
         window.addEventListener('scroll', ()=>{
-            if (window.scrollY > 50) elements.header.classList.add('scrolled');
-            else elements.header.classList.remove('scrolled');
+            if (window.scrollY > 50 && elements.header) elements.header.classList.add('scrolled');
+            else if (elements.header) elements.header.classList.remove('scrolled');
 
-            // Infinite scroll for main books
-            if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 300) && // Near bottom
-                !isLoadingBooksMain && hasMoreBooksMain && currentUser && elements.homeBtn.classList.contains('active')) { // Only on home screen
+            // Infinite scroll for main books only on home screen (homeBtn is active)
+            if (elements.homeBtn && elements.homeBtn.classList.contains('active') &&
+                (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 300) &&
+                !isLoadingBooksMain && hasMoreBooksMain && currentUser) {
                 fetchBooksMain(true);
             }
         });
-        elements.searchToggleBtn.addEventListener('click',(e)=>{
-            e.stopPropagation();
-            elements.searchContainer.classList.toggle('active');
-            if (elements.searchContainer.classList.contains('active')) elements.searchInput.focus();
-        });
+
+        if(elements.searchToggleBtn) {
+            elements.searchToggleBtn.addEventListener('click',(e)=>{
+                e.stopPropagation();
+                if(elements.searchContainer) elements.searchContainer.classList.toggle('active');
+                if (elements.searchContainer && elements.searchContainer.classList.contains('active') && elements.searchInput) elements.searchInput.focus();
+            });
+        }
 
         function handleSearchInput(){
+            if (!elements.searchInput || !elements.searchResults) return;
             const query = elements.searchInput.value.toLowerCase().trim();
             if (query.length < 2) { elements.searchResults.style.display = 'none'; return; }
-            const results = allBooksCache.filter(book => // Use allBooksCache
+
+            const results = allBooksCache.filter(book =>
                 book.bookName.toLowerCase().includes(query) ||
                 book.authorName.toLowerCase().includes(query) ||
                 (book.category && book.category.toLowerCase().includes(query))
-            ).slice(0, 10);
+            ).slice(0, 10); // Limit results displayed
             renderSearchResults(results, elements.searchResults);
         }
         let searchTimeoutGlobal;
-        elements.searchInput.addEventListener('input',()=>{ clearTimeout(searchTimeoutGlobal); searchTimeoutGlobal = setTimeout(handleSearchInput, 300); });
-        elements.searchInput.addEventListener('focus',handleSearchInput);
+        if(elements.searchInput) {
+            elements.searchInput.addEventListener('input',()=>{ clearTimeout(searchTimeoutGlobal); searchTimeoutGlobal = setTimeout(handleSearchInput, 300); });
+            elements.searchInput.addEventListener('focus',handleSearchInput); // Show results on focus if query is already there
+        }
+
 
         function renderSearchResults(results, resCont){
             if (!resCont) return;
@@ -2961,27 +3174,33 @@
             resCont.innerHTML = results.map(book => `
                 <div class="search-result-item" data-book-id="${book.id}">
                     <h4>${escapeHTML(book.bookName)}</h4>
-                    <p>By ${escapeHTML(book.authorName)} | Category: ${escapeHTML(book.category)}</p>
+                    <p>By ${escapeHTML(book.authorName)} | Category: ${escapeHTML(book.category || 'N/A')}</p>
                 </div>`).join('');
             resCont.style.display = 'block';
         }
 
-        elements.searchResults.addEventListener('click', (e) => {
-            const item = e.target.closest('.search-result-item');
-            if (item && item.dataset.bookId) {
-                openBookDetailModal(item.dataset.bookId);
-                elements.searchResults.style.display = 'none';
-                elements.searchInput.value = '';
-                if (elements.searchContainer.classList.contains('active') && window.innerWidth <= 768) {
-                    elements.searchContainer.classList.remove('active');
+        if(elements.searchResults) {
+            elements.searchResults.addEventListener('click', (e) => {
+                const item = e.target.closest('.search-result-item');
+                if (item && item.dataset.bookId) {
+                    if (!currentUser) { openModal(elements.loginModal); return; }
+                    openBookDetailModal(item.dataset.bookId);
+                    elements.searchResults.style.display = 'none';
+                    if (elements.searchInput) elements.searchInput.value = '';
+                    if (elements.searchContainer && elements.searchContainer.classList.contains('active') && window.innerWidth <= 768) {
+                        elements.searchContainer.classList.remove('active');
+                    }
                 }
-            }
-        });
+            });
+        }
 
         document.addEventListener('click',(e)=>{
-            if (!elements.searchContainer.contains(e.target) && elements.searchContainer.classList.contains('active') && window.innerWidth <= 768) {
+            // Hide mobile search if active and click is outside
+            if (elements.searchContainer && elements.searchContainer.classList.contains('active') && window.innerWidth <= 768 && !elements.searchContainer.contains(e.target) && e.target !== elements.searchToggleBtn) {
                 elements.searchContainer.classList.remove('active');
-            } else if (!elements.searchContainer.contains(e.target)) {
+            }
+            // Hide desktop search results if click is outside
+            if (elements.searchContainer && !elements.searchContainer.contains(e.target) && elements.searchResults) {
                  elements.searchResults.style.display = 'none';
             }
         });
@@ -2989,33 +3208,41 @@
         function openPage(pageEl){
             if (!pageEl) return;
             pageEl.classList.add('active');
-            elements.body.style.overflow = 'hidden';
-            AOS.refresh();
+            elements.body.style.overflow = 'hidden'; // Prevent scrolling of underlying content
+            AOS.refresh(); // Refresh AOS for elements within the new page
+
             if (pageEl === elements.profilePage) {
                 if(currentUser) {
-                    fetchUserBooks(false, true); fetchWithdrawalHistory();
-                    const firstTabBtn = elements.profileTabs.querySelector('.profile-tab-btn');
-                    if (firstTabBtn) {
-                        const firstTabContent = $('#tab-' + firstTabBtn.dataset.tab);
-                        elements.profileTabBtns.forEach(btn => btn.classList.remove('active'));
-                        elements.profileTabContents.forEach(content => content.classList.remove('active'));
-                        firstTabBtn.classList.add('active');
-                        if (firstTabContent) firstTabContent.classList.add('active');
+                    fetchUserBooks(false, true); // forceRefresh true
+                    fetchWithdrawalHistory();
+                    if (elements.profileTabs) {
+                        const firstTabBtn = elements.profileTabs.querySelector('.profile-tab-btn');
+                        if (firstTabBtn) {
+                            const firstTabContentId = `tab-${firstTabBtn.dataset.tab}`;
+                            elements.profileTabBtns.forEach(btn => btn.classList.remove('active'));
+                            elements.profileTabContents.forEach(content => content.classList.remove('active'));
+                            firstTabBtn.classList.add('active');
+                            const firstTabContent = $(`#${firstTabContentId}`);
+                            if (firstTabContent) firstTabContent.classList.add('active');
+                        }
                     }
+                } else {
+                    closePage(elements.profilePage); // Close if somehow opened without user
+                    openModal(elements.loginModal);
                 }
             } else if (pageEl === elements.notificationsPage) {
                 if(currentUser) {
-                    // Activate personal tab by default
-                    elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
-                    elements.personalNotificationsListContainer.classList.remove('active');
-                    elements.adminAnnouncementsListContainer.classList.remove('active');
+                    if(elements.notificationTabsContainer && elements.personalNotificationsListContainer && elements.adminAnnouncementsListContainer) {
+                        // Activate personal tab by default
+                        elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
+                        elements.personalNotificationsListContainer.classList.remove('active');
+                        elements.adminAnnouncementsListContainer.classList.remove('active');
 
-                    const personalTabBtn = elements.notificationTabsContainer.querySelector('[data-tab="personal"]');
-                    if (personalTabBtn) personalTabBtn.classList.add('active');
-                    elements.personalNotificationsListContainer.classList.add('active');
-                    elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
-
-                    // Listeners are already set up by onAuthStateChanged or initializeDataFetching
+                        const personalTabBtn = elements.notificationTabsContainer.querySelector('[data-tab="personal"]');
+                        if (personalTabBtn) personalTabBtn.classList.add('active');
+                        elements.personalNotificationsListContainer.classList.add('active');
+                        if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
+                    }
                 } else {
                     closePage(elements.notificationsPage);
                     openModal(elements.loginModal);
@@ -3025,15 +3252,17 @@
         function closePage(pageEl){
             if (!pageEl) return;
             pageEl.classList.remove('active');
-            if (!$$('.profile-page.active, .notifications-page.active, .modal.active').length) {
+            const anyModalActive = $$('.modal.active').length > 0;
+            const anyPageActive = $$('.profile-page.active, .notifications-page.active').length > 0;
+            if (!anyModalActive && !anyPageActive) {
                 elements.body.style.overflow = 'auto';
             }
         }
 
         function openProfilePage(){ if(currentUser) { activateNavItem(elements.profileBtn); openPage(elements.profilePage); } else { openModal(elements.loginModal); } }
-        function closeProfilePage(){ closePage(elements.profilePage); activateNavItem(elements.homeBtn); }
+        function closeProfilePage(){ if(elements.profilePage) closePage(elements.profilePage); if(elements.homeBtn) activateNavItem(elements.homeBtn); }
         function openNotificationsPage(){ if(currentUser) { activateNavItem(elements.notificationsBtn); openPage(elements.notificationsPage); } else { openModal(elements.loginModal); } }
-        function closeNotificationsPage(){ closePage(elements.notificationsPage); activateNavItem(elements.homeBtn); }
+        function closeNotificationsPage(){ if(elements.notificationsPage) closePage(elements.notificationsPage); if(elements.homeBtn) activateNavItem(elements.homeBtn); }
 
 
         function activateNavItem(targetBtn){
@@ -3041,38 +3270,41 @@
             elements.bottomNavItems.forEach(item => item.classList.remove('active'));
             targetBtn.classList.add('active');
         }
-        function resetNavigation(){ activateNavItem(elements.homeBtn); }
+        function resetNavigation(){ if(elements.homeBtn) activateNavItem(elements.homeBtn); }
         function closeAllPagesAndModals(){
-            closePage(elements.profilePage); closePage(elements.notificationsPage);
+            if(elements.profilePage) closePage(elements.profilePage);
+            if(elements.notificationsPage) closePage(elements.notificationsPage);
             $$('.modal.active').forEach(m => closeModal(m));
-            if (!$$('.profile-page.active, .notifications-page.active').length) {
+             const anyModalActive = $$('.modal.active').length > 0;
+             const anyPageActive = $$('.profile-page.active, .notifications-page.active').length > 0;
+             if (!anyModalActive && !anyPageActive) {
                 elements.body.style.overflow = 'auto';
-            }
-            currentBookDetailId = null;
+             }
+            currentBookDetailId = null; // Reset current book detail context
         }
 
-        elements.homeBtn.onclick=()=>{closeAllPagesAndModals();activateNavItem(elements.homeBtn);window.scrollTo({top:0,behavior:'smooth'});};
-        elements.logoLink.onclick=(e)=>{e.preventDefault();elements.homeBtn.click();};
-        elements.notificationsBtn.onclick = openNotificationsPage;
-        elements.notificationsBackBtn.onclick = closeNotificationsPage;
-        elements.profileBtn.onclick=openProfilePage;
-        elements.userAvatar.onclick=openProfilePage;
-        elements.profileBackBtn.onclick=closeProfilePage;
-        elements.addBookBtn.onclick=()=>{ if(currentUser) openModal(elements.addBookModal); else openModal(elements.loginModal); };
-        elements.closeAddBookModal.onclick=()=>closeModal(elements.addBookModal);
-        elements.discoverBtn.onclick=()=>{ if(currentUser) openModal(elements.discoverModal); else openModal(elements.loginModal); };
-        elements.closeDiscoverModal.onclick=()=>closeModal(elements.discoverModal);
-        elements.switchToSignup.onclick=()=>{ closeModal(elements.loginModal); openModal(elements.signupModal); };
-        elements.switchToLogin.onclick=()=>{ closeModal(elements.signupModal); openModal(elements.loginModal); };
-        elements.closeLoginModal.onclick=()=>closeModal(elements.loginModal);
-        elements.closeSignupModal.onclick=()=>closeModal(elements.signupModal);
-        elements.closeBookDetailModal.onclick=()=> { closeModal(elements.bookDetailModal); currentBookDetailId = null; }
+        if(elements.homeBtn) elements.homeBtn.onclick=()=>{closeAllPagesAndModals();activateNavItem(elements.homeBtn);window.scrollTo({top:0,behavior:'smooth'});};
+        if(elements.logoLink) elements.logoLink.onclick=(e)=>{e.preventDefault(); if(elements.homeBtn) elements.homeBtn.click();};
+        if(elements.notificationsBtn) elements.notificationsBtn.onclick = openNotificationsPage;
+        if(elements.notificationsBackBtn) elements.notificationsBackBtn.onclick = closeNotificationsPage;
+        if(elements.profileBtn) elements.profileBtn.onclick=openProfilePage;
+        if(elements.userAvatar) elements.userAvatar.onclick=openProfilePage;
+        if(elements.profileBackBtn) elements.profileBackBtn.onclick=closeProfilePage;
+        if(elements.addBookBtn) elements.addBookBtn.onclick=()=>{ if(currentUser) openModal(elements.addBookModal); else openModal(elements.loginModal); };
+        if(elements.closeAddBookModal) elements.closeAddBookModal.onclick=()=>closeModal(elements.addBookModal);
+        if(elements.discoverBtn) elements.discoverBtn.onclick=()=>{ if(currentUser) openModal(elements.discoverModal); else openModal(elements.loginModal); };
+        if(elements.closeDiscoverModal) elements.closeDiscoverModal.onclick=()=>closeModal(elements.discoverModal);
+        if(elements.switchToSignup) elements.switchToSignup.onclick=()=>{ closeModal(elements.loginModal); openModal(elements.signupModal); };
+        if(elements.switchToLogin) elements.switchToLogin.onclick=()=>{ closeModal(elements.signupModal); openModal(elements.loginModal); };
+        if(elements.closeLoginModal) elements.closeLoginModal.onclick=()=>closeModal(elements.loginModal);
+        if(elements.closeSignupModal) elements.closeSignupModal.onclick=()=>closeModal(elements.signupModal);
+        if(elements.closeBookDetailModal) elements.closeBookDetailModal.onclick=()=> { closeModal(elements.bookDetailModal); currentBookDetailId = null; }
         $$('.modal').forEach(m=>{m.addEventListener('click',(e)=>{if(e.target===m)closeModal(m);});});
 
 
         // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', () => {
-             elements.loadingOverlay.classList.remove('hidden');
+             if(elements.loadingOverlay) elements.loadingOverlay.classList.remove('hidden');
              showRandomLoadingMessage();
              renderSkeletonLoaders(elements.booksContainer, BOOKS_PER_PAGE_MAIN, 'book');
              renderSkeletonLoaders(elements.popularBooksCarousel, 5, 'popular');
@@ -3081,101 +3313,152 @@
              setupWithdrawalListeners();
 
              const withdrawalOptsHTML = `<div class="withdrawal-option" data-method="upi"><div class="withdrawal-icon"><i class="fas fa-mobile-alt"></i></div><div class="withdrawal-details"><div class="withdrawal-title">UPI</div><div class="withdrawal-description">Fast transfer via UPI ID</div></div></div><div class="withdrawal-option" data-method="redeem"><div class="withdrawal-icon"><i class="fab fa-google-play"></i></div><div class="withdrawal-details"><div class="withdrawal-title">Redeem Code</div><div class="withdrawal-description">Google Play Gift Card</div></div></div><div class="withdrawal-option" data-method="bank"><div class="withdrawal-icon"><i class="fas fa-university"></i></div><div class="withdrawal-details"><div class="withdrawal-title">Bank Account</div><div class="withdrawal-description">Direct bank transfer (slower)</div></div></div><div class="withdrawal-option" data-method="paytm"><div class="withdrawal-icon"><i class="fas fa-wallet"></i></div><div class="withdrawal-details"><div class="withdrawal-title">Paytm Wallet</div><div class="withdrawal-description">Transfer to Paytm</div></div></div><div class="withdrawal-option" data-method="phonepe"><div class="withdrawal-icon"><i class="fas fa-rupee-sign"></i></div><div class="withdrawal-details"><div class="withdrawal-title">PhonePe</div><div class="withdrawal-description">Transfer to PhonePe</div></div></div>`;
-             elements.withdrawalOptionsContainer.innerHTML = withdrawalOptsHTML;
+             if(elements.withdrawalOptionsContainer) elements.withdrawalOptionsContainer.innerHTML = withdrawalOptsHTML;
              const amountOptsHTML = `<div class="amount-option" data-amount="500" data-rs="50">500 pts = ₹50</div><div class="amount-option" data-amount="1000" data-rs="100">1000 pts = ₹100</div><div class="amount-option" data-amount="2000" data-rs="200">2000 pts = ₹200</div><div class="amount-option" data-amount="5000" data-rs="500">5000 pts = ₹500</div>`;
-             elements.amountOptionsContainer.innerHTML = amountOptsHTML;
+             if(elements.amountOptionsContainer) elements.amountOptionsContainer.innerHTML = amountOptsHTML;
         });
 
         /*
-        CONCEPTUAL FIRESTORE SECURITY RULES (Update in Firebase Console)
+        FIRESTORE SECURITY RULES (Update in Firebase Console)
         -------------------------------------------------------------
+        Replace YOUR_ADMIN_UID with the actual UID of your admin user(s)
+        or implement a more robust role-based system using custom claims.
+        For simplicity, this example uses a hardcoded admin UID for certain admin-only actions.
+        Ideally, status changes (book approval/rejection, withdrawal processing)
+        should be handled by Cloud Functions for better security and auditing.
+        */
+        /*
         rules_version = '2';
         service cloud.firestore {
           match /databases/{database}/documents {
 
-            function isAuthenticated() { return request.auth != null; }
-            function isOwner(userId) { return isAuthenticated() && request.auth.uid == userId; }
-            // function isAdmin() { // Define your admin logic, e.g., custom claims or admin list
-            //  return isAuthenticated() && request.auth.token.admin == true;
-            // }
-
-            // Users Collection
-            match /users/{userId} {
-              allow read: if isOwner(userId) || isAuthenticated(); // Allow any authenticated user to read basic profile for display
-              allow create: if isOwner(userId)
-                            && request.resource.data.points == 0
-                            && request.resource.data.credits == 50
-                            && !("admin" in request.resource.data);
-              allow update: if isOwner(userId)
-                            // Allow specific fields for user update
-                            && request.resource.data.keys().hasOnly(['name', 'username', 'bio', 'lastActive', 'lastDailyCreditClaim', 'processedBookActions', 'booksDownloadedCount', 'totalFeedbackGiven', 'credits']) // Credits only via transactions
-                            // Points should only be updated by trusted server logic (Cloud Functions or specific transactions)
-                            // Example for credit deduction: (resource.data.credits - request.resource.data.credits == 30)
-                            ;
+            // --- Helper Functions ---
+            function isAuthenticated() {
+              return request.auth != null;
+            }
+            function isOwner(userId) {
+              return isAuthenticated() && request.auth.uid == userId;
+            }
+            // Example: Simple admin check - replace with your admin UIDs or custom claims
+            function isAdmin() {
+              // return isAuthenticated() && request.auth.token.admin == true; // Using custom claims (recommended)
+              return isAuthenticated() && (request.auth.uid == "YOUR_ADMIN_UID_1" || request.auth.uid == "YOUR_ADMIN_UID_2"); // Hardcoded UIDs (less secure)
+            }
+            function getRole(uid) { // Helper for custom claims if you set them
+                return get(/databases/$(database)/documents/users/$(uid)).data.role;
             }
 
-            // Books Collection
+
+            // --- Users Collection ---
+            match /users/{userId} {
+              allow read: if isAuthenticated(); // Allow any authenticated user to read basic profile info for display
+              allow create: if isOwner(userId)
+                            && request.resource.data.uid == userId
+                            && request.resource.data.email == request.auth.token.email
+                            && request.resource.data.points == 0
+                            && request.resource.data.credits == 50 // Initial credits
+                            && request.resource.data.booksSharedCount == 0
+                            && request.resource.data.booksDownloadedCount == 0
+                            && request.resource.data.totalBookDownloads == 0
+                            && request.resource.data.totalFeedbackGiven == 0
+                            && request.resource.data.createdAt == request.time
+                            && !("admin" in request.resource.data) // Prevent self-assigning admin role
+                            && request.resource.data.username is string && request.resource.data.username.size() >= 3 && request.resource.data.username.size() <= 15
+                            && request.resource.data.name is string && request.resource.data.name.size() > 0;
+
+              allow update: if isOwner(userId)
+                            // User can update their own name, username (if not taken, checked client-side + server potentially), bio, lastActive
+                            && (request.resource.data.keys().hasOnly(['name', 'username', 'bio', 'lastActive', 'lastDailyCreditClaim', 'processedBookActions'])
+                                || (request.resource.data.keys().hasAll(['credits', 'booksDownloadedCount']) && resource.data.credits - request.resource.data.credits == 30) // Book download transaction
+                                || (request.resource.data.keys().hasAll(['points']) && resource.data.points - request.resource.data.points > 0) // Withdrawal transaction (points decrement)
+                                || (request.resource.data.keys().has('totalFeedbackGiven') && request.resource.data.totalFeedbackGiven == resource.data.totalFeedbackGiven + 1) // Feedback given
+                                || (request.resource.data.keys().has('booksSharedCount') && request.resource.data.booksSharedCount == resource.data.booksSharedCount + 1) // Book shared
+                                || (request.resource.data.keys().hasAll(['points', 'totalBookDownloads']) && request.resource.data.points == resource.data.points + 1 && request.resource.data.totalBookDownloads == resource.data.totalBookDownloads + 1) // Book owner gets point for download
+                                || (request.resource.data.keys().hasAll(['points', 'processedBookActions']) && request.resource.data.points == resource.data.points + 10) // Book approval points
+                                || (request.resource.data.keys().hasAll(['credits', 'lastDailyCreditClaim']) && request.resource.data.credits == resource.data.credits + 20) // Daily credit claim
+                            );
+                            // Points increment for book sharing (approval), book download (owner) should be handled by trusted logic (e.g. Cloud Functions or careful transactions)
+                            // Credit decrement for download, daily credit claim can be allowed with validation.
+            }
+
+            // --- Books Collection ---
             match /books/{bookId} {
-              allow read: if isAuthenticated() && (resource.data.status == 'approved' || resource.data.submittedBy == request.auth.uid);
+              allow read: if isAuthenticated() && (resource.data.status == 'approved' || resource.data.submittedBy == request.auth.uid || isAdmin());
               allow create: if isAuthenticated()
                             && request.resource.data.submittedBy == request.auth.uid
-                            && request.resource.data.status == 'pending' // Must be pending on creation
-                            && request.resource.data.bookName is string && request.resource.data.bookName.size() > 0
-                            && request.resource.data.authorName is string && request.resource.data.authorName.size() > 0
-                            && request.resource.data.category is string && request.resource.data.category.size() > 0
+                            && request.resource.data.status == 'pending'
+                            && request.resource.data.downloads == 0
+                            && request.resource.data.ratingCount == 0
+                            && request.resource.data.avgRating == 0
+                            && request.resource.data.bookName is string && request.resource.data.bookName.size() > 0 && request.resource.data.bookName.size() < 150
+                            && request.resource.data.authorName is string && request.resource.data.authorName.size() > 0 && request.resource.data.authorName.size() < 100
+                            && request.resource.data.category is string && request.resource.data.category.size() > 0 && request.resource.data.category.size() < 50
                             && request.resource.data.imageUrl is string && request.resource.data.imageUrl.matches('https?://.+')
                             && request.resource.data.driveLink is string && request.resource.data.driveLink.matches('https?://.+')
-                            && request.resource.data.downloads == 0 && request.resource.data.ratingCount == 0;
+                            && request.resource.data.description is string && request.resource.data.description.size() < 1000
+                            && request.resource.data.submittedAt == request.time;
 
-              // Updates for downloads, ratings, status typically handled by Cloud Functions or specific transactions
-              // For example, allowing download increment:
-              allow update (writeFields: ['downloads']): if isAuthenticated() && request.resource.data.downloads == resource.data.downloads + 1;
-              // Status changes (approve/reject) should be admin-only (via Cloud Function or admin role check)
-              // allow update: if isAdmin(); // Simplified for status changes
+              // For book download increment:
+              allow update (writeFields: ['downloads']): if isAuthenticated()
+                                                        && request.resource.data.downloads == resource.data.downloads + 1;
+              // For rating updates (done via transaction, needs to be reflected here):
+              allow update (writeFields: ['ratingCount', 'avgRating']): if isAuthenticated()
+                                                                    && request.resource.data.ratingCount == resource.data.ratingCount + 1;
+
+              // Admin can update status and admin-specific fields
+              allow update: if isAdmin() && request.resource.data.keys().hasAny(['status', 'approvedAt', 'reviewedAt', 'reviewedBy', 'rejectionReason', 'adminNotes']);
             }
 
-            // Feedback Subcollection
+            // --- Feedback Subcollection ---
             match /books/{bookId}/feedback/{feedbackId} {
               allow read: if isAuthenticated();
               allow create: if isAuthenticated()
                             && request.resource.data.userId == request.auth.uid
                             && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
-                            && request.resource.data.comment is string;
-              // No updates/deletes for feedback by users to keep it simple
+                            && request.resource.data.comment is string && request.resource.data.comment.size() < 500
+                            && request.resource.data.submittedAt == request.time;
+              // No updates/deletes for feedback by users for simplicity
             }
 
-            // Withdrawals Collection
+            // --- Withdrawals Collection ---
             match /withdrawals/{withdrawalId} {
-              allow read: if isOwner(resource.data.userId); // Or isAdmin()
+              allow read: if isOwner(resource.data.userId) || isAdmin();
               allow create: if isAuthenticated()
                             && request.resource.data.userId == request.auth.uid
                             && request.resource.data.status == 'pending'
-                            && request.resource.data.pointsWithdrawn > 0;
-              // Status updates (approve/reject/process) should be admin-only
-              // allow update: if isAdmin() && request.resource.data.keys().hasAny(['status', 'processedAt', 'adminNotes']);
+                            && request.resource.data.pointsWithdrawn > 0 && request.resource.data.pointsWithdrawn <= get(/databases/$(database)/documents/users/$(request.auth.uid)).data.points // Check against current points, transaction handles actual deduction
+                            && request.resource.data.amountRs > 0
+                            && request.resource.data.method is string
+                            && request.resource.data.paymentIdentifier is string
+                            && request.resource.data.requestedAt == request.time;
+              // Admin can update status and processing details
+              allow update: if isAdmin() && request.resource.data.keys().hasAny(['status', 'processedAt', 'adminNotes']);
             }
 
-            // User Notifications Subcollection
+            // --- User Notifications Subcollection ---
             match /users/{userId}/notifications/{notificationId} {
               allow read: if isOwner(userId);
-              allow create: if isAuthenticated(); // Can be created by server (Functions) or trusted client actions
-              allow update (writeFields: ['read']): if isOwner(userId); // Only allow updating 'read' status by user
+              // Notifications are created server-side (e.g., Cloud Functions) or via trusted client actions during specific events.
+              // For client-created notifications during specific events (e.g., profile update):
+              allow create: if isOwner(userId) // If client needs to create some simple notifications
+                            && request.resource.data.timestamp == request.time
+                            && request.resource.data.read == false;
+              allow update (writeFields: ['read']): if isOwner(userId) && request.resource.data.read == true; // Only allow marking as read
             }
 
-            // Admin Announcements Collection (NEW)
+            // --- Admin Announcements Collection ---
             match /adminAnnouncements/{announcementId} {
-              allow read: if isAuthenticated(); // All authenticated users can read announcements
-              // Create, update, delete only by admin (e.g., via Cloud Function or admin panel with proper auth)
-              allow write: if false; // Or: if isAdmin();
+              allow read: if isAuthenticated(); // All authenticated users can read
+              allow write: if isAdmin(); // Only admins can create/update/delete announcements
             }
 
-            match /{document=**} {
-              allow read, write: if false;
-            }
+            // Deny all other access by default
+            // match /{document=**} {
+            //  allow read, write: if false;
+            // }
           }
         }
         */
-
     </script>
 </body>
 </html>
