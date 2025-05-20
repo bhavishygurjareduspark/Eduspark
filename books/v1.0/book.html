@@ -1385,15 +1385,34 @@
             offset: 50,
         });
         
-        const firebaseConfig = { // KEEP YOUR CONFIG HERE
-            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
-            authDomain: "eduspark-new.firebaseapp.com",
-            projectId: "eduspark-new",
-            storageBucket: "eduspark-new.firebasestorage.app",
-            messagingSenderId: "564501033350",
-            appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
-            measurementId: "G-NM2SE3DE7J"
-        };
+        const firebaseConfig = {
+
+
+  apiKey: "AIzaSyASKb2xr27kjYokZICpIbBYULWsRdmBzI0",
+
+
+  authDomain: "eduspark-books.firebaseapp.com",
+
+
+  databaseURL: "https://eduspark-books-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+
+  projectId: "eduspark-books",
+
+
+  storageBucket: "eduspark-books.firebasestorage.app",
+
+
+  messagingSenderId: "977405961718",
+
+
+  appId: "1:977405961718:web:4f9d16cf0a44e1f54e93d7",
+
+
+  measurementId: "G-G6JHCMYZ0X"
+
+
+};
         
         firebase.initializeApp(firebaseConfig);
 
@@ -1408,7 +1427,7 @@
         // And enabled ENFORCEMENT for Firestore, Storage, and Auth in Firebase Console App Check settings.
         try {
             appCheck.activate(
-                '6Lc9skArAAAAANQTNjr39EHkSZySQX3FTMqIUmu3', // REPLACE THIS
+                '6LeaGEArAAAAALrN3cJ-9hYLxsmtUyq3JXXbeUr5', // REPLACE THIS
                 true // Set to true to automatically get a token if none is present.
             );
             console.log("Firebase App Check activated.");
