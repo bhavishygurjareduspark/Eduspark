@@ -871,7 +871,11 @@
             .category-filter-item { padding: 5px 10px; }
             .book-detail-image { width: 150px; height: 210px; }
         }
-        
+        * {
+          -webkit-user-select: none; /* Safari and Chrome */
+          user-select: none;         /* Standard */
+          -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+        }
 
     </style>
 </head>
@@ -1381,34 +1385,15 @@
             offset: 50,
         });
         
-        const firebaseConfig = {
-
-
-  apiKey: "AIzaSyASKb2xr27kjYokZICpIbBYULWsRdmBzI0",
-
-
-  authDomain: "eduspark-books.firebaseapp.com",
-
-
-  databaseURL: "https://eduspark-books-default-rtdb.asia-southeast1.firebasedatabase.app",
-
-
-  projectId: "eduspark-books",
-
-
-  storageBucket: "eduspark-books.firebasestorage.app",
-
-
-  messagingSenderId: "977405961718",
-
-
-  appId: "1:977405961718:web:4f9d16cf0a44e1f54e93d7",
-
-
-  measurementId: "G-G6JHCMYZ0X"
-
-
-};
+        const firebaseConfig = { // KEEP YOUR CONFIG HERE
+            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+            authDomain: "eduspark-new.firebaseapp.com",
+            projectId: "eduspark-new",
+            storageBucket: "eduspark-new.firebasestorage.app",
+            messagingSenderId: "564501033350",
+            appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+            measurementId: "G-NM2SE3DE7J"
+        };
         
         firebase.initializeApp(firebaseConfig);
 
@@ -1418,12 +1403,12 @@
         const appCheck = firebase.appCheck();
 
         // Activate App Check
-        // YOU MUST REPLACE 'YOUR_RECAPTCHA_V3_SITE_KEY' with your actual reCAPTCHA v3 site key
+ 
         // Also ensure you've registered your app in Firebase Console for App Check (reCAPTCHA v3 provider)
         // And enabled ENFORCEMENT for Firestore, Storage, and Auth in Firebase Console App Check settings.
         try {
             appCheck.activate(
-                '6LeaGEArAAAAALrN3cJ-9hYLxsmtUyq3JXXbeUr5', // REPLACE THIS
+                '6Lc9skArAAAAANQTNjr39EHkSZySQX3FTMqIUmu3', // REPLACE THIS
                 true // Set to true to automatically get a token if none is present.
             );
             console.log("Firebase App Check activated.");
