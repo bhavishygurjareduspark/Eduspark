@@ -1,0 +1,513 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add Content Security Policy Meta Tag - Customize as needed -->
+    <!-- IMPORTANT: This CSP needs to allow connections to your Firebase project -->
+    <!-- Ensure firebaseio.com, firebasedatabase.app, googleapis.com, gstatic.com, unpkg.com, cdn.jsdelivr.net, fonts.googleapis.com, fonts.gstatic.com are allowed -->
+    <!-- Consider adding your link shortener domain if redirecting from here -->
+    
+    <title>EduSparK - Credit Added!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase SDKs (Must be the same versions as book.html) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- No need for storage or app-check on this simple page unless specifically used -->
+
+    <style>
+        /* Copy relevant CSS variables and body styles from book.html */
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --secondary-dark: #000000;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --card-bg-dark: #1a1a1a;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --gradient-light: linear-gradient(135deg, #ff6666, #ff3333);
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.35);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --credit-color: #ffd700; /* Gold color for credits */
+            --warning-color: #f39c12; /* Matching book.html warning color */
+            --error-color: #e74c3c; /* Matching book.html error color */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+             -webkit-user-select: none; /* Safari and Chrome */
+             user-select: none;         /* Standard */
+             -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .success-container {
+            background-color: var(--card-bg-dark);
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInScale 0.5s ease forwards;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animation-container {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* Checkmark Animation */
+        .checkmark {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          display: block;
+          stroke-width: 4;
+          stroke: #fff; /* White stroke for contrast */
+          stroke-miterlimit: 10;
+          box-shadow: inset 0px 0px 0px #fff;
+          animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        .checkmark__circle {
+          stroke-dasharray: 166;
+          stroke-dashoffset: 166;
+          stroke-width: 4;
+          stroke-miterlimit: 10;
+          stroke: var(--primary-color);
+          fill: none;
+          animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark__check {
+          transform-origin: 50% 50%;
+          stroke-dasharray: 48;
+          stroke-dashoffset: 48;
+          animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        /* Generic Icon Display */
+        .icon-display {
+            font-size: 60px; /* Slightly smaller than checkmark viewBox */
+            margin-bottom: 25px;
+            width: 80px; /* Match container size */
+            height: 80px; /* Match container size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scale 0.3s ease-in-out forwards; /* Add scale animation to icons too */
+        }
+         .icon-display i { animation: fadeIn 0.5s ease forwards; /* Fade in the icon */ }
+
+        @keyframes stroke {
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes scale {
+          0%, 100% { transform: none; }
+          50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+        @keyframes fill {
+          100% { box-shadow: inset 0px 0px 0px 50px var(--primary-color); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+         @keyframes fadeInUp {
+             from { opacity: 0; transform: translateY(10px); }
+             to { opacity: 1; transform: translateY(0); }
+         }
+
+
+        .status-message {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            opacity: 0; /* Initial state for animation */
+            animation: fadeInUp 0.5s ease 1s forwards; /* Added delay */
+        }
+
+        .credits-added {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--credit-color);
+            margin-bottom: 20px;
+             opacity: 0; /* Initial state for animation */
+             animation: fadeInUp 0.5s ease 1.2s forwards; /* Added delay */
+             display: none; /* Controlled by JS */
+        }
+        .credits-added i {
+             color: var(--credit-color);
+             margin-left: 8px;
+        }
+
+        .redirect-message {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 15px;
+             opacity: 0; /* Initial state for animation */
+             animation: fadeInUp 0.5s ease 1.4s forwards; /* Added delay */
+             display: none; /* Controlled by JS */
+        }
+
+         .error-message {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-light); /* Use primary-light or warning/error color */
+            margin-bottom: 15px;
+            opacity: 0; /* Initial state for animation */
+            animation: fadeInUp 0.5s ease 1s forwards; /* Added delay */
+             display: none; /* Controlled by JS */
+         }
+         .error-message i { margin-right: 8px; }
+         .error-message.warning { color: var(--warning-color); }
+         .error-message.error { color: var(--error-color); }
+
+
+         .spinner-container {
+            width: 80px; height: 80px; margin-bottom: 25px;
+            display: none; /* Initially hidden */
+            align-items: center; justify-content: center;
+         }
+         .spinner {
+             width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: var(--primary-color); animation: spin 1s linear infinite;
+         }
+         @keyframes spin { to { transform: rotate(360deg); } }
+
+
+        .login-prompt {
+             font-size: 1rem; color: var(--text-muted);
+             margin-top: 20px;
+             opacity: 0; /* Initial state for animation */
+             animation: fadeInUp 0.5s ease 1.4s forwards; /* Added delay */
+             display: none; /* Controlled by JS */
+        }
+        .login-prompt a {
+             color: var(--primary-color); text-decoration: none;
+             font-weight: 600; transition: color 0.3s ease;
+        }
+         .login-prompt a:hover { color: var(--primary-light); text-decoration: underline; }
+
+         @media (max-width: 400px) {
+            .success-container { padding: 30px 15px; }
+            .status-message { font-size: 1.2rem; }
+            .credits-added { font-size: 1.6rem; }
+            .checkmark { width: 60px; height: 60px; stroke-width: 5; }
+            .checkmark__circle, .checkmark__check { stroke-width: 5;}
+            .icon-display { font-size: 40px; width: 60px; height: 60px; }
+         }
+         
+         * {
+          -webkit-user-select: none; /* Safari and Chrome */
+          user-select: none;         /* Standard */
+          -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="success-container" id="statusContainer">
+        <div class="spinner-container" id="spinnerContainer">
+            <div class="spinner"></div>
+        </div>
+
+         <!-- Animation/Icon Container -->
+         <div class="animation-container" id="animationContainer">
+             <!-- Checkmark SVG (for success) or icon-display (for others) will be placed here by JS -->
+             <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" style="display: none;">
+               <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+               <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+             </svg>
+             <!-- Example Error/Cooldown Icon Placeholder -->
+             <div class="icon-display" style="display: none;">
+                 <!-- Icon added by JS -->
+             </div>
+         </div>
+
+
+        <p class="status-message" id="statusMessage">Processing...</p>
+        <p class="credits-added" id="creditsAmount">+50 <i class="fas fa-coins"></i></p> <!-- Showed by JS -->
+         <p class="error-message" id="errorMessage"></p> <!-- Showed by JS -->
+
+        <p class="redirect-message" id="redirectMessage">Redirecting in <span id="countdown">3</span> seconds...</p> <!-- Showed by JS -->
+
+        <p class="login-prompt" id="loginPrompt">
+            Please <a href="https://edusparkk.xyz/books/v1.2.0/book" id="loginLink">login</a> to add credits.
+        </p>
+    </div>
+
+    <script>
+        // Firebase Configuration (MUST BE THE SAME AS book.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+            authDomain: "eduspark-new.firebaseapp.com",
+            projectId: "eduspark-new",
+            storageBucket: "eduspark-new.firebasestorage.app",
+            messagingSenderId: "564501033350",
+            appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+            measurementId: "G-NM2SE3DE7J"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app(); // Use the already initialized app
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const elements = {
+            statusMessage: document.getElementById('statusMessage'),
+            creditsAmount: document.getElementById('creditsAmount'),
+            redirectMessage: document.getElementById('redirectMessage'),
+            countdown: document.getElementById('countdown'),
+            loginPrompt: document.getElementById('loginPrompt'),
+            spinnerContainer: document.getElementById('spinnerContainer'),
+            animationContainer: document.getElementById('animationContainer'),
+            checkmarkSvg: document.querySelector('#animationContainer .checkmark'),
+            iconDisplay: document.querySelector('#animationContainer .icon-display'),
+            errorMessage: document.getElementById('errorMessage'),
+            loginLink: document.getElementById('loginLink')
+        };
+
+        const CREDITS_TO_ADD = 50;
+        const COOLDOWN_SECONDS = 180; // 3 minutes
+        const REDIRECT_DELAY_SECONDS_DEFAULT = 3;
+        const REDIRECT_DELAY_SECONDS_ERROR = 5; // Slightly longer delay for errors/cooldown
+
+        function resetUI() {
+            elements.spinnerContainer.style.display = 'none';
+            elements.animationContainer.style.display = 'none';
+            elements.checkmarkSvg.style.display = 'none';
+            elements.iconDisplay.style.display = 'none';
+            elements.creditsAmount.style.display = 'none';
+            elements.statusMessage.textContent = '';
+            elements.errorMessage.textContent = '';
+            elements.errorMessage.style.display = 'none';
+            elements.loginPrompt.style.display = 'none';
+            elements.redirectMessage.style.display = 'none';
+        }
+
+        function displayMessage(type, statusText, detailText = '', iconClass = null, redirectSeconds = REDIRECT_DELAY_SECONDS_DEFAULT) {
+            resetUI(); // Start by resetting everything
+
+            elements.statusMessage.textContent = statusText;
+            elements.statusMessage.style.opacity = 1; // Ensure it's visible
+
+            if (type === 'processing') {
+                elements.spinnerContainer.style.display = 'flex';
+                 elements.redirectMessage.style.display = 'none'; // No redirect message during processing
+            } else if (type === 'success') {
+                elements.animationContainer.style.display = 'block';
+                elements.checkmarkSvg.style.display = 'block'; // Show checkmark
+                elements.creditsAmount.innerHTML = `+${CREDITS_TO_ADD} <i class="fas fa-coins"></i>`;
+                elements.creditsAmount.style.display = 'block';
+                 elements.redirectMessage.style.display = 'block';
+                 startRedirectTimer(redirectSeconds);
+            } else { // error, cooldown, not_logged_in
+                elements.animationContainer.style.display = 'block';
+                 // Ensure iconDisplay is used and content is cleared before adding icon
+                 elements.iconDisplay.style.display = 'flex';
+                 elements.iconDisplay.innerHTML = ''; // Clear previous icon
+                if(iconClass) {
+                    const iconElement = document.createElement('i');
+                    iconElement.className = iconClass;
+                     elements.iconDisplay.appendChild(iconElement);
+                }
+
+                elements.errorMessage.textContent = detailText;
+                elements.errorMessage.style.display = 'block';
+                elements.errorMessage.className = `error-message ${type}`; // Add type class for specific color
+
+                if (type === 'not_logged_in') {
+                    elements.redirectMessage.style.display = 'none'; // Don't show redirect message initially
+                    elements.loginPrompt.style.display = 'block';
+                     // Set up the login link click handler
+                     if (elements.loginLink) {
+                         elements.loginLink.onclick = (e) => {
+                             e.preventDefault();
+                             // Redirect to book.html and potentially signal to open login modal
+                             // A simple query parameter is one way, but requires handling on book.html load
+                             window.location.href = 'https://edusparkk.xyz/books/v1.2.0/book?login=true';
+                         };
+                     }
+                     // Still redirect after a delay if user does nothing
+                     startRedirectTimer(redirectSeconds, 'https://edusparkk.xyz/books/v1.2.0/book');
+
+                } else { // error or cooldown
+                     elements.redirectMessage.style.display = 'block';
+                     startRedirectTimer(redirectSeconds);
+                }
+            }
+             // Ensure any elements not explicitly handled are hidden if they were previously shown
+             if (type !== 'creditsAmount') elements.creditsAmount.style.display = 'none';
+             if (type !== 'errorMessage') elements.errorMessage.style.display = 'none';
+             if (type !== 'loginPrompt') elements.loginPrompt.style.display = 'none';
+             if (type === 'processing') elements.redirectMessage.style.display = 'none';
+             if (type !== 'processing') elements.spinnerContainer.style.display = 'none';
+             if (type !== 'success' && type !== 'cooldown' && type !== 'error') elements.animationContainer.style.display = 'none';
+
+        }
+
+        function startRedirectTimer(seconds, redirectUrl = 'https://edusparkk.xyz/books/v1.2.0/book') {
+            // Ensure the redirect message is visible before starting the timer
+            elements.redirectMessage.style.display = 'block';
+            let count = seconds;
+            elements.countdown.textContent = count;
+
+            // Clear any existing timer
+            if(window.redirectTimer) clearInterval(window.redirectTimer);
+
+            window.redirectTimer = setInterval(() => {
+                count--;
+                if (count >= 0) {
+                   elements.countdown.textContent = count;
+                }
+                if (count <= 0) {
+                    clearInterval(window.redirectTimer);
+                    window.location.href = redirectUrl;
+                }
+            }, 1000);
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                displayMessage('processing', 'Checking your account...');
+                const userRef = db.collection('users').doc(user.uid);
+
+                try {
+                    // === Implement Credit Boost Transaction ===
+                    let transactionResult = 'cooldown'; // Assume cooldown initially
+
+                     await db.runTransaction(async (transaction) => {
+                         const userDoc = await transaction.get(userRef);
+                         if (!userDoc.exists) {
+                             // This shouldn't happen with auth listener, but handle defensively
+                             transactionResult = 'error_user_not_found';
+                             return; // Abort transaction
+                         }
+                         const userData = userDoc.data();
+                         const lastClaimTimestamp = userData.lastCreditBoostClaim;
+
+                         // Get server time approximation for *this request* by reading a server timestamp
+                         // This is still not perfect, but better than client time alone.
+                         // A truly secure check needs Cloud Functions or server-side validation.
+                         // Let's refine the rule check approach: rely on the rule to check
+                         // if request.time is >= resource.data.lastCreditBoostClaim + duration(180, 's')
+                         // Client side, we can do a basic check based on the *existing* timestamp to give faster feedback.
+
+                         const now = Date.now(); // Client time approximation
+                         const lastClaimTimeMs = lastClaimTimestamp ? lastClaimTimestamp.toDate().getTime() : 0;
+                         const elapsedSeconds = (now - lastClaimTimeMs) / 1000;
+
+                         if (elapsedSeconds < COOLDOWN_SECONDS) {
+                             // Cooldown active (client-side check for UX)
+                             transactionResult = 'cooldown';
+                             // Don't update anything in the transaction, it will effectively abort for this user state
+                             return; // Abort transaction based on client check
+                         }
+
+                         // If cooldown passed client-side, proceed with the update in the transaction
+                         // The Firestore Security Rule MUST validate the timestamp condition server-side
+                         // to prevent race conditions or client manipulation.
+                         transaction.update(userRef, {
+                             credits: firebase.firestore.FieldValue.increment(CREDITS_TO_ADD),
+                             lastCreditBoostClaim: firebase.firestore.FieldValue.serverTimestamp(), // Set new claim time using server time
+                             creditsEarnedViaBoosts: firebase.firestore.FieldValue.increment(CREDITS_TO_ADD) // Track source
+                         });
+                         transactionResult = 'success';
+                     });
+
+                    // === Handle Transaction Result ===
+                    if (transactionResult === 'success') {
+                        displayMessage('success', 'Credits Added Successfully!');
+                         // Create notification AFTER the transaction commits successfully
+                         await db.collection('users').doc(user.uid).collection('notifications').add({
+                             title: "Credits Added!",
+                             message: `You received +${CREDITS_TO_ADD} credits for completing the action.`,
+                             type: "success",
+                             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                             read: false,
+                             actionLink: null, // Or link to profile credit section if possible
+                             icon: "fas fa-coins"
+                         });
+                        startRedirectTimer(REDIRECT_DELAY_SECONDS_DEFAULT); // Redirect after default delay
+                    } else if (transactionResult === 'cooldown') {
+                         // Recalculate remaining time based on fresh data read *during* the transaction
+                         const userDocAfterAttempt = await userRef.get();
+                         const userDataAfterAttempt = userDocAfterAttempt.data();
+                         const lastClaimTimeMs = userDataAfterAttempt.lastCreditBoostClaim ? userDataAfterAttempt.lastCreditBoostClaim.toDate().getTime() : 0;
+                         const now = Date.now();
+                         const elapsedSeconds = (now - lastClaimTimeMs) / 1000;
+                         const remainingCooldown = Math.max(0, COOLDOWN_SECONDS - Math.floor(elapsedSeconds)); // Ensure non-negative
+
+                         displayMessage('cooldown', 'Hold On!', `Please wait ${remainingCooldown} seconds before trying again.`, 'fas fa-clock', REDIRECT_DELAY_SECONDS_ERROR);
+                    } else if (transactionResult === 'error_user_not_found') {
+                         displayMessage('error', 'Error', 'Your user data was not found.', 'fas fa-user-times', REDIRECT_DELAY_SECONDS_ERROR);
+                    }
+
+
+                } catch (error) {
+                    console.error("Firestore transaction failed:", error);
+                     // Generic error for unexpected transaction failures
+                    displayMessage('error', 'Error', `Could not add credits: ${error.message || 'An unexpected error occurred.'}`, 'fas fa-exclamation-circle', REDIRECT_DELAY_SECONDS_ERROR);
+                }
+
+            } else {
+                // Not logged in
+                displayMessage('not_logged_in', 'Login Required', 'Please log in to your EduSpark account to add credits.', 'fas fa-user-lock', REDIRECT_DELAY_SECONDS_ERROR);
+                // Redirect timer is started within displayMessage('not_logged_in', ...)
+            }
+        });
+
+        // Initial display before auth state is known
+        displayMessage('processing', 'Checking your account...');
+
+    </script>
+</body>
+</html>
