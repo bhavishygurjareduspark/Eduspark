@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to App</title>
+    <script>
+        function openInApp() {
+            // Try to open the app with intent URL
+            window.location.href = "intent://edusparkk.xyz/special/#Intent;scheme=https;package=com.eduspark.sketchpro;end";
+            
+            // If app not installed, redirect after delay
+            setTimeout(function() {
+                window.location.href = "https://play.google.com/store/apps/details?id=com.eduspark.sketchpro";
+            }, 1000);
+        }
+    </script>
+</head>
+<body onload="openInApp()">
+    <p>Redirecting to EduSpark app...</p>
+</body>
+</html>
