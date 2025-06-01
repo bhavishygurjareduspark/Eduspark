@@ -373,11 +373,11 @@
                              e.preventDefault();
                              // Redirect to book.html and potentially signal to open login modal
                              // A simple query parameter is one way, but requires handling on book.html load
-                             window.location.href = 'https://edusparkk.xyz/books/v1.2.0/book?login=true';
+                             window.location.href = 'https://edusparkk.xyz/books?login=true';
                          };
                      }
                      // Still redirect after a delay if user does nothing
-                     startRedirectTimer(redirectSeconds, 'https://edusparkk.xyz/books/v1.2.0/book');
+                     startRedirectTimer(redirectSeconds, 'https://edusparkk.xyz/books');
 
                 } else { // error or cooldown
                      elements.redirectMessage.style.display = 'block';
@@ -394,7 +394,7 @@
 
         }
 
-        function startRedirectTimer(seconds, redirectUrl = 'https://edusparkk.xyz/books/v1.2.0/book') {
+        function startRedirectTimer(seconds, redirectUrl = 'https://edusparkk.xyz/books') {
             // Ensure the redirect message is visible before starting the timer
             elements.redirectMessage.style.display = 'block';
             let count = seconds;
