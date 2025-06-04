@@ -2687,7 +2687,7 @@
         if(elements.conductSurveyBtn) elements.conductSurveyBtn.onclick = () => {
             if (!currentUser) { openModal(elements.loginModal); return; }
             showToast("Redirecting to earn credits...", "info");
-            window.location.href = 'https://linkcents.com/50-Credit-books';
+            window.location.href = 'https://linkcents.com/50-Credit-book';
              createNotification(currentUser.uid, "Attempted Credit Boost", "You clicked the link to earn credits. Checking eligibility...", "info", null, "fas fa-external-link-alt");
              closeModal(elements.creditModal);
         };
