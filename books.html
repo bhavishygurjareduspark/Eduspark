@@ -507,7 +507,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0; position: relative;
         }
-        /* .notifications-title removed as per previous notes, handled by tabs or implied */
         .notifications-actions {
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
         }
@@ -537,6 +536,7 @@
             transition: color 0.3s ease, border-bottom-color 0.3s ease;
             border-bottom: 3px solid transparent;
             white-space: nowrap;
+            position: relative; /* For dot positioning */
         }
         .notification-tab-btn:hover { color: var(--primary-light); }
         .notification-tab-btn.active {
@@ -544,6 +544,18 @@
             border-bottom-color: var(--primary-color);
             font-weight: 600;
         }
+        /* Dot for unread admin announcements on the tab button */
+        .nav-item-dot {
+            position: absolute;
+            top: 10px; /* Adjusted for tab button */
+            right: 10px; /* Adjusted for tab button */
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color); /* Or a specific announcement color */
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px var(--card-bg); /* To make it stand out */
+        }
+
         .notifications-content-area {
             flex: 1; overflow-y: hidden; /* Parent handles scroll if needed, individual lists scroll */
             position: relative;
@@ -811,7 +823,6 @@
             .withdrawal-status { align-self: flex-start; }
             .profile-action-btn { min-width: 150px; }
             .category-filter-item { padding: 7px 15px; font-size: 0.85rem;}
-            /* .notifications-title removed as per previous notes, handled by tabs or implied */
             .notifications-tabs { padding: 0 5px;}
             .notification-tab-btn { font-size: 0.9rem; padding: 10px 8px;}
         }
@@ -850,7 +861,6 @@
             .book-detail-author { font-size: 0.9rem; }
             .rating-stars .stars > i { font-size: 1.4rem; }
             .notifications-header { height: var(--header-height); padding: 0 10px;}
-            /* .notifications-title { font-size: 1rem; } */
             .page-back-btn { width: 35px; height: 35px; font-size: 1.2rem; top: calc(12.5px + (var(--header-height) - 60px) / 2); } /* For profile and notifications */
             .notification-item { padding: 12px; }
             .notification-icon { width: 32px; height: 32px; font-size: 1.2rem; margin-right: 12px; }
@@ -859,6 +869,7 @@
             .notification-timestamp { font-size: 0.7rem; }
             .notifications-tabs {overflow-x: auto; justify-content: flex-start;}
             .notification-tab-btn { flex: 0 0 auto; padding: 10px 15px;} /* Ensure tabs are scrollable if they overflow */
+            .nav-item-dot { top: 8px; right: 5px; } /* Adjust dot for smaller tabs */
         }
 
         @media (max-width: 400px) {
@@ -1009,7 +1020,7 @@
                     <div class="stat-grid">
                         <div class="stat-card">
                             <span class="stat-value" id="booksSharedLarge">0</span>
-                            <span class="stat-label-card">Books Shared</span>
+                            <span class="stat-label-card">Books Submitted</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-value" id="booksDownloadedLarge">0</span>
@@ -1028,18 +1039,18 @@
             </div>
 
             <div class="profile-tabs" data-aos="fade-up" data-aos-delay="300">
-                <button class="profile-tab-btn active" data-tab="shared-books">My Shared Books</button>
+                <button class="profile-tab-btn active" data-tab="shared-books">My Submissions</button> <!-- Renamed tab text slightly for clarity -->
                 <button class="profile-tab-btn" data-tab="withdrawal-history">Withdrawal History</button>
                 <button class="profile-tab-btn" data-tab="point-system">Point System</button>
             </div>
 
             <div class="profile-tab-content active" id="tab-shared-books" data-aos="fade-up" data-aos-delay="350">
-                <h3 class="profile-section-title">Your Shared Books</h3>
+                <h3 class="profile-section-title">Your Submissions (Pending/Rejected)</h3>
                 <div id="profileBooksContainer" class="books-grid">
                      <div class="empty-state" id="emptyProfileBooks" style="display: none;">
                          <i class="fas fa-book-medical"></i>
-                         <h3>No Books Shared Yet</h3>
-                         <p>Share your knowledge with the community!</p>
+                         <h3>No Submissions Yet</h3>
+                         <p>Share your knowledge! Your pending/rejected submissions will appear here.</p>
                      </div>
                 </div>
                  <div class="load-more-container" id="loadMoreContainer">
@@ -1071,7 +1082,7 @@
                     <hr style="border-color: rgba(255,255,255,0.1); margin: 10px 0;">
                     <div class="point-item"><span class="point-action">Daily Login Bonus</span><span class="point-value">+20 Credits</span></div>
                     <div class="point-item"><span class="point-action">Download a Book</span><span class="point-value">-30 Credits</span></div>
-                     <div class="point-item"><span class="point-action">Complete Credit Boost</span><span class="point-value">+50 Credits</span></div> <!-- Added for clarity -->
+                     <div class="point-item"><span class="point-action">Complete Credit Boost</span><span class="point-value">+50 Credits</span></div>
                     <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 20px;">
                         <b>Points</b> are for cash withdrawal. <b>Credits</b> are for downloading books.
                     </p>
@@ -1097,7 +1108,6 @@
             <button class="page-back-btn" id="notificationsBackBtn" aria-label="Go Back">
                 <i class="fas fa-arrow-left"></i>
             </button>
-            <!-- <div class="notifications-title">Notifications</div> -->
             <div class="notifications-actions">
                 <button class="mark-all-read-btn" id="markAllNotificationsReadBtn" disabled>
                     <i class="fas fa-check-double"></i> Mark All Read
@@ -1106,7 +1116,10 @@
         </div>
         <div class="notifications-tabs">
             <button class="notification-tab-btn active" data-tab="personal">Personal</button>
-            <button class="notification-tab-btn" data-tab="announcements">Announcements</button>
+            <button class="notification-tab-btn" data-tab="announcements">
+                Announcements
+                <span class="nav-item-dot" id="announcementUnreadDot" style="display: none;"></span>
+            </button>
         </div>
         <div class="notifications-content-area">
             <div class="notifications-list-container active" id="personalNotificationsListContainer">
@@ -1115,7 +1128,6 @@
                     <h3>No Personal Notifications</h3>
                     <p>Important updates and alerts related to your activity will appear here.</p>
                 </div>
-                <!-- Personal notifications will be loaded here -->
             </div>
             <div class="notifications-list-container" id="adminAnnouncementsListContainer">
                 <div class="empty-state" id="emptyAdminAnnouncementsState" style="display: none;">
@@ -1123,7 +1135,6 @@
                     <h3>No Announcements Yet</h3>
                     <p>Check back later for updates from the EduSparK team.</p>
                 </div>
-                <!-- Admin announcements will be loaded here -->
             </div>
         </div>
     </div>
@@ -1389,14 +1400,15 @@
         });
 
         const firebaseConfig = {
-            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // Replace with your actual API key
             authDomain: "eduspark-new.firebaseapp.com",
             projectId: "eduspark-new",
-            storageBucket: "eduspark-new.firebasestorage.app",
+            storageBucket: "eduspark-new.appspot.com", // Corrected: .appspot.com
             messagingSenderId: "564501033350",
             appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
             measurementId: "G-NM2SE3DE7J"
         };
+
 
         firebase.initializeApp(firebaseConfig);
 
@@ -1408,15 +1420,12 @@
       
         try {
             appCheck.activate(
-                'hh', // REPLACE THIS with your reCAPTCHA v3 site key if needed
-                true // Set to true to automatically get a token if none is present.
+                '6LdJ0A8qAAAAAMoPj8zUkFwFFxX_Gg81cF2o_9y7', // REPLACE THIS with your reCAPTCHA v3 site key if needed
+                true 
             );
             console.log("Firebase App Check activated.");
         } catch (error) {
             console.error("Error activating Firebase App Check:", error);
-            // Handle error appropriately, maybe show a message to the user
-            // For example, the app might not work correctly if App Check fails to activate
-            // and enforcement is turned on in the Firebase console.
         }
 
 
@@ -1445,7 +1454,6 @@
             withdrawalModal: $('#withdrawalModal'), closeWithdrawalModal: $('#closeWithdrawalModal'), withdrawalForm: $('#withdrawalForm'),
             creditModal: $('#creditModal'), closeCreditModal: $('#closeCreditModal'),
             creditModalUserCredits: $('#creditModalUserCredits'), claimDailyCreditBtn: $('#claimDailyCreditBtn'), conductSurveyBtn: $('#conductSurveyBtn'),
-            // Profile Page Elements
             profileBtn: $('#profileBtn'), profilePage: $('#profilePage'), profileBackBtn: $('#profileBackBtn'),
             profileAvatarLarge: $('#profileAvatarLarge'), profileAvatarInitialsLarge: $('#profileAvatarInitialsLarge'),
             profileNameLarge: $('#profileNameLarge'), profileUsernameLarge: $('#profileUsernameLarge'),
@@ -1459,8 +1467,6 @@
             loadMoreBooksBtn: $('#loadMoreBooksBtn'), loadMoreContainer: $('#loadMoreContainer'),
             withdrawalHistoryContainer: $('#withdrawalHistoryContainer'), emptyWithdrawalHistory: $('#emptyWithdrawalHistory'),
             editProfileBtn: $('#editProfileBtn'), logoutBtn: $('#logoutBtn'),
-            // pointSystemInfoTabbed: $('.point-system-info-tabbed'), // Not directly used in JS logic, but for completeness
-            // Withdrawal Modal
             withdrawalOptionsContainer: $('#withdrawalModal .withdrawal-options'),
             amountOptionsContainer: $('#withdrawalModal .amount-selection'),
             paymentDetails: $('#paymentDetails'), paymentMethodLabel: $('#paymentMethodLabel'),
@@ -1468,9 +1474,7 @@
             accountNameInput: $('#accountName'),
             accountNameGroup: $('#accountNameGroup'),
             submitWithdrawalBtn: $('#submitWithdrawalBtn'), withdrawalModalPoints: $('#withdrawalModalPoints'),
-            // Navigation
             homeBtn: $('#homeBtn'), discoverBtn: $('#discoverBtn'),
-            // Notifications
             notificationsBtn: $('#notificationsBtn'), notificationsPage: $('#notificationsPage'),
             notificationsBackBtn: $('#notificationsBackBtn'),
             personalNotificationsListContainer: $('#personalNotificationsListContainer'),
@@ -1480,30 +1484,33 @@
             emptyPersonalNotificationsState: $('#emptyPersonalNotificationsState'),
             emptyAdminAnnouncementsState: $('#emptyAdminAnnouncementsState'),
             unreadNotificationsBadge: $('#unreadNotificationsBadge'),
+            announcementUnreadDot: $('#announcementUnreadDot'), // New element for announcement dot
             markAllNotificationsReadBtn: $('#markAllNotificationsReadBtn'),
-            // Book Detail
             bookDetailModal: $('#bookDetailModal'), closeBookDetailModal: $('#closeBookDetailModal'), bookDetailContent: $('#bookDetailContent'),
             toastContainer: $('#toastContainer')
         };
 
-        // State variables
         let currentUser = null, userData = null, allBooksCache = [],
             displayedBooksMain = [],
             popularBooksData = [], currentCategory = 'All',
-            lastUserBookSnapshot = null, hasMoreUserBooks = true,
+            lastUserBookSnapshot = null, hasMoreUserBooks = true, // For 'My Submissions' tab (pending_books)
             selectedWithdrawalMethod = null, selectedWithdrawalAmount = null, selectedWithdrawalRs = null,
             isFetchingMoreUserBooks = false, currentBookDetailId = null,
             unreadNotificationsCount = 0,
+            unreadAdminAnnouncementsCount = 0, // New state for admin announcements
             lastVisibleBookMain = null,
             isLoadingBooksMain = false,
             hasMoreBooksMain = true;
 
-
-        // Firestore listeners object
-        let listeners = { user: null, withdrawals: null, popularBooks: null, userBooks: null, bookApproval: null, userNotifications: null, adminAnnouncements: null, allBooksSearch: null };
+        let listeners = { 
+            user: null, withdrawals: null, popularBooks: null, userBooks: null, 
+            bookApproval: null, bookRejection: null, // Split approval/rejection listeners
+            userNotifications: null, adminAnnouncements: null, allBooksSearch: null 
+        };
 
         const BOOK_DOWNLOAD_COST = 30;
         const BOOKS_PER_PAGE_MAIN = 12;
+        const USER_SUBMISSIONS_PER_PAGE = 6; // For profile "My Submissions" tab
 
         const bookCategories = ['All', '9th', '10th', '11th', '12th', 'NEET', 'JEE', 'UPSC', 'Coding', 'Computer Science', 'Fiction', 'Non-Fiction', 'Other'];
         const loadingMessages = [
@@ -1511,7 +1518,6 @@
             "Connecting to the Grid...", "Brewing Fresh Ideas...", "Preparing Your Journey..."
         ];
 
-        // --- Utility Functions ---
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str).replace(/[&<>"']/g, function (match) {
@@ -1597,7 +1603,6 @@
         function toggleSpinner(btn, show) {
             if (!btn) return;
             const spinner = btn.querySelector('.spinner');
-            // Query for direct child span that is not a spinner
             const textSpan = btn.querySelector(':scope > span:not(.spinner)');
 
             if (show) {
@@ -1612,7 +1617,6 @@
                 if (textSpan) textSpan.style.opacity = '1';
             }
         }
-
 
         function cleanupListeners() {
             for (const key in listeners) {
@@ -1634,7 +1638,6 @@
             return formatDate(ts, { month: 'long', day: 'numeric', year: 'numeric' });
         }
 
-
         function hideLoadingOverlay() {
             elements.loadingOverlay.classList.add('hidden');
         }
@@ -1643,7 +1646,6 @@
             elements.loadingMessage.textContent = loadingMessages[randomIndex];
         }
 
-        // --- Authentication & User Profile ---
         auth.onAuthStateChanged(async (user) => {
             cleanupListeners();
             currentUser = user;
@@ -1660,19 +1662,18 @@
                         updateAvatar();
                         updateHeaderCredits();
                         enableWithdrawalIfQualified();
-                        setupBookApprovalListener();
+                        setupBookApprovalListeners(); // MODIFIED to plural
                         setupUserNotificationsListener();
                         setupAdminAnnouncementsListener();
                         if (!elements.loadingOverlay.classList.contains('hidden')) {
                            hideLoadingOverlay();
                         }
-                    } else { // User exists in Auth, but not in Firestore (e.g., first signup)
+                    } else { 
                         const tempSignupData = JSON.parse(sessionStorage.getItem('tempSignupData') || '{}');
                         sessionStorage.removeItem('tempSignupData');
                         try {
                             console.log("User document doesn't exist, creating one...");
                             await createUserDocument(user, tempSignupData.name, tempSignupData.username, tempSignupData.bio);
-                            // The onSnapshot listener will pick up the newly created document.
                         } catch (error) {
                             console.error("Fatal error creating user document:", error);
                             showToast("Critical error setting up your profile. Please contact support.", "error", 10000);
@@ -1697,32 +1698,30 @@
                 } catch (warn) { console.warn("Could not update last active time (might be new user):", warn.message); }
 
                 initializeDataFetching();
-            } else { // User is logged out
+            } else { 
                 userData = null;
                 currentUser = null;
                 elements.body.classList.remove('logged-in');
                 elements.body.classList.add('logged-out');
                 elements.headerCreditsContainer.style.display = 'none';
-                updateProfileUI(); // Clears profile UI
-                updateAvatar(); // Resets avatar
-                updateHeaderCredits(); // Resets credits
-                updateUnreadBadge(0); // Clears notification badge
-                showLoginPromptInsteadOfContent(); // Shows login prompts
+                updateProfileUI(); 
+                updateAvatar(); 
+                updateHeaderCredits(); 
+                updateUnreadBadge(0); 
+                updateAdminAnnouncementDot(0); // Clear admin announcement dot
+                showLoginPromptInsteadOfContent(); 
                 closeAllPagesAndModals();
                 resetNavigation();
-                // Clear dynamic content areas
                 ['popularBooksCarousel', 'profileBooksContainer', 'withdrawalHistoryContainer', 'personalNotificationsListContainer', 'adminAnnouncementsListContainer', 'booksContainer'].forEach(elKey => {
                     if (elements[elKey]) elements[elKey].innerHTML = '';
                 });
                  if (elements.categoryFilterContainer) elements.categoryFilterContainer.innerHTML = '';
-                // Reset caches and pagination states
                 allBooksCache = []; displayedBooksMain = []; popularBooksData = [];
                 lastVisibleBookMain = null; hasMoreBooksMain = true; isLoadingBooksMain = false;
                 lastUserBookSnapshot = null; hasMoreUserBooks = true; isFetchingMoreUserBooks = false;
                 currentCategory = 'All';
-                if (listeners.allBooksSearch) listeners.allBooksSearch(); // Detach search listener
+                if (listeners.allBooksSearch) listeners.allBooksSearch();
                 listeners.allBooksSearch = null;
-
 
                 if (!elements.loadingOverlay.classList.contains('hidden')) {
                     hideLoadingOverlay();
@@ -1733,11 +1732,10 @@
         async function createUserDocument(user, nameFromSignup, usernameFromSignup, bioFromSignup) {
             const name = nameFromSignup || user.displayName || "Anonymous User";
             let username = usernameFromSignup || user.email.split('@')[0].replace(/[^a-z0-9_.]/gi, '').toLowerCase() || `user${Date.now().toString().slice(-5)}`;
-            // Ensure username uniqueness again, just in case (though primarily handled at signup form)
             try {
                 const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
                 if (!usernameSnapshot.empty) {
-                    username = `user${Date.now().toString().slice(-5)}`; // Fallback to a more unique username
+                    username = `user${Date.now().toString().slice(-5)}`; 
                 }
             } catch (e) { console.warn("Error re-checking username during doc creation:", e); }
 
@@ -1745,33 +1743,28 @@
             const userRef = db.collection('users').doc(user.uid);
             const initialUserData = {
                 uid: user.uid, email: user.email, name: name, username: username, bio: bio,
-                points: 0, credits: 50, // Initial credits
+                points: 0, credits: 50, 
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastActive: firebase.firestore.FieldValue.serverTimestamp(),
                 booksSharedCount: 0, booksDownloadedCount: 0, lastDailyCreditClaim: null,
                 totalBookDownloads: 0, totalFeedbackGiven: 0,
-                processedBookActions: {}, // To track points/notifications for book actions
-                // === Added for Credit Boost Feature ===
-                lastCreditBoostClaim: null, // Timestamp of the last credit boost claim
-                creditsEarnedViaBoosts: 0 // Total credits earned this way (for tracking)
-                // =====================================
+                processedBookActions: {}, 
+                lastCreditBoostClaim: null, creditsEarnedViaBoosts: 0,
+                lastViewedAnnouncementsAt: null // New field for admin announcements
             };
             try {
                 await userRef.set(initialUserData);
-                // Notification for welcome and starting credits
                 await createNotification(user.uid, "Welcome to EduSparK!", `Your profile is set up. You've received ${initialUserData.credits} starting credits!`, "success", null, "fas fa-hand-sparkles");
                 showToast("Welcome to EduSparK! Your profile is set up.", "success");
             } catch (error) {
                 console.error("Critical error creating user document in Firestore: ", error);
-                // This is a serious issue; the user might be authenticated but without a profile document.
-                // Consider how to handle this - perhaps force logout or show a persistent error.
                 showToast("Major error setting up your account. Please contact support.", "error", 10000);
-                throw error; // Re-throw to be caught by the caller if needed
+                throw error; 
             }
         }
 
         function showLoginPromptInsteadOfContent() {
              if (elements.booksContainer) {
-                elements.booksContainer.innerHTML = ''; // Clear any skeletons
+                elements.booksContainer.innerHTML = ''; 
                 elements.emptyStateBooks.innerHTML = `<i class="fas fa-sign-in-alt"></i><h3>Login to Discover Books</h3><p>Join EduSparK to share, download, and engage!</p><button class="submit-btn" style="margin-top:20px;max-width:200px;" id="loginPromptBtnMain">Login / Sign Up</button>`;
                 elements.emptyStateBooks.style.display = 'flex';
                 const loginPromptBtn = $('#loginPromptBtnMain');
@@ -1785,7 +1778,7 @@
              if(elements.emptyWithdrawalHistory) elements.emptyWithdrawalHistory.style.display = 'flex';
              if(elements.emptyPersonalNotificationsState) elements.emptyPersonalNotificationsState.style.display = 'flex';
              if(elements.emptyAdminAnnouncementsState) elements.emptyAdminAnnouncementsState.style.display = 'flex';
-             renderCategoryFilters(); // Render categories even if logged out
+             renderCategoryFilters(); 
         }
 
         elements.loginForm.addEventListener('submit', async (e) => {
@@ -1833,7 +1826,6 @@
                     showToast("Username already taken. Please choose another.", "error");
                     toggleSpinner(btn, false); return;
                 }
-                 // Check if email is already in use by Firebase Auth
                 const methods = await auth.fetchSignInMethodsForEmail(email);
                 if (methods.length > 0) {
                     showToast("This email address is already in use.", "error");
@@ -1842,15 +1834,12 @@
 
                 sessionStorage.setItem('tempSignupData', JSON.stringify({ name, username, bio }));
                 await auth.createUserWithEmailAndPassword(email, password);
-                // onAuthStateChanged will handle creating the user document and closing modal indirectly
-                // closeModal(elements.signupModal); // This might be too soon if onAuthStateChanged is slow
             } catch (error) {
                 console.error("Signup error:", error);
                 showToast(error.message, "error");
-                sessionStorage.removeItem('tempSignupData'); // Clean up if signup fails
+                sessionStorage.removeItem('tempSignupData'); 
             } finally {
                 toggleSpinner(btn, false);
-                // elements.signupForm.reset(); // Reset form only on success, or handled by onAuthStateChanged logic
             }
         });
 
@@ -1858,7 +1847,6 @@
             toggleSpinner(elements.logoutBtn, true);
             try {
                 await auth.signOut();
-                // onAuthStateChanged will handle UI reset, closing pages, etc.
                 showToast("Logged out successfully.", "info");
             } catch (error) {
                 console.error("Logout error:", error);
@@ -1878,11 +1866,11 @@
                 elements.profileBioLarge.textContent = escapeHTML(userData.bio || 'No bio set. Click Edit Profile to add one!');
 
                 elements.userPointsLarge.textContent = userData.points || 0;
-                elements.booksSharedLarge.textContent = userData.booksSharedCount || 0;
+                elements.booksSharedLarge.textContent = userData.booksSharedCount || 0; // This is now "books submitted"
                 elements.booksDownloadedLarge.textContent = userData.booksDownloadedCount || 0;
                 elements.totalBookDownloadsLarge.textContent = userData.totalBookDownloads || 0;
                 elements.totalFeedbackLarge.textContent = userData.totalFeedbackGiven || 0;
-            } else { // Reset profile UI elements
+            } else { 
                 elements.profileAvatarInitialsLarge.textContent = 'U';
                 elements.profileNameLarge.textContent = 'User Loading...';
                 elements.profileUsernameLarge.textContent = '@loading';
@@ -1893,11 +1881,11 @@
                     if (elements[elId]) elements[elId].textContent = '0';
                 });
                 if(elements.emptyProfileBooks) {
-                    elements.profileBooksContainer.innerHTML = ''; // Clear books before showing empty state
+                    elements.profileBooksContainer.innerHTML = ''; 
                     elements.emptyProfileBooks.style.display = 'flex';
                 }
                 if(elements.emptyWithdrawalHistory) {
-                    elements.withdrawalHistoryContainer.innerHTML = ''; // Clear history
+                    elements.withdrawalHistoryContainer.innerHTML = ''; 
                     elements.emptyWithdrawalHistory.style.display = 'flex';
                 }
             }
@@ -1970,24 +1958,22 @@
                 elements.profileTabContents.forEach(content => {
                     content.classList.toggle('active', content.id === `tab-${tabId}`);
                 });
-                AOS.refresh(); // Refresh AOS for new tab content
+                AOS.refresh(); 
             });
         }
 
-
-        // --- Book Data Fetching & Display ---
         function initializeDataFetching() {
              if (!currentUser) return;
-             fetchBooksMain(false); // Initial fetch for main grid
+             fetchBooksMain(false); 
              fetchPopularBooks();
              renderCategoryFilters();
-             setupAllBooksListenerForSearch(); //MODIFIED
+             setupAllBooksListenerForSearch(); 
         }
 
         function renderSkeletonLoaders(container, count, type = 'book') {
             if (!container) return;
             if (container !== elements.booksGridLoadingIndicator) {
-                 container.innerHTML = ''; // Clear only if not the loading indicator itself
+                 container.innerHTML = ''; 
             }
             let skeletonHTML = '';
             for (let i = 0; i < count; i++) {
@@ -2001,26 +1987,29 @@
                     skeletonHTML += `<div class="skeleton-notification-item"><div class="skeleton-icon"></div><div class="skeleton-content"><div class="skeleton-text title"></div><div class="skeleton-text message"></div><div class="skeleton-text timestamp"></div></div></div>`;
                 }
             }
-            if (container !== elements.booksGridLoadingIndicator) { // Append to loading indicator, replace for others
+            if (container !== elements.booksGridLoadingIndicator) { 
                 container.innerHTML = skeletonHTML;
             }
         }
 
         function createBookCardHTML(book, target = 'main') {
-             const isAdmin = target === 'profile'; // 'profile' implies it's user's own book list
+             // target 'profile' now means it's from pending_books for "My Submissions"
+             const isAdminOrProfileView = target === 'profile'; 
              const defaultImage = 'https://via.placeholder.com/300x220/333/888?text=No+Cover';
              const imageUrl = book.imageUrl || defaultImage;
              let statusBadge = '';
-             if (isAdmin) { // Only show status badges on the user's own profile book list
+             // For profile view (My Submissions from pending_books), always show status
+             if (isAdminOrProfileView) { 
                  if (book.status === 'pending') statusBadge = '<span class="status-badge status-pending">Pending</span>';
                  else if (book.status === 'rejected') statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
+                 // No 'approved' badge here as approved books are not in this list by default
              }
              const reviewedByDisplay = escapeHTML(book.reviewedByName || book.reviewedBy || 'Admin');
 
 
              return `
                 <div class="book-card" data-id="${book.id}" style="animation-delay: ${Math.random() * 0.2}s" data-aos="fade-up">
-                    <div class="book-img-container" data-action="view" data-book-id="${book.id}">
+                    <div class="book-img-container" data-action="view" data-book-id="${book.id}" data-source="${target === 'profile' ? 'pending_books' : 'books'}">
                         <img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(book.bookName)}" class="book-img" loading="lazy" onerror="this.onerror=null;this.src='${defaultImage}';">
                         ${statusBadge}
                     </div>
@@ -2031,9 +2020,9 @@
                             <span><i class="fas fa-user"></i> ${escapeHTML(book.submittedByName || 'Anon')}</span>
                             <span><i class="fas fa-calendar-alt"></i> ${formatDate(book.submittedAt)}</span>
                         </div>
-                        ${isAdmin && book.status !== 'approved' ? `<div class="book-admin-info" style="font-style: italic; color: ${book.status === 'pending' ? 'var(--status-pending-bg, #f39c12)' : 'var(--status-rejected-bg, #e74c3c)'};"><i class="fas ${book.status === 'pending' ? 'fa-hourglass-half' : 'fa-times-circle'}"></i> Status: ${book.status.toUpperCase()}${book.status === 'rejected' && book.rejectionReason ? `<br>Reason: ${escapeHTML(book.rejectionReason)}` : ''}</div>` : ''}
-                        ${isAdmin && book.status === 'approved' && (book.reviewedByName || book.reviewedBy) ? `<div class="book-admin-info"><i class="fas fa-user-shield"></i> Approved by ${reviewedByDisplay} on ${book.approvedAt ? formatDate(book.approvedAt) : '-'}</div>` : ''}
-                        <button class="action-btn view-btn" data-action="view" data-book-id="${book.id}">
+                        ${isAdminOrProfileView && (book.status === 'pending' || book.status === 'rejected') ? `<div class="book-admin-info" style="font-style: italic; color: ${book.status === 'pending' ? 'var(--status-pending-bg, #f39c12)' : 'var(--status-rejected-bg, #e74c3c)'};"><i class="fas ${book.status === 'pending' ? 'fa-hourglass-half' : 'fa-times-circle'}"></i> Status: ${book.status.toUpperCase()}${book.status === 'rejected' && book.rejectionReason ? `<br>Reason: ${escapeHTML(book.rejectionReason)}` : ''}</div>` : ''}
+                        ${target === 'main' && book.status === 'approved' && (book.reviewedByName || book.reviewedBy) ? `<div class="book-admin-info"><i class="fas fa-user-shield"></i> Approved by ${reviewedByDisplay} on ${book.approvedAt ? formatDate(book.approvedAt) : '-'}</div>` : ''}
+                        <button class="action-btn view-btn" data-action="view" data-book-id="${book.id}" data-source="${target === 'profile' ? 'pending_books' : 'books'}">
                             <span class="spinner" style="display: none;"></span>
                             <span><i class="fas fa-eye"></i> View Details</span>
                         </button>
@@ -2041,11 +2030,12 @@
                 </div>`;
         }
 
+
         function createPopularBookCardHTML(book) {
             const defaultImage = 'https://via.placeholder.com/160x200/333/888?text=No+Cover';
             const imageUrl = book.imageUrl || defaultImage;
             return `
-                <div class="popular-book-card" data-action="view" data-book-id="${book.id}" data-aos="fade-left" style="animation-delay: ${Math.random() * 0.3}s">
+                <div class="popular-book-card" data-action="view" data-book-id="${book.id}" data-source="books" data-aos="fade-left" style="animation-delay: ${Math.random() * 0.3}s">
                     <div class="popular-book-img-container">
                         <img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(book.bookName)}" class="popular-book-img" loading="lazy" onerror="this.onerror=null;this.src='${defaultImage}';">
                     </div>
@@ -2057,91 +2047,96 @@
         }
 
         async function fetchBooksMain(loadMore = false) {
-    if (!currentUser || isLoadingBooksMain) return;
-    if (!hasMoreBooksMain && loadMore) {
-        if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
-        return;
-    }
+            if (!currentUser || isLoadingBooksMain) return;
+            if (!hasMoreBooksMain && loadMore) {
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
+                return;
+            }
 
-    isLoadingBooksMain = true;
-    if (loadMore) {
-        if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'block';
-    } else {
-        lastVisibleBookMain = null;
-        hasMoreBooksMain = true;
-        displayedBooksMain = [];
-        if(elements.booksContainer) elements.booksContainer.innerHTML = '';
-        renderSkeletonLoaders(elements.booksContainer, BOOKS_PER_PAGE_MAIN, 'book');
-        if(elements.emptyStateBooks) elements.emptyStateBooks.style.display = 'none';
-    }
+            isLoadingBooksMain = true;
+            if (loadMore) {
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'block';
+            } else {
+                lastVisibleBookMain = null;
+                hasMoreBooksMain = true;
+                displayedBooksMain = []; 
+                if(elements.booksContainer) elements.booksContainer.innerHTML = '';
+                renderSkeletonLoaders(elements.booksContainer, BOOKS_PER_PAGE_MAIN, 'book');
+                if(elements.emptyStateBooks) elements.emptyStateBooks.style.display = 'none';
+            }
 
-    // Only query the approved books collection
-    let query = db.collection('books').where('status', '==', 'approved');
-    if (currentCategory !== 'All') {
-        query = query.where('category', '==', currentCategory);
-    }
-    query = query.orderBy('approvedAt', 'desc').limit(BOOKS_PER_PAGE_MAIN);
+            let query = db.collection('books').where('status', '==', 'approved');
+            if (currentCategory !== 'All') {
+                query = query.where('category', '==', currentCategory);
+            }
+            query = query.orderBy('approvedAt', 'desc').limit(BOOKS_PER_PAGE_MAIN);
 
-    if (loadMore && lastVisibleBookMain) {
-        query = query.startAfter(lastVisibleBookMain);
-    }
+            if (loadMore && lastVisibleBookMain) {
+                query = query.startAfter(lastVisibleBookMain);
+            }
 
-    try {
-        const snapshot = await query.get();
-        if (!loadMore && elements.booksContainer) elements.booksContainer.innerHTML = '';
+            try {
+                const snapshot = await query.get();
+                if (!loadMore && elements.booksContainer) elements.booksContainer.innerHTML = ''; 
 
-        const newBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const newBooks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        if (newBooks.length > 0) {
-            newBooks.forEach(book => {
-                displayedBooksMain.push(book);
-                if(elements.booksContainer) elements.booksContainer.innerHTML += createBookCardHTML(book);
-            });
-            lastVisibleBookMain = snapshot.docs[snapshot.docs.length - 1];
+                if (newBooks.length > 0) {
+                    newBooks.forEach(book => {
+                        displayedBooksMain.push(book); 
+                        if(elements.booksContainer) elements.booksContainer.innerHTML += createBookCardHTML(book, 'main'); // Pass 'main' target
+                    });
+                    lastVisibleBookMain = snapshot.docs[snapshot.docs.length - 1];
+                }
+
+                hasMoreBooksMain = newBooks.length === BOOKS_PER_PAGE_MAIN;
+
+                if (displayedBooksMain.length === 0 && !loadMore && elements.emptyStateBooks) {
+                    elements.emptyStateBooks.innerHTML = `<i class="fas fa-search-minus"></i><h3>No Books Found</h3><p>No books match the category '${escapeHTML(currentCategory)}'. Try 'All' or another category.</p>`;
+                    elements.emptyStateBooks.style.display = 'flex';
+                } else if (elements.emptyStateBooks) {
+                    elements.emptyStateBooks.style.display = 'none';
+                }
+                AOS.refreshHard(); 
+
+            } catch (error) {
+                console.error(`Error fetching books for main grid (currentCategory: ${currentCategory}):`, error);
+                // More specific error for missing index
+                if (error.code === 'failed-precondition') {
+                    console.error("Firestore 'failed-precondition' error. This often means a composite index is required. Check the Firebase console for a link to create it. Query details: status='approved', category='" + currentCategory + "', orderBy='approvedAt'.");
+                    showToast("Error loading books: A database configuration (index) might be missing. Please check server logs or contact support if you are an admin.", "error", 10000);
+                } else {
+                    showToast("Could not load books. Please check your connection or try again later.", "error");
+                }
+                if (!loadMore && elements.emptyStateBooks) {
+                    if(elements.booksContainer) elements.booksContainer.innerHTML = ''; 
+                    elements.emptyStateBooks.innerHTML = `<i class="fas fa-exclamation-triangle"></i><h3>Error Loading Books</h3><p>Please refresh or try again later.</p>`;
+                    elements.emptyStateBooks.style.display = 'flex';
+                }
+            } finally {
+                isLoadingBooksMain = false;
+                if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
+            }
         }
 
-        hasMoreBooksMain = newBooks.length === BOOKS_PER_PAGE_MAIN;
+        function setupAllBooksListenerForSearch() { 
+            if (!currentUser) {
+                allBooksCache = [];
+                if (listeners.allBooksSearch) listeners.allBooksSearch();
+                listeners.allBooksSearch = null;
+                return;
+            }
+            if (listeners.allBooksSearch) return; 
 
-        if (displayedBooksMain.length === 0 && !loadMore && elements.emptyStateBooks) {
-            elements.emptyStateBooks.innerHTML = `<i class="fas fa-search-minus"></i><h3>No Books Found</h3><p>No books match the category '${escapeHTML(currentCategory)}'. Try 'All' or another category.</p>`;
-            elements.emptyStateBooks.style.display = 'flex';
-        } else if (elements.emptyStateBooks) {
-            elements.emptyStateBooks.style.display = 'none';
+            listeners.allBooksSearch = db.collection('books').where('status', '==', 'approved')
+                .onSnapshot(snapshot => {
+                    allBooksCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log("Search cache updated with approved books:", allBooksCache.length);
+                }, error => {
+                    console.error("Error listening to all books for search:", error);
+                    showToast("Search functionality might be limited due to a network error.", "warning");
+                });
         }
-        AOS.refreshHard();
-    } catch (error) {
-        console.error("Error fetching books for main grid:", error);
-        showToast("Could not load books. Please check your connection.", "error");
-        if (!loadMore && elements.emptyStateBooks) {
-            if(elements.booksContainer) elements.booksContainer.innerHTML = '';
-            elements.emptyStateBooks.innerHTML = `<i class="fas fa-exclamation-triangle"></i><h3>Error Loading Books</h3><p>Please refresh or try again later.</p>`;
-            elements.emptyStateBooks.style.display = 'flex';
-        }
-    } finally {
-        isLoadingBooksMain = false;
-        if(elements.booksGridLoadingIndicator) elements.booksGridLoadingIndicator.style.display = 'none';
-    }
-}
-
-        function setupAllBooksListenerForSearch() {
-    if (!currentUser) {
-        allBooksCache = [];
-        if (listeners.allBooksSearch) listeners.allBooksSearch();
-        listeners.allBooksSearch = null;
-        return;
-    }
-    if (listeners.allBooksSearch) return;
-
-    // Only listen to approved books for search
-    listeners.allBooksSearch = db.collection('books').where('status', '==', 'approved')
-        .onSnapshot(snapshot => {
-            allBooksCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            console.log("Search cache updated with approved books:", allBooksCache.length);
-        }, error => {
-            console.error("Error listening to all books for search:", error);
-            showToast("Search functionality might be limited due to a network error.", "warning");
-        });
-}
 
 
         function fetchPopularBooks() {
@@ -2149,14 +2144,14 @@
                  if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-lock"></i><p style="font-size:0.9rem;">Login to see popular books.</p></div>`;
                  return;
              }
-             if (listeners.popularBooks) listeners.popularBooks(); // Detach previous listener
+             if (listeners.popularBooks) listeners.popularBooks(); 
              renderSkeletonLoaders(elements.popularBooksCarousel, 5, 'popular');
 
              listeners.popularBooks = db.collection('books').where('status', '==', 'approved')
                                        .orderBy('downloads', 'desc').orderBy('approvedAt', 'desc').limit(10)
                                        .onSnapshot(snapshot => {
                  popularBooksData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                 if (elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = ''; // Clear skeletons
+                 if (elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = ''; 
 
                  if (popularBooksData.length === 0) {
                      if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML = `<div class="empty-state" style="padding:20px 0;min-height:150px;width:100%;text-align:center;"><i class="fas fa-sad-tear"></i><p style="font-size:0.9rem;">No popular books yet.</p></div>`;
@@ -2165,7 +2160,7 @@
                          if(elements.popularBooksCarousel) elements.popularBooksCarousel.innerHTML += createPopularBookCardHTML(book);
                      });
                  }
-                 AOS.refreshHard(); // Use refreshHard as DOM structure changes
+                 AOS.refreshHard(); 
              }, error => {
                  console.error("Error fetching popular books:", error);
                  showToast("Could not load popular books.", "error");
@@ -2185,7 +2180,7 @@
         if(elements.categoryFilterContainer) {
             elements.categoryFilterContainer.addEventListener('click', (e) => {
                 const target = e.target.closest('.category-filter-item');
-                if (target && currentUser) { // Only allow filter change if logged in
+                if (target && currentUser) { 
                     currentCategory = target.dataset.category;
                     $$('#categoryFilterContainer .category-filter-item').forEach(i => i.classList.remove('active'));
                     target.classList.add('active');
@@ -2199,100 +2194,136 @@
 
 
         elements.addBookForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!currentUser || !userData) { showToast("Login to share books.", "error"); openModal(elements.loginModal); return; }
+            e.preventDefault();
+            if (!currentUser || !userData) { showToast("Login to share books.", "error"); openModal(elements.loginModal); return; }
 
-    const bookName = $('#bookName').value.trim();
-    const authorName = $('#authorName').value.trim();
-    const category = $('#bookCategory').value.trim();
-    const imageUrl = $('#bookImageUrl').value.trim();
-    const driveLink = $('#driveLink').value.trim();
-    const description = $('#bookDescription').value.trim();
+            const bookName = $('#bookName').value.trim();
+            const authorName = $('#authorName').value.trim();
+            const category = $('#bookCategory').value.trim();
+            const imageUrl = $('#bookImageUrl').value.trim();
+            const driveLink = $('#driveLink').value.trim();
+            const description = $('#bookDescription').value.trim();
 
-    if (!bookName || !authorName || !category || !imageUrl || !driveLink) {
-        showToast("Please fill all required fields.", "warning"); return;
-    }
-    try { new URL(imageUrl); } catch (_) { showToast("Image URL must be a valid link.", "warning"); return; }
-    try { new URL(driveLink); } catch (_) { showToast("Drive link must be a valid link.", "warning"); return; }
+            if (!bookName || !authorName || !category || !imageUrl || !driveLink) {
+                showToast("Please fill all required fields.", "warning"); return;
+            }
+            try { new URL(imageUrl); } catch (_) { showToast("Image URL must be a valid link.", "warning"); return; }
+            try { new URL(driveLink); } catch (_) { showToast("Drive link must be a valid link.", "warning"); return; }
 
-    const btn = $('#submitBookBtn');
-    toggleSpinner(btn, true);
 
-    const bookData = {
-        bookName, authorName, category, imageUrl, driveLink, description,
-        submittedBy: currentUser.uid,
-        submittedByName: userData.name || "Anonymous",
-        submittedByUsername: userData.username || "anon_username",
-        submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        status: "pending", 
-        // Remove these as they're not needed for pending books
-        // downloads: 0, avgRating: 0, ratingCount: 0,
-        // approvedAt: null, reviewedAt: null, reviewedBy: null, reviewedByName: null, rejectionReason: '', adminNotes: '',
-    };
+            const btn = $('#submitBookBtn');
+            toggleSpinner(btn, true);
 
-    try {
-        // Store in pending_books collection instead of books
-        await db.collection('pending_books').add(bookData);
-        
-        // Increment shared count
-        await db.collection('users').doc(currentUser.uid).update({
-            booksSharedCount: firebase.firestore.FieldValue.increment(1)
+            const bookData = {
+                bookName, authorName, category, imageUrl, driveLink, description,
+                submittedBy: currentUser.uid,
+                submittedByName: userData.name || "Anonymous",
+                submittedByUsername: userData.username || "anon_username", 
+                submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                status: "pending", downloads: 0, avgRating: 0, ratingCount: 0,
+                approvedAt: null, reviewedAt: null, reviewedBy: null, reviewedByName: null, rejectionReason: '', adminNotes: '',
+            };
+
+            try {
+                // MODIFIED: Save to pending_books collection
+                await db.collection('pending_books').add(bookData);
+                
+                await db.collection('users').doc(currentUser.uid).update({
+                    booksSharedCount: firebase.firestore.FieldValue.increment(1)
+                });
+                await createNotification(currentUser.uid, "Book Submitted", `Your book "${escapeHTML(bookName)}" has been submitted for approval.`, "info", null, "fas fa-upload");
+                showToast("Book submitted for approval! You'll be notified.", "success");
+                elements.addBookForm.reset();
+                closeModal(elements.addBookModal);
+            } catch (error) {
+                console.error("Error submitting book:", error);
+                showToast("Failed to submit book: " + error.message, "error");
+            } finally {
+                toggleSpinner(btn, false);
+            }
         });
-        
-        await createNotification(currentUser.uid, "Book Submitted", `Your book "${escapeHTML(bookName)}" has been submitted for approval.`, "info", null, "fas fa-upload");
-        showToast("Book submitted for approval! You'll be notified.", "success");
-        elements.addBookForm.reset();
-        closeModal(elements.addBookModal);
-    } catch (error) {
-        console.error("Error submitting book:", error);
-        showToast("Failed to submit book: " + error.message, "error");
-    } finally {
-        toggleSpinner(btn, false);
-    }
-});
 
-        function setupBookApprovalListener() {
-    if (!currentUser || listeners.bookApproval) return;
+        // MODIFIED: Split into two listeners for clarity and to handle different collections
+        function setupBookApprovalListeners() {
+            if (!currentUser) return;
 
-    listeners.bookApproval = db.collection('pending_books')
-        .where('submittedBy', '==', currentUser.uid)
-        .onSnapshot(async (snapshot) => {
-            for (const change of snapshot.docChanges()) {
-                if (change.type === 'removed') {
-                    // Check if the book was moved to the approved books collection
-                    const approvedBookSnapshot = await db.collection('books').doc(change.doc.id).get();
-                    if (approvedBookSnapshot.exists) {
-                        const book = approvedBookSnapshot.data();
-                        const userRef = db.collection('users').doc(currentUser.uid);
-                        
-                        try {
-                            const userDoc = await userRef.get();
-                            if (!userDoc.exists) {
-                                console.warn("User document not found during book approval processing");
-                                continue;
+            // Listener for REJECTIONS from pending_books
+            if (listeners.bookRejection) listeners.bookRejection();
+            listeners.bookRejection = db.collection('pending_books')
+                .where('submittedBy', '==', currentUser.uid)
+                .onSnapshot(async (snapshot) => {
+                    for (const change of snapshot.docChanges()) {
+                        if (change.type === 'modified') { // A pending book's status was changed
+                            const book = {id: change.doc.id, ...change.doc.data()};
+                            const userRef = db.collection('users').doc(currentUser.uid);
+                            try {
+                                const userDoc = await userRef.get();
+                                if (!userDoc.exists) continue;
+                                const currentLocalUserData = userDoc.data();
+                                const processedActions = currentLocalUserData.processedBookActions || {};
+
+                                if (book.status === 'rejected' && (!processedActions[book.id] || !processedActions[book.id].rejection)) {
+                                    showToast(`Your submission "${escapeHTML(book.bookName)}" was rejected. Reason: ${escapeHTML(book.rejectionReason || 'Not specified')}.`, "warning", 7000);
+                                    await userRef.update({
+                                        [`processedBookActions.${book.id}.rejection`]: true
+                                    });
+                                    await createNotification(currentUser.uid, "Book Submission Update", `Your submission "${escapeHTML(book.bookName)}" was rejected. Reason: ${escapeHTML(book.rejectionReason || 'Not specified')}.`, "warning", null, "fas fa-times-circle");
+                                }
+                            } catch (e) {
+                                console.error("Error processing book rejection for user:", currentUser.uid, "pending_book_id:", book.id, e);
                             }
-                            
-                            const processedActions = userDoc.data().processedBookActions || {};
-                            
-                            if (!processedActions[change.doc.id] || !processedActions[change.doc.id].approval) {
-                                showToast(`Your book "${escapeHTML(book.bookName)}" has been approved! +10 points.`, "success", 7000);
-                                await userRef.update({
-                                    points: firebase.firestore.FieldValue.increment(10),
-                                    [`processedBookActions.${change.doc.id}.approval`]: true
-                                });
-                                await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", `/#bookDetail/${change.doc.id}`, "fas fa-book-reader");
-                                await createNotification(currentUser.uid, "Points Awarded!", `You received +10 points for sharing "${escapeHTML(book.bookName)}".`, "success", null, "fas fa-coins");
-                            }
-                        } catch (e) {
-                            console.error("Error processing book approval:", e);
                         }
                     }
-                }
-            }
-        }, error => {
-            console.error("Error in book approval listener:", error);
-        });
-}
+                }, error => {
+                    console.error("Error in book rejection listener (pending_books):", error);
+                });
+
+            // Listener for APPROVALS from books (when a new approved book by user appears)
+            if (listeners.bookApproval) listeners.bookApproval();
+            listeners.bookApproval = db.collection('books')
+                .where('submittedBy', '==', currentUser.uid) // Assuming submittedBy is copied from pending_books
+                .where('status', '==', 'approved')
+                .onSnapshot(async (snapshot) => {
+                    for (const change of snapshot.docChanges()) {
+                        if (change.type === 'added') { // A new book by this user was added to 'books' (i.e., approved by admin)
+                            const book = {id: change.doc.id, ...change.doc.data()};
+                            const userRef = db.collection('users').doc(currentUser.uid);
+                            // The key for processedActions will be the ID from the 'books' collection.
+                            // If admin panel uses original pending_book ID as 'originalSubmissionId' in the 'books' doc, that would be more robust.
+                            const approvalActionKey = book.id; 
+
+                            try {
+                                const userDoc = await userRef.get();
+                                if (!userDoc.exists) continue;
+                                const currentLocalUserData = userDoc.data();
+                                const processedActions = currentLocalUserData.processedBookActions || {};
+
+                                if (!processedActions[approvalActionKey] || !processedActions[approvalActionKey].approval) {
+                                    showToast(`Your book "${escapeHTML(book.bookName)}" has been approved! +10 points.`, "success", 7000);
+                                    await userRef.update({
+                                        points: firebase.firestore.FieldValue.increment(10),
+                                        [`processedBookActions.${approvalActionKey}.approval`]: true
+                                    });
+                                    await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", `/#bookDetail/${book.id}`, "fas fa-book-reader");
+                                    await createNotification(currentUser.uid, "Points Awarded!", `You received +10 points for sharing "${escapeHTML(book.bookName)}".`, "success", null, "fas fa-coins");
+                                   
+                                    // Refresh "My Submissions" tab if profile is active, because approved book is removed from pending_books by admin
+                                    if (elements.profilePage.classList.contains('active') && elements.profileBooksContainer) {
+                                        const activeTabBtn = elements.profileTabs.querySelector('.profile-tab-btn.active');
+                                        if (activeTabBtn && activeTabBtn.dataset.tab === 'shared-books') {
+                                            fetchUserBooks(false, true); // Force refresh submissions list
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.error("Error processing book approval for user:", currentUser.uid, "book_id:", book.id, e);
+                            }
+                        }
+                    }
+                }, error => {
+                    console.error("Error in book approval listener (books):", error);
+                });
+        }
 
 
         [elements.booksContainer, elements.profileBooksContainer, elements.popularBooksCarousel].forEach(container => {
@@ -2302,31 +2333,40 @@
                     if (!targetButton) return;
 
                     if (!currentUser || !userData) { openModal(elements.loginModal); return; }
-                    const action = targetButton.dataset.action;
+                    
                     const bookId = targetButton.dataset.bookId;
+                    const dataSource = targetButton.dataset.source || 'books'; // Default to 'books' if source not specified
 
                     if (!bookId) { console.warn("Action requires bookId, but not found on target:", targetButton); return; }
-                    if (action === 'view') { openBookDetailModal(bookId); }
+                    openBookDetailModal(bookId, dataSource); 
                 });
             }
         });
 
 
-        async function handleBookDownload(bookId, link, fromModal = false, buttonElement = null) {
+        async function handleBookDownload(bookId, link, dataSource = 'books', fromModal = false, buttonElement = null) {
             if (!currentUser || !userData) { openModal(elements.loginModal); return; }
 
             const btn = buttonElement || (fromModal ? $(`#bookDetailModal [data-action="download"][data-book-id="${bookId}"]`) : null);
             if (btn) toggleSpinner(btn, true);
 
             try {
-                 // Get fresh userData, especially credits, right before transaction
                 const userDocFresh = await db.collection('users').doc(currentUser.uid).get();
                 if (!userDocFresh.exists) {
                     throw new Error("User data not found. Please try again.");
                 }
                 const freshUserData = userDocFresh.data();
 
-                if (freshUserData.credits < BOOK_DOWNLOAD_COST && bookId && (await db.collection('books').doc(bookId).get()).data().submittedBy !== currentUser.uid) { // Check if not owner
+                // Books from pending_books cannot be downloaded. This check is primarily for books from 'books' collection.
+                const bookRef = db.collection(dataSource).doc(bookId); 
+                const bookDocSnapshot = await bookRef.get();
+                if (!bookDocSnapshot.exists) throw new Error("Book details not found.");
+                const bookDataForDownload = bookDocSnapshot.data();
+
+                // Only charge credits if the book is from 'books' collection (approved) and not owned by user
+                const shouldChargeCredits = dataSource === 'books' && bookDataForDownload.submittedBy !== currentUser.uid;
+
+                if (shouldChargeCredits && freshUserData.credits < BOOK_DOWNLOAD_COST) {
                     showToast(`Need ${BOOK_DOWNLOAD_COST} credits. You have ${freshUserData.credits}. Earn more or claim daily bonus!`, "warning", 5000);
                     openModal(elements.creditModal);
                     if (btn) toggleSpinner(btn, false);
@@ -2334,60 +2374,60 @@
                 }
 
                 const userRef = db.collection('users').doc(currentUser.uid);
-                const bookRef = db.collection('books').doc(bookId);
-
-                let bookOwnerIdForNotification = null;
-                let bookNameForNotification = null;
-                let isOwner = false;
-
+                let bookOwnerIdForNotification = bookDataForDownload.submittedBy;
+                let bookNameForNotification = bookDataForDownload.bookName;
+                
                 await db.runTransaction(async (transaction) => {
-                    const userDoc = await transaction.get(userRef); // Read within transaction
-                    const bookDoc = await transaction.get(bookRef); // Read within transaction
+                    const userDoc = await transaction.get(userRef);
+                    const bookDoc = await transaction.get(bookRef); // Read book from its actual source within transaction
 
                     if (!userDoc.exists) throw new Error("User not found during transaction.");
                     if (!bookDoc.exists) throw new Error("Book not found during transaction.");
-
-                    const currentCredits = userDoc.data().credits || 0;
-                    bookOwnerIdForNotification = bookDoc.data().submittedBy;
-                    bookNameForNotification = bookDoc.data().bookName;
-                    isOwner = currentUser.uid === bookOwnerIdForNotification;
-
-                    if (!isOwner && currentCredits < BOOK_DOWNLOAD_COST) {
-                        throw new Error(`Insufficient credits. Need ${BOOK_DOWNLOAD_COST}, have ${currentCredits}. Please refresh.`);
-                    }
-
-                    if (!isOwner) {
+                    
+                    if (shouldChargeCredits) { // Only if it's an approved book and not owner
+                        const currentCredits = userDoc.data().credits || 0;
+                        if (currentCredits < BOOK_DOWNLOAD_COST) {
+                           throw new Error(`Insufficient credits. Need ${BOOK_DOWNLOAD_COST}, have ${currentCredits}. Please refresh.`);
+                        }
                         transaction.update(userRef, {
                             credits: firebase.firestore.FieldValue.increment(-BOOK_DOWNLOAD_COST),
                             booksDownloadedCount: firebase.firestore.FieldValue.increment(1)
                         });
                     }
-                    transaction.update(bookRef, { downloads: firebase.firestore.FieldValue.increment(1) });
+                    // Increment download count only for approved books in 'books' collection
+                    if (dataSource === 'books') {
+                        transaction.update(bookRef, { downloads: firebase.firestore.FieldValue.increment(1) });
+                    }
 
-                    if (bookOwnerIdForNotification && !isOwner) {
+                    // Award points to owner only if it's an approved book from 'books' collection and not self-download
+                    if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid) {
                         const submitterRef = db.collection('users').doc(bookOwnerIdForNotification);
-                        transaction.update(submitterRef, {
-                            points: firebase.firestore.FieldValue.increment(1),
-                            totalBookDownloads: firebase.firestore.FieldValue.increment(1)
-                        });
+                        // Ensure submitterRef exists before attempting to update
+                        const submitterDoc = await transaction.get(submitterRef);
+                        if (submitterDoc.exists) {
+                            transaction.update(submitterRef, {
+                                points: firebase.firestore.FieldValue.increment(1),
+                                totalBookDownloads: firebase.firestore.FieldValue.increment(1)
+                            });
+                        } else {
+                            console.warn(`Submitter user document ${bookOwnerIdForNotification} not found. Points not awarded.`);
+                        }
                     }
                 });
 
                 window.open(link, '_blank');
-                if (!isOwner) {
+                if (shouldChargeCredits) {
                   showToast(`-${BOOK_DOWNLOAD_COST} credits. Opening download...`, "info", 3000);
                 } else {
-                  showToast(`Opening download... (This is your book, no credits deducted)`, "info", 3000);
+                  showToast(`Opening download... ${dataSource === 'books' && bookDataForDownload.submittedBy === currentUser.uid ? '(This is your approved book, no credits deducted)' : ''}`, "info", 3000);
                 }
 
-
-                // Update local userData immediately if credits were deducted for responsiveness
-                if (!isOwner && userData) { // Check if userData exists
+                if (userData && shouldChargeCredits) { 
                     userData.credits = (userData.credits || 0) - BOOK_DOWNLOAD_COST;
                     updateHeaderCredits();
                 }
 
-                if (bookOwnerIdForNotification && !isOwner && bookNameForNotification) {
+                if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid && bookNameForNotification) {
                     await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
                 }
 
@@ -2399,99 +2439,67 @@
             }
         }
 
-
-        // --- User Profile Books & Withdrawals ---
+        // MODIFIED: fetchUserBooks now queries pending_books for "My Submissions"
         function fetchUserBooks(loadMore = false, forceRefresh = false) {
-    if (!currentUser || (isFetchingMoreUserBooks && !forceRefresh)) return;
-    if (forceRefresh) {
-        lastUserBookSnapshot = null; 
-        hasMoreUserBooks = true;
-        if(elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
-        if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
-    }
-    if (!hasMoreUserBooks && loadMore) {
-        if(elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
-        return;
-    }
-
-    isFetchingMoreUserBooks = true;
-    if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, true);
-    else if (!forceRefresh && elements.profileBooksContainer && !elements.profileBooksContainer.querySelector('.book-card')) {
-        renderSkeletonLoaders(elements.profileBooksContainer, 3);
-    }
-
-    // First get pending books
-    let pendingQuery = db.collection('pending_books')
-        .where('submittedBy', '==', currentUser.uid)
-        .orderBy('submittedAt', 'desc');
-
-    // Then get approved books
-    let approvedQuery = db.collection('books')
-        .where('submittedBy', '==', currentUser.uid)
-        .orderBy('submittedAt', 'desc')
-        .limit(6);
-
-    if (loadMore && lastUserBookSnapshot) {
-        approvedQuery = approvedQuery.startAfter(lastUserBookSnapshot);
-    }
-
-    if (listeners.userBooks) listeners.userBooks();
-    
-    // Get pending books first
-    pendingQuery.get().then(pendingSnapshot => {
-        // Then get approved books
-        approvedQuery.get().then(approvedSnapshot => {
-            if (!loadMore && elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
-
-            // Combine results
-            const allBooks = [];
-            
-            // Add pending books first
-            pendingSnapshot.forEach(doc => {
-                allBooks.push({ id: doc.id, ...doc.data(), status: 'pending' });
-            });
-            
-            // Add approved books
-            approvedSnapshot.forEach(doc => {
-                allBooks.push({ id: doc.id, ...doc.data(), status: 'approved' });
-            });
-            
-            // Sort by submittedAt (newest first)
-            allBooks.sort((a, b) => b.submittedAt - a.submittedAt);
-
-            if (allBooks.length === 0) {
-                if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'flex';
-                hasMoreUserBooks = false;
-            } else {
+            if (!currentUser || (isFetchingMoreUserBooks && !forceRefresh) ) return;
+            if (forceRefresh) {
+                lastUserBookSnapshot = null; hasMoreUserBooks = true;
+                if(elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
                 if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
-                allBooks.forEach(book => {
-                    const existingCard = elements.profileBooksContainer.querySelector(`.book-card[data-id="${book.id}"]`);
-                    if(!existingCard && elements.profileBooksContainer) {
-                        elements.profileBooksContainer.innerHTML += createBookCardHTML(book, 'profile');
-                    }
-                });
-                
-                lastUserBookSnapshot = approvedSnapshot.docs.length > 0 ? 
-                    approvedSnapshot.docs[approvedSnapshot.docs.length - 1] : null;
-                hasMoreUserBooks = approvedSnapshot.docs.length === 6;
+            }
+            if (!hasMoreUserBooks && loadMore) {
+                if(elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false); 
+                return;
             }
 
-            if(elements.loadMoreBooksBtn) elements.loadMoreBooksBtn.style.display = hasMoreUserBooks ? 'inline-flex' : 'none';
-            if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
-            isFetchingMoreUserBooks = false;
-            AOS.refreshHard();
-        });
-    }).catch(error => {
-        console.error("Error fetching user books:", error);
-        showToast("Could not load your shared books.", "error");
-        if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
-        isFetchingMoreUserBooks = false;
-        if(elements.emptyProfileBooks && elements.profileBooksContainer) {
-            elements.profileBooksContainer.innerHTML = '';
-            elements.emptyProfileBooks.style.display = 'flex';
+            isFetchingMoreUserBooks = true;
+            if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, true);
+            else if (!forceRefresh && elements.profileBooksContainer && !elements.profileBooksContainer.querySelector('.book-card')) {
+                renderSkeletonLoaders(elements.profileBooksContainer, USER_SUBMISSIONS_PER_PAGE, 'book');
+            }
+
+            // Query 'pending_books' for user's submissions (pending/rejected)
+            let query = db.collection('pending_books').where('submittedBy', '==', currentUser.uid)
+                          .orderBy('submittedAt', 'desc').limit(USER_SUBMISSIONS_PER_PAGE);
+            if (loadMore && lastUserBookSnapshot) { query = query.startAfter(lastUserBookSnapshot); }
+
+            if (listeners.userBooks) listeners.userBooks(); // Detach previous listener for this specific query
+            listeners.userBooks = query.onSnapshot(snapshot => {
+                if (!loadMore && !forceRefresh && snapshot.metadata.hasPendingWrites && !snapshot.empty) return;
+
+                if (!loadMore && elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
+
+                if (snapshot.empty && (!elements.profileBooksContainer || elements.profileBooksContainer.innerHTML === '')) {
+                    if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'flex';
+                    hasMoreUserBooks = false;
+                } else {
+                    if(elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
+                    snapshot.docs.forEach(doc => {
+                        const existingCard = elements.profileBooksContainer ? elements.profileBooksContainer.querySelector(`.book-card[data-id="${doc.id}"]`) : null;
+                        if(!existingCard && elements.profileBooksContainer) {
+                           elements.profileBooksContainer.innerHTML += createBookCardHTML({ id: doc.id, ...doc.data() }, 'profile'); // Pass 'profile' target
+                        }
+                    });
+                    lastUserBookSnapshot = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+                    hasMoreUserBooks = snapshot.docs.length === USER_SUBMISSIONS_PER_PAGE;
+                }
+
+                if(elements.loadMoreBooksBtn) elements.loadMoreBooksBtn.style.display = hasMoreUserBooks ? 'inline-flex' : 'none';
+                if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
+                isFetchingMoreUserBooks = false;
+                AOS.refreshHard();
+            }, error => {
+                console.error("Error fetching user submissions (from pending_books):", error);
+                showToast("Could not load your submissions.", "error");
+                if (loadMore && elements.loadMoreBooksBtn) toggleSpinner(elements.loadMoreBooksBtn, false);
+                isFetchingMoreUserBooks = false;
+                if(elements.emptyProfileBooks && elements.profileBooksContainer) {
+                    elements.profileBooksContainer.innerHTML = '';
+                    elements.emptyProfileBooks.style.display = 'flex';
+                }
+            });
         }
-    });
-}
+
 
         if(elements.loadMoreBooksBtn) elements.loadMoreBooksBtn.addEventListener('click', () => fetchUserBooks(true));
 
@@ -2548,7 +2556,7 @@
             const accountNameFieldGroup = elements.accountNameGroup;
             const accountNameField = elements.accountNameInput;
 
-            if(!paymentIdLabel || !paymentIdField || !accountNameFieldGroup || !accountNameField) return; // Safety check
+            if(!paymentIdLabel || !paymentIdField || !accountNameFieldGroup || !accountNameField) return; 
 
             paymentIdField.placeholder = "Enter details";
             accountNameFieldGroup.style.display = 'none';
@@ -2589,7 +2597,7 @@
                         const currentPoints = userDoc.data().points || 0;
                         if (currentPoints < selectedWithdrawalAmount) { throw new Error("Insufficient points. Please refresh."); }
                         transaction.update(userRef, { points: firebase.firestore.FieldValue.increment(-selectedWithdrawalAmount) });
-                        const withdrawalRef = db.collection('withdrawals').doc(); // Auto-generate ID
+                        const withdrawalRef = db.collection('withdrawals').doc(); 
                         transaction.set(withdrawalRef, withdrawalData);
                     });
                     await createNotification(currentUser.uid, "Withdrawal Request Submitted", `Your request to withdraw ${selectedWithdrawalAmount} points (₹${selectedWithdrawalRs}) is pending.`, "info", null, "fas fa-hourglass-half");
@@ -2613,7 +2621,7 @@
             elements.emptyWithdrawalHistory.style.display = 'none';
 
             listeners.withdrawals = db.collection('withdrawals').where('userId', '==', currentUser.uid)
-                .orderBy('requestedAt', 'desc').limit(10) // Consider pagination for long histories
+                .orderBy('requestedAt', 'desc').limit(10) 
                 .onSnapshot(snapshot => {
                     elements.withdrawalHistoryContainer.innerHTML = '';
                     if (snapshot.empty) { elements.emptyWithdrawalHistory.style.display = 'flex'; }
@@ -2643,14 +2651,12 @@
                 });
         }
 
-        // --- Credits & Survey ---
         async function handleDailyCreditClaim() {
             if (!currentUser || !userData) { showToast("Please login to claim credits.", "info"); openModal(elements.loginModal); return; }
             const btn = elements.claimDailyCreditBtn;
             toggleSpinner(btn, true);
 
             try {
-                 // Fetch fresh user data to check last claim accurately
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (!userDoc.exists) throw new Error("User data not found.");
                 const freshUserData = userDoc.data();
@@ -2668,7 +2674,6 @@
                 });
                 await createNotification(currentUser.uid, "Daily Bonus Claimed!", `You received +${creditsToAward} daily credits. Come back tomorrow!`, "success", null, "fas fa-gift");
                 showToast(`+${creditsToAward} daily credits claimed! Come back tomorrow.`, "success");
-                // userData.credits will be updated by the onSnapshot listener
             } catch (error) {
                 console.error("Error claiming daily credit:", error);
                 showToast("Failed to claim daily credit. " + error.message, "error");
@@ -2687,14 +2692,13 @@
         if(elements.conductSurveyBtn) elements.conductSurveyBtn.onclick = () => {
             if (!currentUser) { openModal(elements.loginModal); return; }
             showToast("Redirecting to earn credits...", "info");
-            window.location.href = 'https://linkcents.com/50-Credit-book';
+            window.location.href = 'https://linkcents.com/50-Credit-books'; // Your link
              createNotification(currentUser.uid, "Attempted Credit Boost", "You clicked the link to earn credits. Checking eligibility...", "info", null, "fas fa-external-link-alt");
              closeModal(elements.creditModal);
         };
 
-
-        // --- Book Detail Modal Logic ---
-        async function openBookDetailModal(bookId) {
+        // MODIFIED: Takes dataSource to fetch from 'books' or 'pending_books'
+        async function openBookDetailModal(bookId, dataSource = 'books') {
             if (!bookId) { console.warn("openBookDetailModal called without bookId"); return; }
             if (!currentUser) { openModal(elements.loginModal); return; }
 
@@ -2703,7 +2707,7 @@
             if(elements.bookDetailContent) elements.bookDetailContent.innerHTML = `<div style="text-align:center; padding: 50px 0;"><div class="spinner" style="width: 30px; height: 30px; border-width: 4px;"></div><p style="margin-top: 15px; color: var(--text-muted);">Loading details...</p></div>`;
 
             try {
-                const bookDoc = await db.collection('books').doc(bookId).get();
+                const bookDoc = await db.collection(dataSource).doc(bookId).get();
                 if (!bookDoc.exists) {
                     showToast("Book details not found.", "error");
                     closeModal(elements.bookDetailModal);
@@ -2714,15 +2718,22 @@
                 const bookData = { id: bookDoc.id, ...bookDoc.data() };
                 const isOwnedByCurrentUser = bookData.submittedBy === currentUser?.uid;
 
-                if (bookData.status !== 'approved' && !isOwnedByCurrentUser) {
+                // If book is from pending_books and not owned, or if from 'books' but not approved (should not happen with current logic)
+                if (dataSource === 'pending_books' && !isOwnedByCurrentUser) {
+                    showToast("This submission is not yet available.", "error");
+                    closeModal(elements.bookDetailModal);
+                    currentBookDetailId = null;
+                    return;
+                }
+                 if (dataSource === 'books' && bookData.status !== 'approved') {
                     showToast("This book is not yet approved or available.", "error");
                     closeModal(elements.bookDetailModal);
                     currentBookDetailId = null;
                     return;
                 }
                 
-                renderBookDetailContent(bookData);
-                if (bookData.status === 'approved') {
+                renderBookDetailContent(bookData, dataSource); // Pass dataSource
+                if (dataSource === 'books' && bookData.status === 'approved') { // Feedback only for approved books
                     loadFeedbackComments(bookId);
                 }
             } catch (error) {
@@ -2732,16 +2743,18 @@
             }
         }
 
-        function renderBookDetailContent(book) { // book is {id, ...data}
+        // MODIFIED: Takes dataSource
+        function renderBookDetailContent(book, dataSource = 'books') { 
             if (!elements.bookDetailContent) return;
             const defaultImage = 'https://via.placeholder.com/200x280/333/888?text=No+Cover';
             const imageUrl = book.imageUrl || defaultImage;
             const isOwner = book.submittedBy === currentUser?.uid;
-            const isApproved = book.status === 'approved';
+            const isApproved = book.status === 'approved' && dataSource === 'books';
 
             let statusDisplayHTML = '';
-            if (isOwner && !isApproved) {
-                statusDisplayHTML = `<p style="text-align:center; padding:10px; background-color: var(--card-bg-dark); border-radius: var(--border-radius-sm); margin-bottom:15px; color: ${book.status === 'pending' ? 'var(--status-pending-bg, #f39c12)' : 'var(--status-rejected-bg, #e74c3c)'};">This book is currently: <strong>${book.status.toUpperCase()}</strong>${book.status === 'rejected' && book.rejectionReason ? `<br>Reason: ${escapeHTML(book.rejectionReason)}` : ''}</p>`;
+             // Show status if it's owner's book from pending_books OR an approved book from 'books' (though status isn't strictly needed for 'approved' here)
+            if (isOwner && dataSource === 'pending_books' && (book.status === 'pending' || book.status === 'rejected')) {
+                statusDisplayHTML = `<p style="text-align:center; padding:10px; background-color: var(--card-bg-dark); border-radius: var(--border-radius-sm); margin-bottom:15px; color: ${book.status === 'pending' ? 'var(--status-pending-bg, #f39c12)' : 'var(--status-rejected-bg, #e74c3c)'};">This submission is currently: <strong>${book.status.toUpperCase()}</strong>${book.status === 'rejected' && book.rejectionReason ? `<br>Reason: ${escapeHTML(book.rejectionReason)}` : ''}</p>`;
             }
 
             const downloadButtonText = isApproved
@@ -2765,12 +2778,14 @@
                         </div>
                         ${book.description ? `<div class="book-detail-description">${escapeHTML(book.description)}</div>` : '<p class="book-detail-description">No description available for this book.</p>'}
                         <div class="book-detail-actions">
-                            ${isApproved ? `
-                            <button class="action-btn detail-download-btn" data-action="download" data-link="${escapeHTML(book.driveLink)}" data-book-id="${book.id}">
+                            ${ (dataSource === 'books' && isApproved) || (dataSource === 'pending_books' && isOwner && book.status === 'pending') /* Allow owner to "test" download link of pending books for free */ ? `
+                            <button class="action-btn detail-download-btn" data-action="download" data-link="${escapeHTML(book.driveLink)}" data-book-id="${book.id}" data-source="${dataSource}">
                                 <span class="spinner" style="display:none;"></span>
-                                <span><i class="fas fa-download"></i> Download (${downloadButtonText})</span>
+                                <span><i class="fas fa-download"></i> 
+                                    ${dataSource === 'books' && isApproved ? `Download (${downloadButtonText})` : (isOwner && dataSource === 'pending_books' ? 'Test Download Link (Free)' : 'Unavailable')}
+                                </span>
                             </button>
-                            ` : (isOwner ? `<p style="font-style:italic; color:var(--text-muted);">Download will be available once approved.</p>` : '')}
+                            ` : (isOwner && dataSource === 'pending_books' && book.status === 'rejected' ? `<p style="font-style:italic; color:var(--text-muted);">Download unavailable for rejected submission.</p>` : `<p style="font-style:italic; color:var(--text-muted);">Download will be available once approved.</p>`)}
                         </div>
                     </div>
                 </div>
@@ -2795,20 +2810,31 @@
                     <h3 class="feedback-title" style="margin-top: 30px;">Comments</h3>
                     <div class="comments-list" id="commentsList"><div class="no-comments">Loading comments...</div></div>
                 </div>
-                ` : (isOwner ? `<div class="feedback-separator"></div><p style="text-align:center; color:var(--text-muted); margin-top:20px;">Feedback section will be available once approved.</p>` : '')}
+                ` : (isOwner && dataSource === 'pending_books' ? `<div class="feedback-separator"></div><p style="text-align:center; color:var(--text-muted); margin-top:20px;">Feedback section will be available once approved.</p>` : '')}
             `;
             if (isApproved) {
-                addDetailModalListeners(book.id);
+                addDetailModalListeners(book.id, dataSource); // Pass dataSource
+            } else if (dataSource === 'pending_books' && isOwner) { // Special case for owner testing download of pending book
+                 const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
+                 if(downloadBtn) {
+                    downloadBtn.addEventListener('click', () => {
+                        if (!currentUser || !userData) { openModal(elements.loginModal); return; }
+                        // For pending books, owner "test download" is free, no transaction
+                        window.open(downloadBtn.dataset.link, '_blank');
+                        showToast(`Opening test download link...`, "info", 3000);
+                    });
+                 }
             }
         }
 
 
-        function addDetailModalListeners(bookId) {
+        // MODIFIED: Takes dataSource
+        function addDetailModalListeners(bookId, dataSource = 'books') {
             const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
-            if (downloadBtn) {
+            if (downloadBtn && dataSource === 'books') { // Only attach full download handler for approved books from 'books' collection
                 downloadBtn.addEventListener('click', () => {
                     if (!currentUser || !userData) { openModal(elements.loginModal); return; }
-                    handleBookDownload(bookId, downloadBtn.dataset.link, true, downloadBtn);
+                    handleBookDownload(bookId, downloadBtn.dataset.link, dataSource, true, downloadBtn);
                 });
             }
              const starsContainer = $('#feedbackStars');
@@ -2828,13 +2854,13 @@
         function highlightStars(starsNodeList, rating, isHovering) {
              starsNodeList.forEach(s => {
                  const starValue = parseInt(s.dataset.value);
-                 s.classList.remove('fas', 'far', 'selected', 'hovered'); // Reset classes
+                 s.classList.remove('fas', 'far', 'selected', 'hovered'); 
                  if (starValue <= rating) {
-                     s.classList.add('fas'); // Filled star
+                     s.classList.add('fas'); 
                      if (!isHovering) s.classList.add('selected');
                      if (isHovering) s.classList.add('hovered');
                  } else {
-                     s.classList.add('far'); // Empty star
+                     s.classList.add('far'); 
                  }
              });
         }
@@ -2842,7 +2868,6 @@
          async function handleFeedbackSubmit(event, bookId) {
             event.preventDefault();
             if (!currentUser || !userData || !bookId) { showToast("Please login to submit feedback.", "info"); if(!currentUser) openModal(elements.loginModal); return; }
-
 
             const rating = parseInt($('#feedbackRating').value);
             const comment = $('#feedbackComment').value.trim();
@@ -2855,24 +2880,23 @@
             const feedbackData = {
                 userId: currentUser.uid,
                 userName: userData.name || "Anonymous",
-                userAvatarInitials: getInitials(userData.name || "Anonymous"), // For potential future display
+                userAvatarInitials: getInitials(userData.name || "Anonymous"), 
                 rating: rating,
                 comment: comment,
                 submittedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             try {
+                // Feedback is always on 'books' collection items
                 await db.collection('books').doc(bookId).collection('feedback').add(feedbackData);
                 const bookRef = db.collection('books').doc(bookId);
                 const userRef = db.collection('users').doc(currentUser.uid);
 
-                // Transaction to update book's average rating and user's feedback count
                 await db.runTransaction(async (transaction) => {
                     const bookDoc = await transaction.get(bookRef);
-                    const userDoc = await transaction.get(userRef); // Also get user doc for totalFeedbackGiven
+                    const userDoc = await transaction.get(userRef); 
                     if (!bookDoc.exists) throw new Error("Book not found for rating update.");
                     if (!userDoc.exists) throw new Error("User data not found for stat update.");
-
 
                     const currentRatingCount = bookDoc.data().ratingCount || 0;
                     const currentAvgRating = bookDoc.data().avgRating || 0;
@@ -2883,7 +2907,7 @@
                     transaction.update(userRef, { totalFeedbackGiven: firebase.firestore.FieldValue.increment(1) });
                 });
 
-                const bookSnapshot = await bookRef.get(); // Get book name after transaction
+                const bookSnapshot = await bookRef.get(); 
                 const bookNameForNotif = bookSnapshot.exists ? bookSnapshot.data().bookName : "this book";
                 await createNotification(currentUser.uid, "Feedback Submitted", `Your feedback for "${escapeHTML(bookNameForNotif)}" has been recorded.`, "success", `/#bookDetail/${bookId}`, "fas fa-comment-dots");
 
@@ -2891,20 +2915,18 @@
                 if($('#feedbackForm')) $('#feedbackForm').reset();
                 if($('#feedbackRating')) $('#feedbackRating').value = 0;
                 if ($$('#feedbackStars i').length > 0) highlightStars($$('#feedbackStars i'), 0, false);
-                loadFeedbackComments(bookId); // Refresh comments list
+                loadFeedbackComments(bookId); 
 
-                // Update book detail meta in real-time
                 const bookDocAfterRating = await db.collection('books').doc(bookId).get();
                 if(bookDocAfterRating.exists && elements.bookDetailContent) {
                     const updatedBookData = bookDocAfterRating.data();
-                    const avgRatingSpan = elements.bookDetailContent.querySelector('.book-detail-meta span:nth-child(3)'); // Assuming rating is 3rd
+                    const avgRatingSpan = elements.bookDetailContent.querySelector('.book-detail-meta span:nth-child(3)'); 
                     if (avgRatingSpan && avgRatingSpan.querySelector('.fa-star, .far.fa-star')) {
                         avgRatingSpan.innerHTML = `<i class="fas fa-star" style="color:var(--star-color);"></i> ${updatedBookData.avgRating.toFixed(1)} (${updatedBookData.ratingCount || 0} ratings)`;
                     }
                      const downloadCountSpan = elements.bookDetailContent.querySelector('#detailDownloadCount');
                      if(downloadCountSpan) downloadCountSpan.textContent = updatedBookData.downloads || 0;
                 }
-
 
             } catch (error) {
                 console.error("Error submitting feedback:", error);
@@ -2920,11 +2942,12 @@
             commentsList.innerHTML = '<div class="no-comments" style="padding: 20px 0;">Loading comments...</div>';
 
             try {
+                // Feedback is on 'books' collection items
                 const snapshot = await db.collection('books').doc(bookId).collection('feedback')
                     .orderBy('submittedAt', 'desc').limit(15).get();
                 if (snapshot.empty) { commentsList.innerHTML = '<div class="no-comments" style="padding: 20px 0;">Be the first to leave feedback for this book!</div>'; return; }
 
-                commentsList.innerHTML = ''; // Clear loading/previous comments
+                commentsList.innerHTML = ''; 
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     let starsHTML = '';
@@ -2945,14 +2968,13 @@
             }
         }
 
-        // --- Notification System ---
         async function createNotification(userId, title, message, type = 'info', actionLink = null, icon = null) {
             if (!userId) { console.warn("createNotification called without userId"); return; }
             try {
                 await db.collection('users').doc(userId).collection('notifications').add({
                     title: title, message: message, type: type,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    read: false, actionLink: actionLink, // Can be like '/#bookDetail/bookId123' or external URL
+                    read: false, actionLink: actionLink, 
                     icon: icon || getDefaultIconForType(type)
                 });
             } catch (error) { console.error("Error creating notification:", error); }
@@ -2976,7 +2998,6 @@
                     elements.unreadNotificationsBadge.style.display = 'none';
                 }
             }
-            // Update "Mark all read" button state based on active tab
             if (elements.notificationTabsContainer && elements.markAllNotificationsReadBtn) {
                 const activeTabBtn = elements.notificationTabsContainer.querySelector('.notification-tab-btn.active');
                 if (activeTabBtn) {
@@ -2984,13 +3005,22 @@
                     if (activeTab === 'personal') {
                         elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
                     } else {
-                        elements.markAllNotificationsReadBtn.disabled = true; // Announcements are not "markable" by user
+                        elements.markAllNotificationsReadBtn.disabled = true; 
                     }
                 } else {
-                     elements.markAllNotificationsReadBtn.disabled = true; // Default if no tab active (should not happen)
+                     elements.markAllNotificationsReadBtn.disabled = true; 
                 }
             }
         }
+
+        // New function for admin announcement dot
+        function updateAdminAnnouncementDot(count) {
+            unreadAdminAnnouncementsCount = count;
+            if (elements.announcementUnreadDot) {
+                elements.announcementUnreadDot.style.display = count > 0 ? 'block' : 'none';
+            }
+        }
+
 
         function setupUserNotificationsListener() {
             if (!currentUser || listeners.userNotifications) return;
@@ -3000,7 +3030,7 @@
 
             listeners.userNotifications = db.collection('users').doc(currentUser.uid).collection('notifications')
                 .orderBy('timestamp', 'desc')
-                .limit(50) // Limit to avoid performance issues with too many notifications
+                .limit(50) 
                 .onSnapshot(snapshot => {
                     let unreadCount = 0;
                     const notificationsByDate = {};
@@ -3023,7 +3053,7 @@
                         const sortedDateGroups = Object.keys(notificationsByDate).sort((a, b) => {
                             const dateA = a === "Today" ? new Date() : (a === "Yesterday" ? new Date(Date.now() - 86400000) : new Date(a));
                             const dateB = b === "Today" ? new Date() : (b === "Yesterday" ? new Date(Date.now() - 86400000) : new Date(b));
-                            return dateB - dateA; // Sort descending
+                            return dateB - dateA; 
                         });
 
                         sortedDateGroups.forEach(dateGroup => {
@@ -3051,17 +3081,25 @@
 
             renderSkeletonLoaders(elements.adminAnnouncementsListContainer, 3, 'notification');
 
-            listeners.adminAnnouncements = db.collection('broadcast_notifications') // CHANGED: from adminAnnouncements to broadcast_notifications
-                .orderBy('sentAt', 'desc') // CHANGED: from timestamp to sentAt
+            listeners.adminAnnouncements = db.collection('broadcast_notifications') 
+                .orderBy('sentAt', 'desc') 
                 .limit(20)
-                .onSnapshot(snapshot => {
+                .onSnapshot(async snapshot => { // Added async
                     const announcementsByDate = {};
-                    snapshot.forEach(doc => {
-                        const announcement = { id: doc.id, ...doc.data(), type: doc.data().type || 'announcement' }; // Use provided type or default
-                        const dateStr = formatRelativeDate(announcement.sentAt); // CHANGED: from timestamp to sentAt
+                    let newAnnouncementsCount = 0;
+                    const lastViewed = userData?.lastViewedAnnouncementsAt ? userData.lastViewedAnnouncementsAt.toDate() : new Date(0);
+
+                    for (const doc of snapshot.docs) { // Use for...of for async operations if needed, though not here
+                        const announcement = { id: doc.id, ...doc.data(), type: doc.data().type || 'announcement' }; 
+                        const dateStr = formatRelativeDate(announcement.sentAt); 
                         if (!announcementsByDate[dateStr]) announcementsByDate[dateStr] = [];
                         announcementsByDate[dateStr].push(announcement);
-                    });
+
+                        if (announcement.sentAt.toDate() > lastViewed) {
+                            newAnnouncementsCount++;
+                        }
+                    }
+                    updateAdminAnnouncementDot(newAnnouncementsCount); // Update dot based on new ones
 
                     elements.adminAnnouncementsListContainer.innerHTML = '';
                     if (snapshot.empty) {
@@ -3102,7 +3140,6 @@
                     fullActionLink = notification.actionLink;
                 }
             }
-             // For admin announcements, use `sentAt` and default to 'announcement' icon if specific icon not provided
             const timestampToUse = notification.sentAt || notification.timestamp;
             const iconToUse = notification.icon || getDefaultIconForType(notification.type || 'announcement');
 
@@ -3128,7 +3165,6 @@
                     if (!item || !item.dataset.id) return;
                     if (!currentUser) { openModal(elements.loginModal); return; }
 
-
                     const notifId = item.dataset.id;
                     const actionLink = item.dataset.actionLink; 
                     const internalRoute = item.dataset.internalRoute; 
@@ -3143,7 +3179,7 @@
                         const bookId = internalRoute.split('/')[2]; 
                         closePage(elements.notificationsPage); 
                         activateNavItem(elements.homeBtn); 
-                        openBookDetailModal(bookId);
+                        openBookDetailModal(bookId, 'books'); // Assume book detail links are always for 'books' collection
                     } else if (actionLink && actionLink.startsWith('http')) { 
                         window.open(actionLink, '_blank');
                     }
@@ -3177,7 +3213,7 @@
         }
 
         if(elements.notificationTabsContainer) {
-            elements.notificationTabsContainer.addEventListener('click', (e) => {
+            elements.notificationTabsContainer.addEventListener('click', async (e) => { // Added async
                 const targetTabBtn = e.target.closest('.notification-tab-btn');
                 if (!targetTabBtn) return;
                 elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
@@ -3191,13 +3227,22 @@
                     if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
                 } else {
                     if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = true;
+                    // If announcements tab is clicked and there are unread ones, mark them as "viewed"
+                    if (unreadAdminAnnouncementsCount > 0 && currentUser) {
+                        try {
+                            await db.collection('users').doc(currentUser.uid).update({
+                                lastViewedAnnouncementsAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            updateAdminAnnouncementDot(0); // Visually clear the dot immediately
+                        } catch (error) {
+                            console.error("Error updating lastViewedAnnouncementsAt:", error);
+                        }
+                    }
                 }
                 AOS.refresh();
             });
         }
 
-
-        // --- General Navigation & Event Listeners ---
         window.addEventListener('scroll', ()=>{
             if (window.scrollY > 50 && elements.header) elements.header.classList.add('scrolled');
             else if (elements.header) elements.header.classList.remove('scrolled');
@@ -3222,7 +3267,7 @@
             const query = elements.searchInput.value.toLowerCase().trim();
             if (query.length < 2) { elements.searchResults.style.display = 'none'; return; }
 
-            const results = allBooksCache.filter(book =>
+            const results = allBooksCache.filter(book => // allBooksCache contains only approved books from 'books' collection
                 book.bookName.toLowerCase().includes(query) ||
                 book.authorName.toLowerCase().includes(query) ||
                 (book.category && book.category.toLowerCase().includes(query))
@@ -3252,7 +3297,7 @@
                 const item = e.target.closest('.search-result-item');
                 if (item && item.dataset.bookId) {
                     if (!currentUser) { openModal(elements.loginModal); return; }
-                    openBookDetailModal(item.dataset.bookId);
+                    openBookDetailModal(item.dataset.bookId, 'books'); // Search results are always from 'books' collection
                     elements.searchResults.style.display = 'none';
                     if (elements.searchInput) elements.searchInput.value = '';
                     if (elements.searchContainer && elements.searchContainer.classList.contains('active') && window.innerWidth <= 768) {
