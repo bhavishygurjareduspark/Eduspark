@@ -577,6 +577,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
             text-transform: uppercase; letter-spacing: 0.5px;
         }
+
+        /* --- MODIFIED NOTIFICATION ITEM STYLES --- */
         .notification-item {
             background-color: var(--card-bg);
             border-radius: var(--border-radius-sm);
@@ -593,10 +595,13 @@
             transform: translateX(3px);
         }
         .notification-item.unread {
-             background-color: rgba(52, 152, 219, 0.08); /* Subtle blue for unread */
+             background-color: rgba(52, 152, 219, 0.08); /* Default unread blue shade */
              border-left-color: var(--notification-unread-dot);
         }
-        .notification-item.unread .notification-title { color: var(--primary-light); }
+        .notification-item.unread .notification-title {
+            color: var(--primary-light);
+            font-weight: 700; /* Slightly bolder for unread titles */
+        }
 
         .notification-item.type-success { border-left-color: var(--notification-border-success); }
         .notification-item.type-success.unread { background-color: var(--notification-bg-success); }
@@ -606,36 +611,49 @@
         .notification-item.type-warning.unread { background-color: var(--notification-bg-warning); }
         .notification-item.type-error { border-left-color: var(--notification-border-error); }
         .notification-item.type-error.unread { background-color: var(--notification-bg-error); }
-        /* Admin Announcement specific style if needed */
-        .notification-item.type-announcement { border-left-color: var(--primary-color); /* Or a distinct color */ }
-        .notification-item.type-announcement .notification-icon { color: var(--primary-color); }
+        .notification-item.type-announcement { border-left-color: var(--primary-color); }
+        .notification-item.type-announcement.unread { background-color: rgba(255, 51, 51, 0.10); } /* Subtle red for unread announcements */
 
 
         .notification-icon {
             font-size: 1.4rem; width: 40px; height: 40px;
             flex-shrink: 0; margin-right: 15px;
             display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; background-color: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.07); /* Slightly more visible default */
+            border: 1px solid rgba(255,255,255,0.1); /* Subtle border for definition */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Subtle shadow */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .notification-item.type-success .notification-icon { color: var(--notification-border-success); }
         .notification-item.type-info .notification-icon { color: var(--notification-border-info); }
         .notification-item.type-warning .notification-icon { color: var(--notification-border-warning); }
         .notification-item.type-error .notification-icon { color: var(--notification-border-error); }
+        .notification-item.type-announcement .notification-icon { color: var(--primary-color); }
+
+        /* Change icon background for unread typed notifications to match border-left glow */
+        .notification-item.type-success.unread .notification-icon { background-color: var(--notification-bg-success); border-color: var(--notification-border-success); }
+        .notification-item.type-info.unread .notification-icon { background-color: var(--notification-bg-info); border-color: var(--notification-border-info); }
+        .notification-item.type-warning.unread .notification-icon { background-color: var(--notification-bg-warning); border-color: var(--notification-border-warning); }
+        .notification-item.type-error.unread .notification-icon { background-color: var(--notification-bg-error); border-color: var(--notification-border-error); }
+        .notification-item.type-announcement.unread .notification-icon { background-color: rgba(255, 51, 51, 0.15); border-color: var(--primary-color); }
+
 
         .notification-content { flex: 1; }
-        .notification-title {
+        .notification-title { /* .unread specific style above handles color and weight for unread */
             font-size: 1rem; font-weight: 600; color: var(--text-light);
             margin-bottom: 5px;
         }
         .notification-message {
             font-size: 0.9rem; color: var(--text-muted);
             line-height: 1.5; margin-bottom: 8px;
-            word-break: break-word; /* Added for long messages */
+            word-break: break-word;
         }
         .notification-timestamp {
             font-size: 0.75rem; color: var(--text-muted); opacity: 0.8;
+            margin-top: 4px; /* Add a bit of space above timestamp */
         }
-        /* End of Full Page Notifications */
+        /* --- END OF MODIFIED NOTIFICATION ITEM STYLES --- */
 
 
         /* --- Modals --- */
@@ -1403,7 +1421,7 @@
             apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // Replace with your actual API key
             authDomain: "eduspark-new.firebaseapp.com",
             projectId: "eduspark-new",
-            storageBucket: "eduspark-new.appspot.com", // Corrected: .appspot.com
+            storageBucket: "eduspark-new.appspot.com",
             messagingSenderId: "564501033350",
             appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
             measurementId: "G-NM2SE3DE7J"
@@ -1662,7 +1680,7 @@
                         updateAvatar();
                         updateHeaderCredits();
                         enableWithdrawalIfQualified();
-                        setupBookApprovalListeners(); // MODIFIED to plural
+                        setupBookApprovalListeners();
                         setupUserNotificationsListener();
                         setupAdminAnnouncementsListener();
                         if (!elements.loadingOverlay.classList.contains('hidden')) {
@@ -1708,7 +1726,7 @@
                 updateAvatar(); 
                 updateHeaderCredits(); 
                 updateUnreadBadge(0); 
-                updateAdminAnnouncementDot(0); // Clear admin announcement dot
+                updateAdminAnnouncementDot(0);
                 showLoginPromptInsteadOfContent(); 
                 closeAllPagesAndModals();
                 resetNavigation();
@@ -1749,7 +1767,7 @@
                 totalBookDownloads: 0, totalFeedbackGiven: 0,
                 processedBookActions: {}, 
                 lastCreditBoostClaim: null, creditsEarnedViaBoosts: 0,
-                lastViewedAnnouncementsAt: null // New field for admin announcements
+                lastViewedAnnouncementsAt: null 
             };
             try {
                 await userRef.set(initialUserData);
@@ -1866,7 +1884,7 @@
                 elements.profileBioLarge.textContent = escapeHTML(userData.bio || 'No bio set. Click Edit Profile to add one!');
 
                 elements.userPointsLarge.textContent = userData.points || 0;
-                elements.booksSharedLarge.textContent = userData.booksSharedCount || 0; // This is now "books submitted"
+                elements.booksSharedLarge.textContent = userData.booksSharedCount || 0;
                 elements.booksDownloadedLarge.textContent = userData.booksDownloadedCount || 0;
                 elements.totalBookDownloadsLarge.textContent = userData.totalBookDownloads || 0;
                 elements.totalFeedbackLarge.textContent = userData.totalFeedbackGiven || 0;
@@ -1993,16 +2011,13 @@
         }
 
         function createBookCardHTML(book, target = 'main') {
-             // target 'profile' now means it's from pending_books for "My Submissions"
              const isAdminOrProfileView = target === 'profile'; 
              const defaultImage = 'https://via.placeholder.com/300x220/333/888?text=No+Cover';
              const imageUrl = book.imageUrl || defaultImage;
              let statusBadge = '';
-             // For profile view (My Submissions from pending_books), always show status
              if (isAdminOrProfileView) { 
                  if (book.status === 'pending') statusBadge = '<span class="status-badge status-pending">Pending</span>';
                  else if (book.status === 'rejected') statusBadge = '<span class="status-badge status-rejected">Rejected</span>';
-                 // No 'approved' badge here as approved books are not in this list by default
              }
              const reviewedByDisplay = escapeHTML(book.reviewedByName || book.reviewedBy || 'Admin');
 
@@ -2084,7 +2099,7 @@
                 if (newBooks.length > 0) {
                     newBooks.forEach(book => {
                         displayedBooksMain.push(book); 
-                        if(elements.booksContainer) elements.booksContainer.innerHTML += createBookCardHTML(book, 'main'); // Pass 'main' target
+                        if(elements.booksContainer) elements.booksContainer.innerHTML += createBookCardHTML(book, 'main');
                     });
                     lastVisibleBookMain = snapshot.docs[snapshot.docs.length - 1];
                 }
@@ -2101,7 +2116,6 @@
 
             } catch (error) {
                 console.error(`Error fetching books for main grid (currentCategory: ${currentCategory}):`, error);
-                // More specific error for missing index
                 if (error.code === 'failed-precondition') {
                     console.error("Firestore 'failed-precondition' error. This often means a composite index is required. Check the Firebase console for a link to create it. Query details: status='approved', category='" + currentCategory + "', orderBy='approvedAt'.");
                     showToast("Error loading books: A database configuration (index) might be missing. Please check server logs or contact support if you are an admin.", "error", 10000);
@@ -2225,7 +2239,6 @@
             };
 
             try {
-                // MODIFIED: Save to pending_books collection
                 await db.collection('pending_books').add(bookData);
                 
                 await db.collection('users').doc(currentUser.uid).update({
@@ -2243,17 +2256,15 @@
             }
         });
 
-        // MODIFIED: Split into two listeners for clarity and to handle different collections
         function setupBookApprovalListeners() {
             if (!currentUser) return;
 
-            // Listener for REJECTIONS from pending_books
             if (listeners.bookRejection) listeners.bookRejection();
             listeners.bookRejection = db.collection('pending_books')
                 .where('submittedBy', '==', currentUser.uid)
                 .onSnapshot(async (snapshot) => {
                     for (const change of snapshot.docChanges()) {
-                        if (change.type === 'modified') { // A pending book's status was changed
+                        if (change.type === 'modified') {
                             const book = {id: change.doc.id, ...change.doc.data()};
                             const userRef = db.collection('users').doc(currentUser.uid);
                             try {
@@ -2278,18 +2289,15 @@
                     console.error("Error in book rejection listener (pending_books):", error);
                 });
 
-            // Listener for APPROVALS from books (when a new approved book by user appears)
             if (listeners.bookApproval) listeners.bookApproval();
             listeners.bookApproval = db.collection('books')
-                .where('submittedBy', '==', currentUser.uid) // Assuming submittedBy is copied from pending_books
+                .where('submittedBy', '==', currentUser.uid)
                 .where('status', '==', 'approved')
                 .onSnapshot(async (snapshot) => {
                     for (const change of snapshot.docChanges()) {
-                        if (change.type === 'added') { // A new book by this user was added to 'books' (i.e., approved by admin)
+                        if (change.type === 'added') { 
                             const book = {id: change.doc.id, ...change.doc.data()};
                             const userRef = db.collection('users').doc(currentUser.uid);
-                            // The key for processedActions will be the ID from the 'books' collection.
-                            // If admin panel uses original pending_book ID as 'originalSubmissionId' in the 'books' doc, that would be more robust.
                             const approvalActionKey = book.id; 
 
                             try {
@@ -2307,11 +2315,10 @@
                                     await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", `/#bookDetail/${book.id}`, "fas fa-book-reader");
                                     await createNotification(currentUser.uid, "Points Awarded!", `You received +10 points for sharing "${escapeHTML(book.bookName)}".`, "success", null, "fas fa-coins");
                                    
-                                    // Refresh "My Submissions" tab if profile is active, because approved book is removed from pending_books by admin
                                     if (elements.profilePage.classList.contains('active') && elements.profileBooksContainer) {
                                         const activeTabBtn = elements.profileTabs.querySelector('.profile-tab-btn.active');
                                         if (activeTabBtn && activeTabBtn.dataset.tab === 'shared-books') {
-                                            fetchUserBooks(false, true); // Force refresh submissions list
+                                            fetchUserBooks(false, true); 
                                         }
                                     }
                                 }
@@ -2335,7 +2342,7 @@
                     if (!currentUser || !userData) { openModal(elements.loginModal); return; }
                     
                     const bookId = targetButton.dataset.bookId;
-                    const dataSource = targetButton.dataset.source || 'books'; // Default to 'books' if source not specified
+                    const dataSource = targetButton.dataset.source || 'books'; 
 
                     if (!bookId) { console.warn("Action requires bookId, but not found on target:", targetButton); return; }
                     openBookDetailModal(bookId, dataSource); 
@@ -2343,12 +2350,16 @@
             }
         });
 
-
+        // --- TRANSACTION FIX APPLIED HERE ---
         async function handleBookDownload(bookId, link, dataSource = 'books', fromModal = false, buttonElement = null) {
             if (!currentUser || !userData) { openModal(elements.loginModal); return; }
 
             const btn = buttonElement || (fromModal ? $(`#bookDetailModal [data-action="download"][data-book-id="${bookId}"]`) : null);
             if (btn) toggleSpinner(btn, true);
+
+            let bookOwnerIdForNotification = null;
+            let bookNameForNotification = null;
+            let bookDataForDownload = null;
 
             try {
                 const userDocFresh = await db.collection('users').doc(currentUser.uid).get();
@@ -2357,13 +2368,14 @@
                 }
                 const freshUserData = userDocFresh.data();
 
-                // Books from pending_books cannot be downloaded. This check is primarily for books from 'books' collection.
-                const bookRef = db.collection(dataSource).doc(bookId); 
+                const bookRef = db.collection(dataSource).doc(bookId);
                 const bookDocSnapshot = await bookRef.get();
                 if (!bookDocSnapshot.exists) throw new Error("Book details not found.");
-                const bookDataForDownload = bookDocSnapshot.data();
+                bookDataForDownload = bookDocSnapshot.data();
 
-                // Only charge credits if the book is from 'books' collection (approved) and not owned by user
+                bookOwnerIdForNotification = bookDataForDownload.submittedBy;
+                bookNameForNotification = bookDataForDownload.bookName;
+
                 const shouldChargeCredits = dataSource === 'books' && bookDataForDownload.submittedBy !== currentUser.uid;
 
                 if (shouldChargeCredits && freshUserData.credits < BOOK_DOWNLOAD_COST) {
@@ -2374,17 +2386,24 @@
                 }
 
                 const userRef = db.collection('users').doc(currentUser.uid);
-                let bookOwnerIdForNotification = bookDataForDownload.submittedBy;
-                let bookNameForNotification = bookDataForDownload.bookName;
                 
                 await db.runTransaction(async (transaction) => {
+                    // --- ALL READS FIRST ---
                     const userDoc = await transaction.get(userRef);
-                    const bookDoc = await transaction.get(bookRef); // Read book from its actual source within transaction
+                    const bookDocFromTransaction = await transaction.get(bookRef); // Re-read book inside transaction
+                    let submitterDoc = null;
 
+                    if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid) {
+                        const submitterRef = db.collection('users').doc(bookOwnerIdForNotification);
+                        submitterDoc = await transaction.get(submitterRef);
+                    }
+
+                    // --- VALIDATIONS AFTER READS ---
                     if (!userDoc.exists) throw new Error("User not found during transaction.");
-                    if (!bookDoc.exists) throw new Error("Book not found during transaction.");
+                    if (!bookDocFromTransaction.exists) throw new Error("Book not found during transaction.");
                     
-                    if (shouldChargeCredits) { // Only if it's an approved book and not owner
+                    // --- ALL WRITES NEXT ---
+                    if (shouldChargeCredits) {
                         const currentCredits = userDoc.data().credits || 0;
                         if (currentCredits < BOOK_DOWNLOAD_COST) {
                            throw new Error(`Insufficient credits. Need ${BOOK_DOWNLOAD_COST}, have ${currentCredits}. Please refresh.`);
@@ -2394,23 +2413,20 @@
                             booksDownloadedCount: firebase.firestore.FieldValue.increment(1)
                         });
                     }
-                    // Increment download count only for approved books in 'books' collection
-                    if (dataSource === 'books') {
+                    
+                    if (dataSource === 'books') { // Only increment download count for approved books
                         transaction.update(bookRef, { downloads: firebase.firestore.FieldValue.increment(1) });
                     }
 
                     // Award points to owner only if it's an approved book from 'books' collection and not self-download
                     if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid) {
-                        const submitterRef = db.collection('users').doc(bookOwnerIdForNotification);
-                        // Ensure submitterRef exists before attempting to update
-                        const submitterDoc = await transaction.get(submitterRef);
-                        if (submitterDoc.exists) {
-                            transaction.update(submitterRef, {
+                        if (submitterDoc && submitterDoc.exists) {
+                            transaction.update(submitterDoc.ref, { // Use submitterDoc.ref
                                 points: firebase.firestore.FieldValue.increment(1),
                                 totalBookDownloads: firebase.firestore.FieldValue.increment(1)
                             });
                         } else {
-                            console.warn(`Submitter user document ${bookOwnerIdForNotification} not found. Points not awarded.`);
+                            console.warn(`Submitter user document ${bookOwnerIdForNotification} not found for points. (Transaction)`);
                         }
                     }
                 });
@@ -2426,20 +2442,26 @@
                     userData.credits = (userData.credits || 0) - BOOK_DOWNLOAD_COST;
                     updateHeaderCredits();
                 }
-
+                
+                // Notification to owner (outside transaction, best-effort)
                 if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid && bookNameForNotification) {
-                    await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
+                    // Check if owner exists before sending notification
+                    const ownerExists = (await db.collection('users').doc(bookOwnerIdForNotification).get()).exists;
+                    if (ownerExists) {
+                        await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
+                    } else {
+                        console.warn(`Submitter user document ${bookOwnerIdForNotification} not found for notification.`);
+                    }
                 }
 
             } catch (error) {
-                console.error("Error during download transaction:", error);
+                console.error("Error during download process:", error);
                 showToast(`Download failed: ${error.message || 'Please try again.'}`, "error");
             } finally {
                 if (btn) toggleSpinner(btn, false);
             }
         }
 
-        // MODIFIED: fetchUserBooks now queries pending_books for "My Submissions"
         function fetchUserBooks(loadMore = false, forceRefresh = false) {
             if (!currentUser || (isFetchingMoreUserBooks && !forceRefresh) ) return;
             if (forceRefresh) {
@@ -2458,12 +2480,11 @@
                 renderSkeletonLoaders(elements.profileBooksContainer, USER_SUBMISSIONS_PER_PAGE, 'book');
             }
 
-            // Query 'pending_books' for user's submissions (pending/rejected)
             let query = db.collection('pending_books').where('submittedBy', '==', currentUser.uid)
                           .orderBy('submittedAt', 'desc').limit(USER_SUBMISSIONS_PER_PAGE);
             if (loadMore && lastUserBookSnapshot) { query = query.startAfter(lastUserBookSnapshot); }
 
-            if (listeners.userBooks) listeners.userBooks(); // Detach previous listener for this specific query
+            if (listeners.userBooks) listeners.userBooks();
             listeners.userBooks = query.onSnapshot(snapshot => {
                 if (!loadMore && !forceRefresh && snapshot.metadata.hasPendingWrites && !snapshot.empty) return;
 
@@ -2477,7 +2498,7 @@
                     snapshot.docs.forEach(doc => {
                         const existingCard = elements.profileBooksContainer ? elements.profileBooksContainer.querySelector(`.book-card[data-id="${doc.id}"]`) : null;
                         if(!existingCard && elements.profileBooksContainer) {
-                           elements.profileBooksContainer.innerHTML += createBookCardHTML({ id: doc.id, ...doc.data() }, 'profile'); // Pass 'profile' target
+                           elements.profileBooksContainer.innerHTML += createBookCardHTML({ id: doc.id, ...doc.data() }, 'profile');
                         }
                     });
                     lastUserBookSnapshot = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
@@ -2692,12 +2713,11 @@
         if(elements.conductSurveyBtn) elements.conductSurveyBtn.onclick = () => {
             if (!currentUser) { openModal(elements.loginModal); return; }
             showToast("Redirecting to earn credits...", "info");
-            window.location.href = 'https://linkcents.com/50-Credit-books'; // Your link
+            window.location.href = 'https://linkcents.com/50-Credit-books'; 
              createNotification(currentUser.uid, "Attempted Credit Boost", "You clicked the link to earn credits. Checking eligibility...", "info", null, "fas fa-external-link-alt");
              closeModal(elements.creditModal);
         };
 
-        // MODIFIED: Takes dataSource to fetch from 'books' or 'pending_books'
         async function openBookDetailModal(bookId, dataSource = 'books') {
             if (!bookId) { console.warn("openBookDetailModal called without bookId"); return; }
             if (!currentUser) { openModal(elements.loginModal); return; }
@@ -2718,7 +2738,6 @@
                 const bookData = { id: bookDoc.id, ...bookDoc.data() };
                 const isOwnedByCurrentUser = bookData.submittedBy === currentUser?.uid;
 
-                // If book is from pending_books and not owned, or if from 'books' but not approved (should not happen with current logic)
                 if (dataSource === 'pending_books' && !isOwnedByCurrentUser) {
                     showToast("This submission is not yet available.", "error");
                     closeModal(elements.bookDetailModal);
@@ -2732,8 +2751,8 @@
                     return;
                 }
                 
-                renderBookDetailContent(bookData, dataSource); // Pass dataSource
-                if (dataSource === 'books' && bookData.status === 'approved') { // Feedback only for approved books
+                renderBookDetailContent(bookData, dataSource); 
+                if (dataSource === 'books' && bookData.status === 'approved') { 
                     loadFeedbackComments(bookId);
                 }
             } catch (error) {
@@ -2743,7 +2762,6 @@
             }
         }
 
-        // MODIFIED: Takes dataSource
         function renderBookDetailContent(book, dataSource = 'books') { 
             if (!elements.bookDetailContent) return;
             const defaultImage = 'https://via.placeholder.com/200x280/333/888?text=No+Cover';
@@ -2752,7 +2770,6 @@
             const isApproved = book.status === 'approved' && dataSource === 'books';
 
             let statusDisplayHTML = '';
-             // Show status if it's owner's book from pending_books OR an approved book from 'books' (though status isn't strictly needed for 'approved' here)
             if (isOwner && dataSource === 'pending_books' && (book.status === 'pending' || book.status === 'rejected')) {
                 statusDisplayHTML = `<p style="text-align:center; padding:10px; background-color: var(--card-bg-dark); border-radius: var(--border-radius-sm); margin-bottom:15px; color: ${book.status === 'pending' ? 'var(--status-pending-bg, #f39c12)' : 'var(--status-rejected-bg, #e74c3c)'};">This submission is currently: <strong>${book.status.toUpperCase()}</strong>${book.status === 'rejected' && book.rejectionReason ? `<br>Reason: ${escapeHTML(book.rejectionReason)}` : ''}</p>`;
             }
@@ -2778,7 +2795,7 @@
                         </div>
                         ${book.description ? `<div class="book-detail-description">${escapeHTML(book.description)}</div>` : '<p class="book-detail-description">No description available for this book.</p>'}
                         <div class="book-detail-actions">
-                            ${ (dataSource === 'books' && isApproved) || (dataSource === 'pending_books' && isOwner && book.status === 'pending') /* Allow owner to "test" download link of pending books for free */ ? `
+                            ${ (dataSource === 'books' && isApproved) || (dataSource === 'pending_books' && isOwner && book.status === 'pending') ? `
                             <button class="action-btn detail-download-btn" data-action="download" data-link="${escapeHTML(book.driveLink)}" data-book-id="${book.id}" data-source="${dataSource}">
                                 <span class="spinner" style="display:none;"></span>
                                 <span><i class="fas fa-download"></i> 
@@ -2813,13 +2830,12 @@
                 ` : (isOwner && dataSource === 'pending_books' ? `<div class="feedback-separator"></div><p style="text-align:center; color:var(--text-muted); margin-top:20px;">Feedback section will be available once approved.</p>` : '')}
             `;
             if (isApproved) {
-                addDetailModalListeners(book.id, dataSource); // Pass dataSource
-            } else if (dataSource === 'pending_books' && isOwner) { // Special case for owner testing download of pending book
+                addDetailModalListeners(book.id, dataSource); 
+            } else if (dataSource === 'pending_books' && isOwner) { 
                  const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
                  if(downloadBtn) {
                     downloadBtn.addEventListener('click', () => {
                         if (!currentUser || !userData) { openModal(elements.loginModal); return; }
-                        // For pending books, owner "test download" is free, no transaction
                         window.open(downloadBtn.dataset.link, '_blank');
                         showToast(`Opening test download link...`, "info", 3000);
                     });
@@ -2827,11 +2843,9 @@
             }
         }
 
-
-        // MODIFIED: Takes dataSource
         function addDetailModalListeners(bookId, dataSource = 'books') {
             const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
-            if (downloadBtn && dataSource === 'books') { // Only attach full download handler for approved books from 'books' collection
+            if (downloadBtn && dataSource === 'books') { 
                 downloadBtn.addEventListener('click', () => {
                     if (!currentUser || !userData) { openModal(elements.loginModal); return; }
                     handleBookDownload(bookId, downloadBtn.dataset.link, dataSource, true, downloadBtn);
@@ -2887,7 +2901,6 @@
             };
 
             try {
-                // Feedback is always on 'books' collection items
                 await db.collection('books').doc(bookId).collection('feedback').add(feedbackData);
                 const bookRef = db.collection('books').doc(bookId);
                 const userRef = db.collection('users').doc(currentUser.uid);
@@ -2942,7 +2955,6 @@
             commentsList.innerHTML = '<div class="no-comments" style="padding: 20px 0;">Loading comments...</div>';
 
             try {
-                // Feedback is on 'books' collection items
                 const snapshot = await db.collection('books').doc(bookId).collection('feedback')
                     .orderBy('submittedAt', 'desc').limit(15).get();
                 if (snapshot.empty) { commentsList.innerHTML = '<div class="no-comments" style="padding: 20px 0;">Be the first to leave feedback for this book!</div>'; return; }
@@ -3013,7 +3025,6 @@
             }
         }
 
-        // New function for admin announcement dot
         function updateAdminAnnouncementDot(count) {
             unreadAdminAnnouncementsCount = count;
             if (elements.announcementUnreadDot) {
@@ -3084,12 +3095,12 @@
             listeners.adminAnnouncements = db.collection('broadcast_notifications') 
                 .orderBy('sentAt', 'desc') 
                 .limit(20)
-                .onSnapshot(async snapshot => { // Added async
+                .onSnapshot(async snapshot => { 
                     const announcementsByDate = {};
                     let newAnnouncementsCount = 0;
                     const lastViewed = userData?.lastViewedAnnouncementsAt ? userData.lastViewedAnnouncementsAt.toDate() : new Date(0);
 
-                    for (const doc of snapshot.docs) { // Use for...of for async operations if needed, though not here
+                    for (const doc of snapshot.docs) { 
                         const announcement = { id: doc.id, ...doc.data(), type: doc.data().type || 'announcement' }; 
                         const dateStr = formatRelativeDate(announcement.sentAt); 
                         if (!announcementsByDate[dateStr]) announcementsByDate[dateStr] = [];
@@ -3099,7 +3110,7 @@
                             newAnnouncementsCount++;
                         }
                     }
-                    updateAdminAnnouncementDot(newAnnouncementsCount); // Update dot based on new ones
+                    updateAdminAnnouncementDot(newAnnouncementsCount); 
 
                     elements.adminAnnouncementsListContainer.innerHTML = '';
                     if (snapshot.empty) {
@@ -3179,7 +3190,7 @@
                         const bookId = internalRoute.split('/')[2]; 
                         closePage(elements.notificationsPage); 
                         activateNavItem(elements.homeBtn); 
-                        openBookDetailModal(bookId, 'books'); // Assume book detail links are always for 'books' collection
+                        openBookDetailModal(bookId, 'books'); 
                     } else if (actionLink && actionLink.startsWith('http')) { 
                         window.open(actionLink, '_blank');
                     }
@@ -3213,7 +3224,7 @@
         }
 
         if(elements.notificationTabsContainer) {
-            elements.notificationTabsContainer.addEventListener('click', async (e) => { // Added async
+            elements.notificationTabsContainer.addEventListener('click', async (e) => { 
                 const targetTabBtn = e.target.closest('.notification-tab-btn');
                 if (!targetTabBtn) return;
                 elements.notificationTabBtns.forEach(btn => btn.classList.remove('active'));
@@ -3227,13 +3238,12 @@
                     if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
                 } else {
                     if(elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = true;
-                    // If announcements tab is clicked and there are unread ones, mark them as "viewed"
                     if (unreadAdminAnnouncementsCount > 0 && currentUser) {
                         try {
                             await db.collection('users').doc(currentUser.uid).update({
                                 lastViewedAnnouncementsAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
-                            updateAdminAnnouncementDot(0); // Visually clear the dot immediately
+                            updateAdminAnnouncementDot(0); 
                         } catch (error) {
                             console.error("Error updating lastViewedAnnouncementsAt:", error);
                         }
@@ -3267,7 +3277,7 @@
             const query = elements.searchInput.value.toLowerCase().trim();
             if (query.length < 2) { elements.searchResults.style.display = 'none'; return; }
 
-            const results = allBooksCache.filter(book => // allBooksCache contains only approved books from 'books' collection
+            const results = allBooksCache.filter(book => 
                 book.bookName.toLowerCase().includes(query) ||
                 book.authorName.toLowerCase().includes(query) ||
                 (book.category && book.category.toLowerCase().includes(query))
@@ -3297,7 +3307,7 @@
                 const item = e.target.closest('.search-result-item');
                 if (item && item.dataset.bookId) {
                     if (!currentUser) { openModal(elements.loginModal); return; }
-                    openBookDetailModal(item.dataset.bookId, 'books'); // Search results are always from 'books' collection
+                    openBookDetailModal(item.dataset.bookId, 'books'); 
                     elements.searchResults.style.display = 'none';
                     if (elements.searchInput) elements.searchInput.value = '';
                     if (elements.searchContainer && elements.searchContainer.classList.contains('active') && window.innerWidth <= 768) {
