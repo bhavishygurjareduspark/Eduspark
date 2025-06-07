@@ -1,7 +1,11 @@
 {
   "hosting": {
     "public": ".",
-    "ignore": [ /* ... */ ]
-    // "rewrites" section yahan se hata dein
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true // Yeh important hai
   }
 }
