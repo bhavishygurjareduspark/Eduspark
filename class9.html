@@ -13,7 +13,7 @@
                object-src 'none';
                base-uri 'self';
                form-action 'self';
-               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
+               frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://*.google.com;">
     <title>EduSparK - Share Knowledge</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,6 +25,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script>
+    <!-- reCAPTCHA v2 API -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <style>
         :root {
@@ -424,6 +426,9 @@
         .auth-switch a { color: var(--primary-color); font-weight: 500; cursor: pointer; transition: color 0.3s ease; text-decoration: none; }
         .auth-switch a:hover { color: var(--primary-light); text-decoration: underline; }
 
+        .g-recaptcha-container { display: flex; justify-content: center; margin-bottom: 15px; transform: scale(0.9); transform-origin: center; } /* For styling reCAPTCHA */
+
+
         .withdrawal-options { display: flex; flex-direction: column; gap: 12px; margin: 25px 0; }
         .withdrawal-option { display: flex; align-items: center; padding: 15px; border-radius: var(--border-radius-sm); background-color: rgba(255, 255, 255, 0.05); cursor: pointer; transition: var(--transition); border: 2px solid transparent; }
         .withdrawal-option:hover { background-color: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); transform: scale(1.02); }
@@ -675,6 +680,10 @@
                 <div class="form-group"> <label for="signupTelegram" class="form-label">Telegram Username (Optional)</label> <input type="text" id="signupTelegram" class="form-input" placeholder="e.g., @yourusername"> </div>
                 <div class="form-group"> <label for="signupRecoveryEmail" class="form-label">Recovery Email (Optional, for PIN recovery)</label> <input type="email" id="signupRecoveryEmail" class="form-input" placeholder="secure.recovery@example.com"> </div>
                 <div class="form-group"> <label for="signupBio" class="form-label">Bio (Optional)</label> <textarea id="signupBio" class="form-textarea" placeholder="Share something about yourself..." rows="2"></textarea> </div>
+                <!-- reCAPTCHA v2 Widget -->
+ <div class="form-group g-recaptcha-container">
+     <div class="g-recaptcha" data-sitekey="6Ld8L1krAAAAAJwQ5Mzww3hRli2tKpkxV-lowW"></div>
+ </div>
                 <button type="submit" class="submit-btn" id="signupBtn"> <span class="spinner" style="display: none;"></span> <span>Create Account</span> </button>
             </form>
             <div class="auth-separator"><span>OR</span></div>
@@ -757,11 +766,11 @@
             <button class="close-modal" id="closePinManagementModal">&times;</button> <h2 class="modal-title" id="pinModalTitle">Set Your Withdrawal PIN</h2>
             <form id="pinManagementForm">
                 <div id="pinSetupFields">
-                    <div class="form-group"> <label for="newPin" class="form-label">New PIN (4-6 digits):</label> <input type="password" id="newPin" class="form-input" required maxlength="6" pattern="\d{4,6}"> </div>
-                    <div class="form-group"> <label for="confirmNewPin" class="form-label">Confirm New PIN:</label> <input type="password" id="confirmNewPin" class="form-input" required maxlength="6" pattern="\d{4,6}"> </div>
+                    <div class="form-group"> <label for="newPin" class="form-label">New PIN (4-6 digits):</label> <input type="password" id="newPin" class="form-input" required maxlength="6" pattern="\d{4,6}" inputmode="numeric"> </div>
+                    <div class="form-group"> <label for="confirmNewPin" class="form-label">Confirm New PIN:</label> <input type="password" id="confirmNewPin" class="form-input" required maxlength="6" pattern="\d{4,6}" inputmode="numeric"> </div>
                 </div>
                 <div id="pinEntryField" style="display:none;">
-                    <div class="form-group"> <label for="currentPin" class="form-label">Enter your Withdrawal PIN:</label> <input type="password" id="currentPin" class="form-input" required maxlength="6" pattern="\d{4,6}"> </div>
+                    <div class="form-group"> <label for="currentPin" class="form-label">Enter your Withdrawal PIN:</label> <input type="password" id="currentPin" class="form-input" required maxlength="6" pattern="\d{4,6}" inputmode="numeric"> </div>
                 </div>
                 <button type="submit" class="submit-btn" id="submitPinManagementBtn"> <span class="spinner" style="display: none;"></span> <span id="submitPinManagementBtnText">Set PIN</span> </button>
             </form>
@@ -784,7 +793,7 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-    
+  
 AOS.init({
     duration: 600,
     easing: 'ease-out-cubic',
@@ -794,13 +803,16 @@ AOS.init({
 
 const firebaseConfig = {
     apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // Stays the same
-    authDomain: "eduspark-new.firebaseapp.com", // <<<< CHANGE THIS
+    authDomain: "edusparkk.xyz", // <<<< From user
     projectId: "eduspark-new",    // Stays the same
     storageBucket: "eduspark-new.appspot.com", // Stays the same
     messagingSenderId: "564501033350", // Stays the same
     appId: "1:564501033350:web:70c0f9873f96e9bd74fc07", // Stays the same
     measurementId: "G-NM2SE3DE7J" // Stays the same
 };
+// ... (firebaseConfig ke baad)
+const RECAPTCHA_V2_SITE_KEY = "6Ld8L1krAAAAAJwQ5Mzww3hRli2tKpkxV-lowW"; // YAHAN KEY PASTE KAREIN
+// ...
 
 firebase.initializeApp(firebaseConfig);
 
@@ -812,7 +824,7 @@ const appCheck = firebase.appCheck();
 
 try {
     appCheck.activate(
-        '6LdJ0A8qAAAAAMoPj8zUkFwFFxX_Gg81cF2o_9y7', // REPLACE THIS with your reCAPTCHA v3 site key if needed
+        '6LdJ0A8qAAAAAMoPj8zUkFwFFxX_Gg81cF2o_9y7', // User's existing AppCheck key
         true
     );
     console.log("Firebase App Check activated.");
@@ -883,7 +895,6 @@ const elements = {
     markAllNotificationsReadBtn: $('#markAllNotificationsReadBtn'),
     bookDetailModal: $('#bookDetailModal'), closeBookDetailModal: $('#closeBookDetailModal'), bookDetailContent: $('#bookDetailContent'),
     toastContainer: $('#toastContainer'),
-    // New Security Feature Elements
     forgotPasswordLink: $('#forgotPasswordLink'),
     forgotPasswordModal: $('#forgotPasswordModal'), closeForgotPasswordModal: $('#closeForgotPasswordModal'), forgotPasswordForm: $('#forgotPasswordForm'),
     pinManagementModal: $('#pinManagementModal'), closePinManagementModal: $('#closePinManagementModal'), pinManagementForm: $('#pinManagementForm'),
@@ -894,7 +905,6 @@ const elements = {
     forgotPinRecoveryEmailInput: $('#forgotPinRecoveryEmail'), verifyRecoveryEmailBtn: $('#verifyRecoveryEmailBtn'),
     securitySettingsBtnFooter: $('#securitySettingsBtnFooter'),
     changePasswordBtnTab: $('#changePasswordBtnTab'), managePinBtnTab: $('#managePinBtnTab'), managePinBtnTabText: $('#managePinBtnTabText'),
-    // Google Sign-In Buttons
     googleLoginBtn: $('#googleLoginBtn'),
     googleSignupBtn: $('#googleSignupBtn')
 };
@@ -922,7 +932,7 @@ let listeners = {
 const BOOK_DOWNLOAD_COST = 30;
 const BOOKS_PER_PAGE_MAIN = 12;
 const USER_SUBMISSIONS_PER_PAGE = 6;
-const PIN_SALT = "EduSparkSuperSecretClientSalt";
+const PIN_SALT = "EduSparkSuperSecretClientSalt"; // This should ideally be a server-side secret if possible
 
 const bookCategories = ['All', '9th', '10th', '11th', '12th', 'NEET', 'JEE', 'UPSC', 'Coding', 'Computer Science', 'Fiction', 'Non-Fiction', 'Other'];
 const loadingMessages = [
@@ -1059,10 +1069,25 @@ function showRandomLoadingMessage() {
 }
 
 auth.onAuthStateChanged(async (user) => {
-    console.log("onAuthStateChanged triggered. User:", user ? user.uid : 'null');
+    console.log("onAuthStateChanged. User:", user ? user.uid : 'null', "Email Verified:", user ? user.emailVerified : 'N/A');
     cleanupListeners();
+    const previousUser = currentUser;
     currentUser = user;
+
     if (user) {
+        if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+            console.log("User email not verified, attempting to resend verification and sign out.");
+            try {
+                await user.sendEmailVerification();
+                showToast("Your email is not verified. A new verification email has been sent. Please check your inbox (and spam folder) then log in again.", "warning", 10000);
+            } catch (error) {
+                console.error("Error sending verification email on unverified login:", error);
+                showToast("Your email is not verified. Please check your inbox or try signing up again if you don't receive an email.", "error", 10000);
+            }
+            await auth.signOut(); // This will re-trigger onAuthStateChanged with user = null
+            return; // Exit early, the signOut will handle UI cleanup
+        }
+
         elements.body.classList.add('logged-in');
         elements.body.classList.remove('logged-out');
         elements.headerCreditsContainer.style.display = 'flex';
@@ -1072,40 +1097,40 @@ auth.onAuthStateChanged(async (user) => {
             console.log("User document snapshot. Exists:", doc.exists, "UID:", user.uid);
             if (doc.exists) {
                 userData = { id: doc.id, ...doc.data() };
-                updateProfileUI();
-                updateAvatar();
-                updateHeaderCredits();
+                updateProfileUI(); updateAvatar(); updateHeaderCredits();
                 enableWithdrawalIfQualified();
                 setupBookApprovalListeners();
                 setupUserNotificationsListener();
                 setupAdminAnnouncementsListener();
                 if(elements.managePinBtnTabText) elements.managePinBtnTabText.textContent = userData.hasSetPin ? 'Change PIN' : 'Set PIN';
-
                 if (elements.loginModal.classList.contains('active')) closeModal(elements.loginModal);
                 if (elements.signupModal.classList.contains('active')) closeModal(elements.signupModal);
-
-                if (!elements.loadingOverlay.classList.contains('hidden')) {
-                    hideLoadingOverlay();
-                }
+                sessionStorage.removeItem('tempSignupData'); // Clean up temp data once user doc is loaded
+                if (!elements.loadingOverlay.classList.contains('hidden')) hideLoadingOverlay();
             } else {
-                const tempSignupData = JSON.parse(sessionStorage.getItem('tempSignupData') || '{}');
-                sessionStorage.removeItem('tempSignupData');
-                console.log("User document doesn't exist for UID:", user.uid, "Attempting to create one. Google Display Name:", user.displayName);
+                 // This block will now primarily handle first-time verified logins or Google sign-ins where doc doesn't exist yet.
+                const tempSignupDataString = sessionStorage.getItem('tempSignupData');
+                let tempSignupData = {};
+                if (tempSignupDataString) {
+                    try { tempSignupData = JSON.parse(tempSignupDataString); }
+                    catch (e) { console.error("Error parsing tempSignupData from sessionStorage", e); }
+                }
+
+                console.log("User document doesn't exist for UID:", user.uid, "Attempting to create one. Google Display Name:", user.displayName, "Temp Data:", tempSignupData);
                 try {
                     await createUserDocument(user,
                         tempSignupData.name || user.displayName,
-                        tempSignupData.username,
+                        tempSignupData.username, // Let createUserDocument handle generation if null
                         tempSignupData.bio,
                         tempSignupData.telegram,
                         tempSignupData.recoveryEmail
                     );
+                    // The onSnapshot listener will pick up the newly created document and set userData.
                 } catch (error) {
                     console.error("Fatal error creating user document in onAuthStateChanged:", error);
                     showToast("Critical error setting up your profile. Please contact support.", "error", 10000);
                     auth.signOut().catch(e => console.error("Error signing out after profile creation failure", e));
-                    if (!elements.loadingOverlay.classList.contains('hidden')) {
-                        hideLoadingOverlay();
-                    }
+                    if (!elements.loadingOverlay.classList.contains('hidden')) hideLoadingOverlay();
                 }
             }
         }, (error) => {
@@ -1113,34 +1138,26 @@ auth.onAuthStateChanged(async (user) => {
             showToast("Could not load your profile data. Please refresh.", "error");
             userData = null;
             updateProfileUI(); updateAvatar(); updateHeaderCredits();
-            if (!elements.loadingOverlay.classList.contains('hidden')) {
-                hideLoadingOverlay();
-            }
+            if (!elements.loadingOverlay.classList.contains('hidden')) hideLoadingOverlay();
         });
 
         try {
             await userDocRef.update({ lastActive: firebase.firestore.FieldValue.serverTimestamp() }).catch(err => {
-                if (err.code === 'not-found') {
-                    console.warn("User document not found for lastActive update (onAuthStateChanged), likely new user. Will be created by snapshot listener.");
-                } else {
-                   console.error("Error updating lastActive:", err);
-                }
+                if (err.code === 'not-found') console.warn("User document not found for lastActive update (onAuthStateChanged), likely new user. Will be created by snapshot listener.");
+                else console.error("Error updating lastActive:", err);
             });
         } catch (warn) { /* Handled by .catch */ }
 
         initializeDataFetching();
-    } else {
+    } else { // User is logged out
         console.log("User is logged out.");
         userData = null;
         currentUser = null;
         elements.body.classList.remove('logged-in');
         elements.body.classList.add('logged-out');
         elements.headerCreditsContainer.style.display = 'none';
-        updateProfileUI();
-        updateAvatar();
-        updateHeaderCredits();
-        updateUnreadBadge(0);
-        updateAdminAnnouncementDot(0);
+        updateProfileUI(); updateAvatar(); updateHeaderCredits();
+        updateUnreadBadge(0); updateAdminAnnouncementDot(0);
         showLoginPromptInsteadOfContent();
         closeAllPagesAndModals();
         resetNavigation();
@@ -1154,28 +1171,25 @@ auth.onAuthStateChanged(async (user) => {
         currentCategory = 'All';
         if (listeners.allBooksSearch) listeners.allBooksSearch();
         listeners.allBooksSearch = null;
-
-        if (!elements.loadingOverlay.classList.contains('hidden')) {
-            hideLoadingOverlay();
-        }
+        if (!elements.loadingOverlay.classList.contains('hidden')) hideLoadingOverlay();
     }
 });
 
 async function createUserDocument(firebaseUser, nameOverride, usernameOverride, bioOverride, telegramOverride, recoveryEmailOverride) {
     const name = nameOverride || firebaseUser.displayName || "Anonymous User";
-    // For username, if it's a Google Sign-In and no usernameOverride, generate one from email
     let username = usernameOverride;
-    if (!username) { // Only generate if not provided (e.g., from email/pass signup)
+    if (!username && firebaseUser.email) { // Generate if not provided AND email exists
         username = firebaseUser.email.split('@')[0].replace(/[^a-z0-9_.]/gi, '').toLowerCase();
+        if (!username || username.length < 3) {
+            username = `user${Date.now().toString().slice(-7)}`;
+        }
+    } else if (!username) { // Absolute fallback if no usernameOverride and no email
+        username = `user${Date.now().toString().slice(-7)}`;
     }
-    if (!username || username.length < 3) { // Fallback if email part is too short or invalid
-      username = `user${Date.now().toString().slice(-7)}`;
-    }
-
 
     try {
         const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
-        if (!usernameSnapshot.empty && usernameSnapshot.docs[0].id !== firebaseUser.uid) { // Check if taken by *another* user
+        if (!usernameSnapshot.empty && usernameSnapshot.docs[0].id !== firebaseUser.uid) {
             username = `${username.substring(0,10)}${Date.now().toString().slice(-5)}`;
         }
     } catch (e) { console.warn("Error checking username uniqueness during doc creation:", e); }
@@ -1184,11 +1198,11 @@ async function createUserDocument(firebaseUser, nameOverride, usernameOverride, 
     const userRef = db.collection('users').doc(firebaseUser.uid);
     const initialUserData = {
         uid: firebaseUser.uid,
-        email: firebaseUser.email,
+        email: firebaseUser.email, // email will be there for verified users or Google users
         name: name,
         username: username,
         bio: bio,
-        points: 0, credits: 50,
+        points: 0, credits: 50, // Initial credits
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastActive: firebase.firestore.FieldValue.serverTimestamp(),
         booksSharedCount: 0, booksDownloadedCount: 0, lastDailyCreditClaim: null,
@@ -1202,18 +1216,16 @@ async function createUserDocument(firebaseUser, nameOverride, usernameOverride, 
         secretPinHash: null,
     };
     try {
-        await userRef.set(initialUserData, { merge: true });
-        console.log("User document created/merged for:", firebaseUser.uid, "with data:", initialUserData); // Debug log
-        // Notification and toast are now handled more reliably by onAuthStateChanged after doc creation
-        // await createNotification(firebaseUser.uid, "Welcome to EduSparK!", `Your profile is set up. You've received ${initialUserData.credits} starting credits!`, "success", null, "fas fa-hand-sparkles");
-        // showToast("Welcome to EduSparK! Your profile is set up.", "success");
+        await userRef.set(initialUserData, { merge: true }); // Use merge to be safe
+        console.log("User document created/merged for:", firebaseUser.uid);
+        await createNotification(firebaseUser.uid, "Welcome to EduSparK!", `Your profile is set up. You've received ${initialUserData.credits} starting credits!`, "success", null, "fas fa-hand-sparkles");
+        showToast("Welcome to EduSparK! Your profile is set up.", "success");
     } catch (error) {
         console.error("Critical error creating user document in Firestore: ", error);
         showToast("Major error setting up your account. Please contact support.", "error", 10000);
-        throw error;
+        throw error; // Re-throw to be caught by onAuthStateChanged
     }
 }
-
 
 function showLoginPromptInsteadOfContent() {
     if (elements.booksContainer) {
@@ -1242,13 +1254,19 @@ elements.loginForm.addEventListener('submit', async (e) => {
     toggleSpinner(btn, true);
     try {
         await auth.signInWithEmailAndPassword(email, password);
-        // onAuthStateChanged will handle modal closing
+        // onAuthStateChanged will handle UI, modal closing, and email verification checks
     } catch (error) {
         console.error("Login error:", error);
-        showToast(error.message, "error");
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            showToast("Invalid email or password.", "error");
+        } else if (error.code === 'auth/too-many-requests') {
+            showToast("Access temporarily disabled due to too many failed login attempts. Try again later.", "error");
+        } else {
+            showToast(error.message, "error");
+        }
     } finally {
         toggleSpinner(btn, false);
-        elements.loginForm.reset();
+        // Don't reset form here, user might want to correct a typo
     }
 });
 
@@ -1262,18 +1280,19 @@ elements.signupForm.addEventListener('submit', async (e) => {
     const telegram = $('#signupTelegram').value.trim();
     const recoveryEmail = $('#signupRecoveryEmail').value.trim();
 
-
     if (!/^[a-z0-9_.]{3,15}$/.test(username)) {
-        showToast("Username: 3-15 chars, lowercase, numbers, '_', '.'", "error", 5000);
-        return;
+        showToast("Username: 3-15 chars, lowercase, numbers, '_', '.'", "error", 5000); return;
     }
     if (password.length < 6) {
-        showToast("Password must be at least 6 characters.", "error");
-        return;
+        showToast("Password must be at least 6 characters.", "error"); return;
     }
     if (recoveryEmail && recoveryEmail === email) {
-        showToast("Recovery email cannot be the same as your account email.", "error");
-        return;
+        showToast("Recovery email cannot be the same as your account email.", "error"); return;
+    }
+
+    const recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+        showToast("Please complete the reCAPTCHA.", "error"); return;
     }
 
     const btn = $('#signupBtn');
@@ -1283,21 +1302,35 @@ elements.signupForm.addEventListener('submit', async (e) => {
         const usernameSnapshot = await db.collection('users').where('username', '==', username).get();
         if (!usernameSnapshot.empty) {
             showToast("Username already taken. Please choose another.", "error");
-            toggleSpinner(btn, false); return;
+            toggleSpinner(btn, false); grecaptcha.reset(); return;
         }
+        
         const methods = await auth.fetchSignInMethodsForEmail(email);
         if (methods.length > 0) {
             showToast("This email address is already in use.", "error");
-            toggleSpinner(btn, false); return;
+            toggleSpinner(btn, false); grecaptcha.reset(); return;
         }
 
+        // Store data BEFORE creating user, in case they verify much later
         sessionStorage.setItem('tempSignupData', JSON.stringify({ name, username, bio, telegram, recoveryEmail }));
-        await auth.createUserWithEmailAndPassword(email, password);
-        // onAuthStateChanged will handle further actions
+
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        await userCredential.user.sendEmailVerification();
+        
+        showToast("Account created! A verification email has been sent to " + email + ". Please verify your email before logging in.", "success", 10000);
+        elements.signupForm.reset();
+        grecaptcha.reset();
+        closeModal(elements.signupModal);
+        // Optionally, sign the user out if Firebase auto-signs them in (behavior can vary)
+        if (auth.currentUser && auth.currentUser.uid === userCredential.user.uid && !auth.currentUser.emailVerified) {
+            await auth.signOut();
+        }
+        openModal(elements.loginModal); // Guide them to login page
     } catch (error) {
         console.error("Signup error:", error);
         showToast(error.message, "error");
-        sessionStorage.removeItem('tempSignupData');
+        sessionStorage.removeItem('tempSignupData'); // Clear if signup failed badly
+        grecaptcha.reset();
     } finally {
         toggleSpinner(btn, false);
     }
@@ -1308,12 +1341,12 @@ async function handleGoogleSignIn(btnElement) {
     toggleSpinner(btnElement, true);
     try {
         const result = await auth.signInWithPopup(provider);
-        // onAuthStateChanged will be triggered automatically.
-        // It will handle user document creation if it's a new user.
-        // It will also handle closing the modals.
+        // onAuthStateChanged will be triggered. If it's a new user,
+        // createUserDocument will be called from there.
+        // Google users are typically considered email-verified.
         console.log("Google Sign-In successful via popup, user:", result.user.uid);
         showToast(`Signed in with Google as ${result.user.displayName || result.user.email}!`, "success", 3000);
-
+        // Modals will be closed by onAuthStateChanged logic if successful
     } catch (error) {
         console.error("Google Sign-In Error:", error);
         if (error.code === 'auth/account-exists-with-different-credential') {
@@ -1800,10 +1833,10 @@ function setupBookApprovalListeners() {
         .where('status', '==', 'approved')
         .onSnapshot(async (snapshot) => {
             for (const change of snapshot.docChanges()) {
-                if (change.type === 'added') {
+                if (change.type === 'added') { // Listen for 'added' as new approved books appear in 'books'
                     const book = { id: change.doc.id, ...change.doc.data() };
                     const userRef = db.collection('users').doc(currentUser.uid);
-                    const approvalActionKey = book.id;
+                    const approvalActionKey = book.id; // Using book's ID from 'books' collection as key
 
                     try {
                         const userDoc = await userRef.get();
@@ -1811,19 +1844,21 @@ function setupBookApprovalListeners() {
                         const currentLocalUserData = userDoc.data();
                         const processedActions = currentLocalUserData.processedBookActions || {};
 
+                        // Check if this approval has already been processed for this book ID
                         if (!processedActions[approvalActionKey] || !processedActions[approvalActionKey].approval) {
                             showToast(`Your book "${escapeHTML(book.bookName)}" has been approved! +10 points.`, "success", 7000);
                             await userRef.update({
                                 points: firebase.firestore.FieldValue.increment(10),
-                                [`processedBookActions.${approvalActionKey}.approval`]: true
+                                [`processedBookActions.${approvalActionKey}.approval`]: true // Mark this specific book ID as processed
                             });
                             await createNotification(currentUser.uid, "Book Approved!", `Your book "${escapeHTML(book.bookName)}" is now live.`, "success", `/#bookDetail/${book.id}`, "fas fa-book-reader");
                             await createNotification(currentUser.uid, "Points Awarded!", `You received +10 points for sharing "${escapeHTML(book.bookName)}".`, "success", null, "fas fa-coins");
 
+                            // Refresh profile books if on that tab
                             if (elements.profilePage.classList.contains('active') && elements.profileBooksContainer) {
                                 const activeTabBtn = elements.profileTabs.querySelector('.profile-tab-btn.active');
                                 if (activeTabBtn && activeTabBtn.dataset.tab === 'shared-books') {
-                                    fetchUserBooks(false, true);
+                                    fetchUserBooks(false, true); // Force refresh to remove it from pending
                                 }
                             }
                         }
@@ -1880,6 +1915,9 @@ async function handleBookDownload(bookId, link, dataSource = 'books', fromModal 
         bookOwnerIdForNotification = bookDataForDownload.submittedBy;
         bookNameForNotification = bookDataForDownload.bookName;
 
+        // Determine if credits should be charged.
+        // For 'pending_books', assume it's the owner testing, so no charge.
+        // For 'books', charge if not the owner.
         const shouldChargeCredits = dataSource === 'books' && bookDataForDownload.submittedBy !== currentUser.uid;
 
         if (shouldChargeCredits && freshUserData.credits < BOOK_DOWNLOAD_COST) {
@@ -1893,9 +1931,10 @@ async function handleBookDownload(bookId, link, dataSource = 'books', fromModal 
 
         await db.runTransaction(async (transaction) => {
             const userDoc = await transaction.get(userRef);
-            const bookDocFromTransaction = await transaction.get(bookRef);
+            const bookDocFromTransaction = await transaction.get(bookRef); // Get book from transaction for consistency
             let submitterDoc = null;
 
+            // Only try to get submitter if it's an approved book ('books' collection) and not the current user
             if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid) {
                 const submitterRef = db.collection('users').doc(bookOwnerIdForNotification);
                 submitterDoc = await transaction.get(submitterRef);
@@ -1915,10 +1954,13 @@ async function handleBookDownload(bookId, link, dataSource = 'books', fromModal 
                 });
             }
 
+            // Only increment general download count for approved books in the 'books' collection
             if (dataSource === 'books') {
                 transaction.update(bookRef, { downloads: firebase.firestore.FieldValue.increment(1) });
             }
 
+
+            // Award points to submitter only for approved books in 'books' collection
             if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid) {
                 if (submitterDoc && submitterDoc.exists) {
                     transaction.update(submitterDoc.ref, {
@@ -1935,20 +1977,22 @@ async function handleBookDownload(bookId, link, dataSource = 'books', fromModal 
         if (shouldChargeCredits) {
             showToast(`-${BOOK_DOWNLOAD_COST} credits. Opening download...`, "info", 3000);
         } else {
-            showToast(`Opening download... ${dataSource === 'books' && bookDataForDownload.submittedBy === currentUser.uid ? '(This is your approved book, no credits deducted)' : ''}`, "info", 3000);
+             showToast(`Opening download... ${dataSource === 'books' && bookDataForDownload.submittedBy === currentUser.uid ? '(This is your approved book, no credits deducted)' : (dataSource === 'pending_books' ? '(This is your pending submission, no credits deducted)' : '')}`, "info", 3000);
         }
 
-        if (userData && shouldChargeCredits) {
+
+        if (userData && shouldChargeCredits) { // Update local userData if it exists
             userData.credits = (userData.credits || 0) - BOOK_DOWNLOAD_COST;
             updateHeaderCredits();
         }
 
+        // Send notification to book owner only for approved books from 'books' collection
         if (dataSource === 'books' && bookOwnerIdForNotification && bookOwnerIdForNotification !== currentUser.uid && bookNameForNotification) {
             const ownerExists = (await db.collection('users').doc(bookOwnerIdForNotification).get()).exists;
             if (ownerExists) {
-                await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
+                 await createNotification(bookOwnerIdForNotification, "Book Downloaded", `Your book "${escapeHTML(bookNameForNotification)}" was downloaded! +1 point.`, "info", `/#bookDetail/${bookId}`, "fas fa-arrow-down");
             } else {
-                console.warn(`Submitter user document ${bookOwnerIdForNotification} not found for notification.`);
+                 console.warn(`Submitter user document ${bookOwnerIdForNotification} not found for notification.`);
             }
         }
 
@@ -1984,6 +2028,7 @@ function fetchUserBooks(loadMore = false, forceRefresh = false) {
 
     if (listeners.userBooks) listeners.userBooks();
     listeners.userBooks = query.onSnapshot(snapshot => {
+        // Debounce if not forcing refresh and there are pending writes (often local changes before server ack)
         if (!loadMore && !forceRefresh && snapshot.metadata.hasPendingWrites && !snapshot.empty) return;
 
         if (!loadMore && elements.profileBooksContainer) elements.profileBooksContainer.innerHTML = '';
@@ -1995,7 +2040,7 @@ function fetchUserBooks(loadMore = false, forceRefresh = false) {
             if (elements.emptyProfileBooks) elements.emptyProfileBooks.style.display = 'none';
             snapshot.docs.forEach(doc => {
                 const existingCard = elements.profileBooksContainer ? elements.profileBooksContainer.querySelector(`.book-card[data-id="${doc.id}"]`) : null;
-                if (!existingCard && elements.profileBooksContainer) {
+                if (!existingCard && elements.profileBooksContainer) { // Add if not already present
                     elements.profileBooksContainer.innerHTML += createBookCardHTML({ id: doc.id, ...doc.data() }, 'profile');
                 }
             });
@@ -2187,9 +2232,9 @@ function fetchWithdrawalHistory() {
         });
 }
 
-async function handleDailyCreditClaim() {
+async function handleDailyCreditClaim() { // This function seems unused, but keeping it for now.
     if (!currentUser || !userData) { showToast("Please login to claim credits.", "info"); openModal(elements.loginModal); return; }
-    const btn = elements.claimDailyCreditBtn;
+    const btn = elements.claimDailyCreditBtn; // This element ID is not in the HTML
     if (btn) toggleSpinner(btn, true);
 
     try {
@@ -2228,7 +2273,7 @@ if (elements.closeCreditModal) elements.closeCreditModal.onclick = () => closeMo
 if (elements.conductSurveyBtn) elements.conductSurveyBtn.onclick = () => {
     if (!currentUser) { openModal(elements.loginModal); return; }
     showToast("Redirecting to earn credits...", "info");
-    window.location.href = 'https://linkcents.com/50-Credit-books';
+    window.location.href = 'https://linkcents.com/50-Credit-books'; // Hardcoded link
     createNotification(currentUser.uid, "Attempted Credit Boost", "You clicked the link to earn credits. Checking eligibility...", "info", null, "fas fa-external-link-alt");
     closeModal(elements.creditModal);
 };
@@ -2346,13 +2391,12 @@ function renderBookDetailContent(book, dataSource = 'books') {
    `;
     if (isApproved) {
         addDetailModalListeners(book.id, dataSource);
-    } else if (dataSource === 'pending_books' && isOwner) {
+    } else if (dataSource === 'pending_books' && isOwner) { // Owner viewing their pending book
         const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
         if (downloadBtn) {
             downloadBtn.addEventListener('click', () => {
                 if (!currentUser || !userData) { openModal(elements.loginModal); return; }
-                window.open(downloadBtn.dataset.link, '_blank');
-                showToast(`Opening test download link...`, "info", 3000);
+                handleBookDownload(book.id, downloadBtn.dataset.link, dataSource, true, downloadBtn);
             });
         }
     }
@@ -2360,7 +2404,7 @@ function renderBookDetailContent(book, dataSource = 'books') {
 
 function addDetailModalListeners(bookId, dataSource = 'books') {
     const downloadBtn = elements.bookDetailContent.querySelector('.detail-download-btn');
-    if (downloadBtn && dataSource === 'books') {
+    if (downloadBtn && dataSource === 'books') { // Only allow download from main 'books' collection through this button
         downloadBtn.addEventListener('click', () => {
             if (!currentUser || !userData) { openModal(elements.loginModal); return; }
             handleBookDownload(bookId, downloadBtn.dataset.link, dataSource, true, downloadBtn);
@@ -2753,12 +2797,11 @@ if (elements.notificationTabsContainer) {
             if (elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = (unreadNotificationsCount === 0);
         } else {
             if (elements.markAllNotificationsReadBtn) elements.markAllNotificationsReadBtn.disabled = true;
-            if (unreadAdminAnnouncementsCount > 0 && currentUser && userData) { // Check userData
+            if (unreadAdminAnnouncementsCount > 0 && currentUser && userData) {
                 try {
                     await db.collection('users').doc(currentUser.uid).update({
                         lastViewedAnnouncementsAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    // updateAdminAnnouncementDot(0); // This will be handled by the snapshot listener
                 } catch (error) {
                     console.error("Error updating lastViewedAnnouncementsAt:", error);
                 }
@@ -2854,7 +2897,7 @@ function openPage(pageEl) {
             checkAndShowProfilePrompts();
             if (elements.profileTabs) {
                 let activeTab = elements.profileTabs.querySelector('.profile-tab-btn.active');
-                if (!activeTab || activeTab.dataset.tab === 'security') {
+                if (!activeTab || activeTab.dataset.tab === 'security') { // Default to 'shared-books' if security was last or no active tab
                     activeTab = elements.profileTabs.querySelector('.profile-tab-btn[data-tab="shared-books"]') || elements.profileTabs.querySelector('.profile-tab-btn');
                 }
                 if (activeTab) {
@@ -2877,6 +2920,7 @@ function openPage(pageEl) {
                 elements.personalNotificationsListContainer.classList.remove('active');
                 elements.adminAnnouncementsListContainer.classList.remove('active');
 
+                // Default to personal tab
                 const personalTabBtn = elements.notificationTabsContainer.querySelector('[data-tab="personal"]');
                 if (personalTabBtn) personalTabBtn.classList.add('active');
                 elements.personalNotificationsListContainer.classList.add('active');
@@ -2970,7 +3014,7 @@ function deobfuscateAndVerifyPin(enteredPin, storedHash) {
 function openPinManagementModal(context) {
     if (!currentUser || !userData) { showToast("Please login.", "error"); return; }
     currentPinManagementContext = context;
-    elements.pinManagementForm.reset();
+    if(elements.pinManagementForm) elements.pinManagementForm.reset();
 
     elements.newPinInput.required = false;
     elements.confirmNewPinInput.required = false;
@@ -3031,12 +3075,13 @@ if (elements.pinManagementForm) {
                     toggleSpinner(btn, false);
                     closeModal(elements.pinManagementModal);
                     openPinManagementModal('setup');
-                    return;
+                    return; // Important: exit after opening setup modal
                 }
                 if (deobfuscateAndVerifyPin(enteredPin, userData.secretPinHash)) {
                     showToast("PIN Verified!", "success", 1500);
-                    await submitWithdrawalRequestWithPin();
-                    return;
+                    // submitWithdrawalRequestWithPin will handle spinner and closing modal
+                    await submitWithdrawalRequestWithPin(); 
+                    return; // Important: exit as submitWithdrawalRequestWithPin handles flow
                 } else {
                     showToast("Incorrect PIN. Please try again.", "error");
                 }
@@ -3045,8 +3090,9 @@ if (elements.pinManagementForm) {
             console.error("Error in PIN management:", error);
             showToast("PIN operation failed: " + error.message, "error");
         }
-        if (!(currentPinManagementContext === 'entry' && userData.secretPinHash && deobfuscateAndVerifyPin(elements.currentPinInput.value, userData.secretPinHash))) {
-            toggleSpinner(btn, false);
+        // Only toggle spinner off if we haven't successfully started another async operation that handles it
+        if (!(currentPinManagementContext === 'entry' && userData && userData.secretPinHash && deobfuscateAndVerifyPin(elements.currentPinInput.value, userData.secretPinHash))) {
+             toggleSpinner(btn, false);
         }
     });
 }
@@ -3077,7 +3123,7 @@ if (elements.forgotPinForm) {
         if (enteredRecoveryEmail.toLowerCase() === userData.recoveryEmail.toLowerCase()) {
             showToast("Recovery email verified. You can now reset your PIN.", "success");
             closeModal(elements.forgotPinModal);
-            openPinManagementModal('change');
+            openPinManagementModal('change'); // Open modal for changing PIN
         } else {
             showToast("Recovery email does not match our records.", "error");
         }
@@ -3110,17 +3156,16 @@ if (elements.addBookBtn) elements.addBookBtn.onclick = () => { if (currentUser) 
 if (elements.closeAddBookModal) elements.closeAddBookModal.onclick = () => closeModal(elements.addBookModal);
 if (elements.discoverBtn) elements.discoverBtn.onclick = () => { if (currentUser) openModal(elements.discoverModal); else openModal(elements.loginModal); };
 if (elements.closeDiscoverModal) elements.closeDiscoverModal.onclick = () => closeModal(elements.discoverModal);
-if (elements.switchToSignup) elements.switchToSignup.onclick = () => { closeModal(elements.loginModal); openModal(elements.signupModal); };
+if (elements.switchToSignup) elements.switchToSignup.onclick = () => { closeModal(elements.loginModal); openModal(elements.signupModal); if(typeof grecaptcha !== 'undefined' && elements.signupForm) grecaptcha.reset(); };
 if (elements.switchToLogin) elements.switchToLogin.onclick = () => { closeModal(elements.signupModal); openModal(elements.loginModal); };
 if (elements.closeLoginModal) elements.closeLoginModal.onclick = () => closeModal(elements.loginModal);
-if (elements.closeSignupModal) elements.closeSignupModal.onclick = () => closeModal(elements.signupModal);
+if (elements.closeSignupModal) elements.closeSignupModal.onclick = () => { closeModal(elements.signupModal); if(typeof grecaptcha !== 'undefined' && elements.signupForm) grecaptcha.reset(); };
 if (elements.closeBookDetailModal) elements.closeBookDetailModal.onclick = () => { closeModal(elements.bookDetailModal); currentBookDetailId = null; }
 $$('.modal').forEach(m => { m.addEventListener('click', (e) => { if (e.target === m) closeModal(m); }); });
 
 
 // --- Initial Setup ---
 document.addEventListener('DOMContentLoaded', () => {
-    // elements.loadingOverlay should be visible by default (no .hidden class initially)
     showRandomLoadingMessage();
     renderSkeletonLoaders(elements.booksContainer, BOOKS_PER_PAGE_MAIN, 'book');
     renderSkeletonLoaders(elements.popularBooksCarousel, 5, 'popular');
@@ -3132,6 +3177,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.withdrawalOptionsContainer) elements.withdrawalOptionsContainer.innerHTML = withdrawalOptsHTML;
     const amountOptsHTML = `<div class="amount-option" data-amount="500" data-rs="50">500 pts = ₹50</div><div class="amount-option" data-amount="1000" data-rs="100">1000 pts = ₹100</div><div class="amount-option" data-amount="2000" data-rs="200">2000 pts = ₹200</div><div class="amount-option" data-amount="5000" data-rs="500">5000 pts = ₹500</div>`;
     if (elements.amountOptionsContainer) elements.amountOptionsContainer.innerHTML = amountOptsHTML;
+
+    // Check if reCAPTCHA key is set
+    if (RECAPTCHA_V2_SITE_KEY === "YOUR_RECAPTCHA_V2_SITE_KEY_HERE") {
+        console.warn("reCAPTCHA v2 Site Key is not set. Signup form reCAPTCHA will not work.");
+        showToast("Site configuration error: reCAPTCHA not set up. Please contact admin.", "error", 10000);
+    }
 });
 </script>
 </body>
