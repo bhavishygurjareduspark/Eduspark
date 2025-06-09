@@ -1,0 +1,33 @@
+name: Set GCS Bucket CORS Policy
+
+on:
+  workflow_dispatch: # Allows manual triggering from GitHub Actions tab
+
+jobs:
+  apply-cors-policy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' # Required for Workload Identity Federation
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/564501033350/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+          service_account: 'github-cors-setter@eduspark-new.iam.gserviceaccount.com' # e.g., github-cors-setter@your-project-id.iam.gserviceaccount.com
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Apply CORS configuration to GCS Bucket
+        run: |
+          echo "Applying CORS configuration from .github/config/cors-config.json"
+          gsutil cors set .github/config/cors-config.json gs://eduspark-new.appspot.com
+          echo "CORS policy successfully applied to gs://eduspark-new.appspot.com"
+        env:
+          CLOUDSDK_CORE_PROJECT: eduspark-new # e.g., eduspark-new
