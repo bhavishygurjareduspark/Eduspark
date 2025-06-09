@@ -1,8 +1,8 @@
 [
   {
-    "origin": ["http://localhost:8080"],
-    "method": ["GET", "POST", "PUT", "OPTIONS", "DELETE"],
-    "responseHeader": ["Content-Type", "Authorization", "X-Requested-With", "Content-Length", "User-Agent", "Accept-Encoding"],
+    "origin": ["https://edusparkk.xyz", "http://localhost:8080"],
+    "method": ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"],
     "maxAgeSeconds": 3600
   }
 ]
