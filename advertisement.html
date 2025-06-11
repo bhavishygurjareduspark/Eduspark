@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
+               script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/api.js https://*.google.com https://www.gstatic.com/recaptcha/;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: blob: https: http://via.placeholder.com https://firebasestorage.googleapis.com; /* CHECK: Ad images from Firestore will have URLs starting with firebasestorage.googleapis.com if you use Storage, or direct https links if you store external URLs */
+               connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://firebaseappcheck.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
+    <title>Advertisement - EduSparK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff3333; /* EduSpark's theme */
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .header {
+            background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px);
+            color: var(--text-light); height: 70px; display: flex;
+            justify-content: center; align-items: center; box-shadow: var(--shadow-md);
+            padding: 0 20px; border-bottom: 1px solid rgba(255, 51, 51, 0.1);
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .logo i { margin-right: 10px; }
+
+        .initial-ad-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .initial-ad-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .initial-ad-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+            position: relative;
+        }
+        .initial-ad-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 15px;
+            background-color: var(--bg-light); /* Placeholder bg for image */
+        }
+        .initial-ad-content .ad-title {
+            font-size: 1.5rem; color: var(--primary-light); margin-bottom: 5px;
+        }
+        .initial-ad-content .ad-description {
+            font-size: 1rem; color: var(--text-muted); margin-bottom: 15px;
+        }
+        .initial-ad-timer {
+            font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;
+        }
+        .close-initial-ad {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: var(--primary-color); color: white;
+            border: none; border-radius: 50%;
+            width: 30px; height: 30px;
+            font-size: 1.2rem; line-height: 1;
+            cursor: pointer;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .page-title {
+            font-size: 2rem; margin-bottom: 25px; color: var(--primary-color);
+        }
+        .ad-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-height: 100px; /* Ensure space for placeholder */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content like image */
+        }
+        .ad-container img {
+            max-width: 100%;
+             max-height: 120px; /* Max height for inline ads */
+            object-fit: contain; /* Better for various ad aspect ratios */
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 10px;
+             background-color: var(--bg-light); /* Placeholder bg for image */
+        }
+        .ad-container .ad-label {
+            font-size: 0.75rem; color: var(--text-muted);
+            display: block; margin-bottom: 5px; text-align: left;
+            width:100%;
+        }
+         .ad-container .ad-placeholder-text {
+            color: var(--text-muted);
+            padding: 20px;
+            border: 2px dashed var(--primary-light);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 70px;
+            width: 100%;
+        }
+        .ad-container .ad-content-title { /* For inline ad title */
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 220px;
+            justify-content: center;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(255, 51, 51, 0.4);
+        }
+        .btn.secondary {
+            background: var(--secondary-light);
+        }
+        .btn.secondary:hover {
+            background: #333;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .footer {
+            background-color: var(--bg-light); color: var(--text-muted);
+            text-align: center; padding: 20px; font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: auto; /* Push footer to bottom */
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="books.html" class="logo"><i class="fas fa-book-reader"></i> EduSparK Ads</a>
+    </header>
+
+    <div class="initial-ad-overlay" id="initialAdOverlay">
+        <div class="initial-ad-content">
+            <button class="close-initial-ad" id="closeInitialAdBtn" aria-label="Close Ad">&times;</button>
+            <div id="initialAdTimer" class="initial-ad-timer">Loading ad...</div>
+            <a href="#" id="initialAdLink" target="_blank" rel="noopener noreferrer">
+                <img src="https://via.placeholder.com/800x450/212121/cccccc?text=Loading+Full+Screen+Ad..." alt="Initial Ad" id="initialAdImage">
+            </a>
+            <h3 id="initialAdTitle" class="ad-title">Sponsored Content</h3>
+            <p id="initialAdDescription" class="ad-description"></p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="page-title">Sponsor Messages</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">
+            Content on EduSparK is free. Ads help us keep it that way!
+        </p>
+
+        <div class="ad-container" id="adSpot1">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-placeholder-text">Loading Ad Spot 1...</div>
+        </div>
+
+        <div class="ad-container" id="adSpot2">
+            <span class="ad-label">Advertisement</span>
+             <div class="ad-placeholder-text">Loading Ad Spot 2...</div>
+        </div>
+
+        <div class="ad-container" id="adSpot3">
+            <span class="ad-label">Advertisement</span>
+            <div class="ad-placeholder-text">Loading Ad Spot 3...</div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="https://linkcents.com/2ygpq" class="btn"><i class="fas fa-arrow-right"></i> Continue to Earn Credit</a>
+            <a href="/pricing" class="btn secondary"><i class="fas fa-bullhorn"></i> Promote Your Business</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        &copy; <span id="currentYearAdPage"></span> EduSparK. Ads help keep our platform free.
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- App Check (optional but recommended for production) -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script> -->
+
+
+    <script>
+        // --- Firebase Configuration ---
+        // IMPORTANT: Replace with your ACTUAL Firebase Project Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // THIS IS A PLACEHOLDER
+            authDomain: "eduspark-new.firebaseapp.com",
+            projectId: "eduspark-new",
+            storageBucket: "eduspark-new.appspot.com",
+            messagingSenderId: "564501033350",
+            appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+            measurementId: "G-NM2SE3DE7J" // Optional
+        };
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+             firebase.initializeApp(firebaseConfig);
+        }
+        const dbPublicAds = firebase.firestore(); // Use a different var name if worried about scope conflicts, though unlikely here
+        
+        // App Check (optional) - if you use it, ensure YOUR_RECAPTCHA_V3_SITE_KEY_HERE is replaced
+        // try {
+        //    const appCheckPublic = firebase.appCheck();
+        //    appCheckPublic.activate('YOUR_RECAPTCHA_V3_SITE_KEY_HERE', true);
+        // } catch(e){ console.warn("App Check not activated on ad page", e.message)}
+
+
+        document.getElementById('currentYearAdPage').textContent = new Date().getFullYear();
+
+        const initialAdOverlayEl = document.getElementById('initialAdOverlay');
+        const closeInitialAdBtnEl = document.getElementById('closeInitialAdBtn');
+        const initialAdTimerDisplayEl = document.getElementById('initialAdTimer');
+        const initialAdImageEl = document.getElementById('initialAdImage');
+        const initialAdLinkEl = document.getElementById('initialAdLink');
+        const initialAdTitleEl = document.getElementById('initialAdTitle');
+        const initialAdDescriptionEl = document.getElementById('initialAdDescription');
+        
+        const adSpot1El = document.getElementById('adSpot1');
+        const adSpot2El = document.getElementById('adSpot2');
+        const adSpot3El = document.getElementById('adSpot3');
+
+        let initialAdCountdownIntervalId;
+
+        function escapeHtmlPublic(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>"']/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match]));
+        }
+
+        async function loadAdvertisementsPublic() {
+            try {
+                const adsSnapshot = await dbPublicAds.collection('advertisements')
+                                          .where('isActive', '==', true)
+                                          .get();
+
+                const adsDataByPlacement = {};
+                adsSnapshot.forEach(doc => {
+                    const ad = doc.data();
+                    // Simplistic: take the first active ad for a placement.
+                    // Could be improved with priority or rotation.
+                    if (!adsDataByPlacement[ad.placement]) {
+                        adsDataByPlacement[ad.placement] = ad;
+                    }
+                });
+                
+                // Load Initial Fullscreen Ad
+                const initialAdData = adsDataByPlacement['initial_fullscreen'];
+                if (initialAdData && initialAdOverlayEl) {
+                    initialAdImageEl.src = escapeHtmlPublic(initialAdData.imageUrl);
+                    initialAdImageEl.alt = escapeHtmlPublic(initialAdData.title || "Advertisement");
+                    initialAdLinkEl.href = escapeHtmlPublic(initialAdData.targetUrl || "#");
+                    initialAdTitleEl.textContent = escapeHtmlPublic(initialAdData.title || "Sponsored Content");
+                    initialAdDescriptionEl.textContent = escapeHtmlPublic(initialAdData.description || "");
+                    initialAdOverlayEl.classList.add('visible');
+
+                    let countdown = initialAdData.displayDurationSeconds || 5;
+                    initialAdTimerDisplayEl.textContent = `Click ad to visit. Closing in ${countdown}s...`;
+
+                    if (initialAdCountdownIntervalId) clearInterval(initialAdCountdownIntervalId);
+                    initialAdCountdownIntervalId = setInterval(() => {
+                        countdown--;
+                        if (initialAdTimerDisplayEl) {
+                             initialAdTimerDisplayEl.textContent = `Click ad to visit. Closing in ${countdown}s...`;
+                        }
+                        if (countdown <= 0) {
+                            clearInterval(initialAdCountdownIntervalId);
+                            if (initialAdTimerDisplayEl) initialAdTimerDisplayEl.textContent = "You can close this ad now.";
+                            if (closeInitialAdBtnEl) closeInitialAdBtnEl.style.display = 'block';
+                        }
+                    }, 1000);
+                } else {
+                    console.log("No active 'initial_fullscreen' ad found or element missing.");
+                    if(initialAdOverlayEl) initialAdOverlayEl.remove();
+                }
+
+                // Load Inline Ads
+                loadInlineAdPublic(adSpot1El, adsDataByPlacement['inline_spot_1'], 'Ad Spot 1');
+                loadInlineAdPublic(adSpot2El, adsDataByPlacement['inline_spot_2'], 'Ad Spot 2');
+                loadInlineAdPublic(adSpot3El, adsDataByPlacement['inline_spot_3'], 'Ad Spot 3');
+
+            } catch (error) {
+                console.error("Error loading advertisements:", error);
+                if(initialAdOverlayEl) initialAdOverlayEl.remove(); // Hide fullscreen if error
+                loadInlineAdPublic(adSpot1El, null, 'Ad Spot 1'); // Show placeholders
+                loadInlineAdPublic(adSpot2El, null, 'Ad Spot 2');
+                loadInlineAdPublic(adSpot3El, null, 'Ad Spot 3');
+            }
+        }
+
+        function loadInlineAdPublic(element, adData, defaultTitle) {
+            if (!element) return;
+            if (adData && adData.imageUrl && adData.targetUrl) {
+                element.innerHTML = `
+                    <span class="ad-label">Advertisement</span>
+                    <a href="${escapeHtmlPublic(adData.targetUrl)}" target="_blank" rel="noopener noreferrer">
+                        <img src="${escapeHtmlPublic(adData.imageUrl)}" alt="${escapeHtmlPublic(adData.title || defaultTitle)}" onerror="this.style.display='none'; element.querySelector('.ad-placeholder-text').style.display='flex';">
+                    </a>
+                    ${adData.title ? `<p class="ad-content-title">${escapeHtmlPublic(adData.title)}</p>` : ''}
+                     <div class="ad-placeholder-text" style="display:none;">${defaultTitle} Space Available</div>`; // Hidden placeholder for fallback
+            } else {
+                element.innerHTML = `<span class="ad-label">Advertisement</span><div class="ad-placeholder-text">${defaultTitle} Space Available</div>`;
+                if(adData) console.log(`Data for ${defaultTitle} was incomplete or missing image/target URL.`);
+                else console.log(`No active ad found for ${defaultTitle.toLowerCase().replace(/\s/g, '_')}.`);
+            }
+        }
+        
+        if(closeInitialAdBtnEl) closeInitialAdBtnEl.addEventListener('click', () => {
+            if (initialAdOverlayEl) initialAdOverlayEl.classList.remove('visible');
+            if(initialAdCountdownIntervalId) clearInterval(initialAdCountdownIntervalId);
+            setTimeout(() => { if (initialAdOverlayEl) initialAdOverlayEl.remove(); }, 500);
+        });
+
+        if(initialAdLinkEl) initialAdLinkEl.addEventListener('click', (e) => {
+            const href = initialAdLinkEl.getAttribute('href');
+            if (!href || href === '#') {
+                 e.preventDefault();
+                 console.log("Initial ad link clicked, but no valid URL provided.");
+            }
+        });
+
+        window.addEventListener('load', loadAdvertisementsPublic);
+    </script>
+</body>
+</html>
