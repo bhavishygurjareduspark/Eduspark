@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+               script-src 'self' 'unsafe-inline';
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: https: http://via.placeholder.com;">
+    <title>Advertising Plans - EduSparK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --card-bg-darker: #1a1a1a; /* For modal */
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --input-border-color: rgba(255, 255, 255, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display:flex;
+            flex-direction:column;
+        }
+        .header {
+            background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px);
+            color: var(--text-light); height: 70px; display: flex;
+            justify-content: space-between; align-items: center; box-shadow: var(--shadow-md);
+            padding: 0 20px; border-bottom: 1px solid rgba(255, 51, 51, 0.1);
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .logo i { margin-right: 10px; }
+        .nav-back-btn {
+            color: var(--text-light); text-decoration: none; font-size: 0.9rem;
+            padding: 8px 15px; border-radius: 20px; background-color: rgba(255,255,255,0.1);
+            transition: background-color 0.3s ease;
+        }
+        .nav-back-btn:hover { background-color: rgba(255,255,255,0.2); }
+
+        .container {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-grow: 1; /* Allow container to take up space */
+        }
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-light);
+            font-weight: 700;
+        }
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .pricing-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+        .pricing-card.popular {
+            border-top: 5px solid var(--primary-color);
+            position: relative;
+        }
+        .pricing-card.popular::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -1px; 
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background: var(--gradient);
+            color: white;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+        }
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+        .plan-price {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        .plan-price .duration {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+        .plan-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            min-height: 40px;
+        }
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+        .features-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .features-list li i {
+            color: var(--primary-color);
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .btn-choose-plan {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+        .btn-choose-plan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 51, 51, 0.3);
+        }
+        .why-advertise-section {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-top: 50px;
+        }
+        .why-advertise-section h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+        }
+        .why-advertise-section p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: center;
+        }
+        .footer {
+            background-color: var(--bg-light); color: var(--text-muted);
+            text-align: center; padding: 20px; font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.visible {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: var(--card-bg-darker);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.visible .modal-content {
+            transform: translateY(0) scale(1);
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            background: none; border: none;
+            font-size: 1.8rem; color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .modal-close-btn:hover {
+            color: var(--primary-color);
+            transform: rotate(90deg);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-light);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"], /* Though not used here, for future */
+        .form-group input[readonly] {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-light);
+            border: 1px solid var(--input-border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        .form-group input[readonly] {
+            background-color: rgba(255,255,255,0.05);
+            cursor: not-allowed;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 30%, transparent);
+        }
+        .form-group.checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .form-group.checkbox-group input[type="checkbox"] {
+            width: 18px; height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        .form-group.checkbox-group label { margin-bottom: 0; font-weight: normal; font-size: 0.85rem; }
+        .modal-submit-btn {
+            display: block; width: 100%; margin-top: 20px;
+            /* Re-using .btn styles */
+        }
+        .modal-error-message {
+            color: var(--primary-light);
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 10px;
+            display: none; /* Hidden by default */
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="books.html" class="logo"><i class="fas fa-book-reader"></i> EduSparK</a>
+        <a href="advertisement.html" class="nav-back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Advertising Plans</h1>
+        <p class="page-subtitle">
+            Reach a dedicated audience of learners and educators. Choose a plan that suits your campaign goals and budget.
+        </p>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="plan-name">Spark Plan</h3>
+                <div class="plan-price">₹499 <span class="duration">/ 12 hours</span></div>
+                <p class="plan-description">Get started and make an impact with our entry-level awareness plan.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> Targeted Audience Exposure</li>
+                    <li><i class="fas fa-check-circle"></i> Initial Homepage Banner Ad</li>
+                    <li><i class="fas fa-check-circle"></i> Visible to All New Visitors</li>
+                    <li><i class="fas fa-times-circle"></i> Multiple Inline Ad Placements</li>
+                    <li><i class="fas fa-times-circle"></i> Basic Click Tracking</li>
+                </ul>
+                <button class="btn-choose-plan" data-plan-name="Spark Plan" data-plan-price="₹499">Choose Spark Plan</button>
+            </div>
+
+            <div class="pricing-card popular">
+                <h3 class="plan-name">Blaze Plan</h3>
+                <div class="plan-price">₹999 <span class="duration">/ 24 hours</span></div>
+                <p class="plan-description">Maximize your reach and engagement with extended visibility.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> All Spark Plan Features</li>
+                    <li><i class="fas fa-check-circle"></i> Initial Homepage Banner Ad</li>
+                    <li><i class="fas fa-check-circle"></i> +2 Inline Ad Placements</li>
+                    <li><i class="fas fa-check-circle"></i> Extended Campaign Duration</li>
+                    <li><i class="fas fa-check-circle"></i> Basic Click Tracking</li>
+                    <li><i class="fas fa-times-circle"></i> Priority Support</li>
+                </ul>
+                <button class="btn-choose-plan" data-plan-name="Blaze Plan" data-plan-price="₹999">Choose Blaze Plan</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="plan-name">Blaze Pro Plan</h3>
+                <div class="plan-price">₹1599 <span class="duration">/ 48 hours</span></div>
+                <p class="plan-description">Ultimate exposure for major campaigns and product launches.</p>
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> All Blaze Plan Features</li>
+                    <li><i class="fas fa-check-circle"></i> Initial Homepage Banner Ad</li>
+                    <li><i class="fas fa-check-circle"></i> +3 Inline Ad Placements (Total)</li>
+                    <li><i class="fas fa-check-circle"></i> Exclusive Top Banner (Duration)</li>
+                    <li><i class="fas fa-check-circle"></i> Priority Support</li>
+                    <li><i class="fas fa-check-circle"></i> Detailed Performance Report (Conceptual)</li>
+                </ul>
+                <button class="btn-choose-plan" data-plan-name="Blaze Pro Plan" data-plan-price="₹1599">Choose Blaze Pro Plan</button>
+            </div>
+        </div>
+
+        <div class="why-advertise-section">
+            <h2>Why Advertise with EduSparK?</h2>
+            <p> EduSparK connects with a vibrant community of students, educators, and lifelong learners. Advertising on our platform allows you to: <br> - Reach a highly engaged and targeted demographic. <br> - Increase brand visibility within the educational sector. <br> - Drive traffic to your products, services, or educational content. <br> - Support a platform dedicated to knowledge sharing. </p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        © <span id="currentYearPricing"></span> EduSparK. Grow Your Reach.
+    </footer>
+
+    <!-- Plan Application Modal -->
+    <div class="modal-overlay" id="planApplicationModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closePlanModalBtn" aria-label="Close">×</button>
+            <h2 class="modal-title">Apply for Advertising Plan</h2>
+            <form id="planApplicationForm">
+                <div class="form-group">
+                    <label for="applicantName">Your Name:</label>
+                    <input type="text" id="applicantName" name="applicantName" required>
+                </div>
+                <div class="form-group">
+                    <label for="companyName">Company/Business Name:</label>
+                    <input type="text" id="companyName" name="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="selectedPlan">Selected Plan:</label>
+                    <input type="text" id="selectedPlan" name="selectedPlan" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="totalPrice">Total Price:</label>
+                    <input type="text" id="totalPrice" name="totalPrice" readonly>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="termsAndConditions" name="termsAndConditions" required>
+                    <label for="termsAndConditions">I agree to the <a href="#placeholder-terms" target="_blank" style="color: var(--primary-light); text-decoration: underline;">Terms and Conditions</a> of advertising.</label>
+                </div>
+                <button type="submit" class="btn modal-submit-btn" id="applyPlanBtn">Apply Plan & Send Inquiry</button>
+                <p class="modal-error-message" id="modalErrorMessage"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('currentYearPricing').textContent = new Date().getFullYear();
+
+        const planApplicationModal = document.getElementById('planApplicationModal');
+        const closePlanModalBtn = document.getElementById('closePlanModalBtn');
+        const planApplicationForm = document.getElementById('planApplicationForm');
+        const choosePlanButtons = document.querySelectorAll('.btn-choose-plan');
+        const modalErrorMessage = document.getElementById('modalErrorMessage');
+
+        const applicantNameInput = document.getElementById('applicantName');
+        const companyNameInput = document.getElementById('companyName');
+        const selectedPlanInput = document.getElementById('selectedPlan');
+        const totalPriceInput = document.getElementById('totalPrice');
+        const termsCheckbox = document.getElementById('termsAndConditions');
+
+        function openModal() {
+            planApplicationModal.classList.add('visible');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
+
+        function closeModal() {
+            planApplicationModal.classList.remove('visible');
+            document.body.style.overflow = 'auto';
+            modalErrorMessage.style.display = 'none';
+            planApplicationForm.reset(); // Clear form on close
+        }
+
+        choosePlanButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const planName = button.dataset.planName;
+                const planPrice = button.dataset.planPrice;
+                selectedPlanInput.value = planName;
+                totalPriceInput.value = planPrice;
+                openModal();
+            });
+        });
+
+        if (closePlanModalBtn) {
+            closePlanModalBtn.addEventListener('click', closeModal);
+        }
+        
+        // Close modal if overlay is clicked
+        if(planApplicationModal) {
+            planApplicationModal.addEventListener('click', (event) => {
+                if (event.target === planApplicationModal) {
+                    closeModal();
+                }
+            });
+        }
+
+
+        if (planApplicationForm) {
+            planApplicationForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                modalErrorMessage.style.display = 'none';
+
+                if (!termsCheckbox.checked) {
+                    modalErrorMessage.textContent = 'Please accept the Terms and Conditions.';
+                    modalErrorMessage.style.display = 'block';
+                    return;
+                }
+
+                const name = applicantNameInput.value.trim();
+                const company = companyNameInput.value.trim();
+                const plan = selectedPlanInput.value;
+                const price = totalPriceInput.value;
+                const currentDate = new Date().toLocaleDateString('en-GB', { // dd/mm/yyyy format
+                    day: '2-digit', month: '2-digit', year: 'numeric'
+                });
+
+                const emailRecipient = 'edusparkkofficial@gmail.com';
+                const subject = `New Advertising Plan Application: ${plan} - ${company}`;
+                const body = `
+A new application has been submitted for an advertising plan:
+
+Name: ${name}
+Company Name: ${company}
+Plan Selected: ${plan}
+Date of Plan Selection: ${currentDate}
+Total Price: ${price}
+
+User has agreed to the Terms and Conditions.
+
+Please follow up with this applicant.
+                `;
+
+                const mailtoLink = `mailto:${emailRecipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                
+                // Attempt to open mail client
+                window.location.href = mailtoLink;
+
+                // Inform user (since mailto might not always provide feedback if it failed)
+                alert("Your application inquiry has been prepared for sending via your email client. Please review and send the email. We will contact you shortly!");
+                closeModal();
+            });
+        }
+
+    </script>
+</body>
+</html>
