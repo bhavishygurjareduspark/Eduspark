@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
+               script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/api.js https://*.google.com https://www.gstatic.com/recaptcha/;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: blob: https: http://via.placeholder.com https://firebasestorage.googleapis.com;
+               connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://firebaseappcheck.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
+    <title>EduSparK - Page Not Found</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --gradient-light: linear-gradient(135deg, #ff6666, #ff3333);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* This will center content if shorter than viewport */
+            text-align: center;
+            padding: 20px; /* Overall page padding */
+            line-height: 1.6;
+            overflow-y: auto; /* Allow vertical scrolling if content exceeds viewport */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            position: relative; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Subtle Background Particle Animation */
+        body::before {
+            content: '';
+            position: fixed; /* Ensures it stays fixed during scroll */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 51, 51, 0.05) 0px, transparent 2px),
+                radial-gradient(circle at 80% 30%, rgba(255, 102, 102, 0.04) 0px, transparent 1.5px),
+                radial-gradient(circle at 30% 70%, rgba(204, 0, 0, 0.03) 0px, transparent 1px),
+                radial-gradient(circle at 60% 90%, rgba(255, 51, 51, 0.06) 0px, transparent 2.5px),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 0px, transparent 1px);
+            background-size: 50px 50px, 70px 70px, 60px 60px, 80px 80px, 40px 40px;
+            animation: moveParticles 20s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes moveParticles {
+            0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+            100% { background-position: 100px 100px, -140px -140px, 120px -120px, -160px 160px, 80px -80px; }
+        }
+
+        .not-found-header {
+            /* position: absolute; top: 20px; left: 50%; transform: translateX(-50%); */
+            /* Removed absolute positioning to allow it to be part of the scroll flow */
+            /* It will be centered by the body's align-items: center */
+            margin-bottom: 20px; /* Space between header and main content if body is not justify-content: space-between */
+            z-index: 10;
+             width: 100%; /* Ensure it can be centered if needed */
+        }
+
+        .logo-container-404 {
+            display: inline-flex; /* Changed from flex to inline-flex so body's text-align:center works, or keep flex and use margin auto */
+            align-items: center;
+            animation: fadeInDown 1s ease-out 0.2s forwards;
+            opacity: 0;
+            transform: translateY(-20px); /* Initial state for animation */
+        }
+         @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .logo-404 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-404 i {
+            margin-right: 10px;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+        }
+        
+        .not-found-container {
+            max-width: 650px;
+            width: 100%;
+            background-color: rgba(33, 33, 33, 0.5); 
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 51, 51, 0.1);
+            position: relative;
+            z-index: 1;
+            /* margin-top: auto; /* If using justify-content: flex-start on body */
+            /* margin-bottom: auto; /* If using justify-content: flex-start on body */
+        }
+
+        .not-found-oops {
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 5px;
+            animation: oops-animation 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.5s forwards;
+            opacity: 0;
+            transform: translateY(-25px) scale(0.7);
+        }
+
+        @keyframes oops-animation {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.7);
+            }
+            70% {
+                opacity: 1;
+                transform: translateY(8px) scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .not-found-graphic {
+            font-size: clamp(3.5rem, 12vw, 7rem);
+            color: var(--primary-color);
+            margin: 15px 0;
+            animation: ghost-float-enhanced 3.5s ease-in-out infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 10px rgba(255, 51, 51, 0.3));
+        }
+
+        @keyframes ghost-float-enhanced {
+            0%, 100% {
+                transform: translateY(0) rotate(-3deg) scale(1);
+            }
+            25% {
+                transform: translateY(-10px) rotate(0deg) scale(1.03);
+            }
+            50% {
+                transform: translateY(-18px) rotate(3deg) scale(1.06);
+            }
+            75% {
+                 transform: translateY(-10px) rotate(0deg) scale(1.03);
+            }
+        }
+        
+        .not-found-title {
+            font-size: clamp(4rem, 20vw, 10rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 0px;
+            color: var(--text-light);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: title-animation 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s forwards;
+            opacity: 0;
+            transform: scale(0.3) rotate(-5deg);
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.25);
+        }
+
+        @keyframes title-animation {
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .not-found-subtitle {
+            font-size: clamp(1.3rem, 4.5vw, 2.2rem);
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            animation: subtitle-fade-in 1.2s ease-out 1.5s forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        @keyframes subtitle-fade-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .not-found-message {
+            font-size: clamp(0.85rem, 2.3vw, 1.05rem);
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            animation: message-fade-in 1.2s ease-out 1.8s forwards;
+            opacity: 0;
+            transform: translateY(15px);
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        @keyframes message-fade-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .helpful-links-container {
+            margin: 25px 0;
+            animation: links-fade-in 1.2s ease-out 2.1s forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .helpful-links-container p {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .helpful-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px 15px;
+            flex-wrap: wrap;
+        }
+
+        .helpful-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: var(--border-radius-sm);
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        .helpful-link:hover {
+            background-color: rgba(255, 51, 51, 0.2);
+            color: var(--text-light);
+            transform: translateY(-2px);
+        }
+
+        @keyframes links-fade-in {
+             to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .not-found-button {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            animation: button-fade-in 1.2s ease-out 2.4s forwards;
+            opacity: 0;
+            transform: translateY(15px) scale(0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .not-found-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -75%;
+            width: 50%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.7s ease;
+            pointer-events: none;
+        }
+        
+        .not-found-button:hover::after {
+            left: 125%;
+        }
+
+        .not-found-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(255, 51, 51, 0.45);
+            background: var(--gradient-light);
+        }
+
+        @keyframes button-fade-in {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px; /* Adjust body padding for smaller screens */
+                 justify-content: flex-start; /* Allow content to start from top on small screens if it overflows */
+            }
+            .not-found-container {
+                padding: 20px 15px;
+            }
+            .not-found-header {
+                /* top: 15px; */ /* No longer absolute */
+                margin-bottom: 15px;
+            }
+             .logo-404 {
+                font-size: 1.6rem;
+            }
+            .logo-404 i {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .not-found-graphic {
+                margin: 10px 0;
+            }
+            .not-found-subtitle {
+                margin-bottom: 10px;
+            }
+            .not-found-message {
+                margin-bottom: 20px;
+            }
+            .not-found-button {
+                padding: 12px 28px;
+            }
+            .helpful-links-container {
+                margin: 20px 0;
+            }
+             .helpful-links {
+                gap: 8px 10px;
+            }
+            .helpful-link {
+                padding: 5px 10px;
+            }
+            * {
+          -webkit-user-select: none; /* Safari and Chrome */
+          user-select: none;         /* Standard */
+          -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+        }
+        }
+    </style>
+</head>
+<body>
+    <header class="not-found-header">
+        <div class="logo-container-404">
+            <a href="books.html" class="logo-404">
+                <i class="fas fa-book-reader"></i>
+                <span>EduSparK</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="not-found-container" data-aos="zoom-in-up" data-aos-duration="900" data-aos-delay="300">
+        <div class="not-found-oops">Oops! Looks like you're lost.</div>
+        <div class="not-found-graphic">
+            <i class="fas fa-ghost"></i>
+        </div>
+        <h1 class="not-found-title">404</h1>
+        <p class="not-found-subtitle">This Page is Not on Our Map</p>
+        <p class="not-found-message">
+            The page you were trying to reach seems to have taken a detour into the digital unknown.
+            Perhaps a typo in the URL, or maybe it's just exploring new dimensions.
+            Don't worry, even the best explorers get lost sometimes!
+        </p>
+        
+        <div class="helpful-links-container">
+            <p>Here are some helpful places to navigate:</p>
+            <div class="helpful-links">
+                <a href="books.html#categoryFilterContainer" class="helpful-link"><i class="fas fa-th-large" style="margin-right: 5px;"></i>Browse Categories</a>
+                <a href="books.html#popularBooksCarousel" class="helpful-link"><i class="fas fa-fire" style="margin-right: 5px;"></i>Popular Books</a>
+            </div>
+        </div>
+
+        <a href="books.html" class="not-found-button">
+            <i class="fas fa-compass" style="margin-right: 8px;"></i>Back to Safe Territory
+        </a>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 700,
+            easing: 'ease-out-quad',
+            once: true,
+            offset: 20,
+        });
+    </script>
+</body>
+</html>
