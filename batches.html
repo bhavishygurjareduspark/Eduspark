@@ -24,7 +24,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script>
+    
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lf781IrAAAAAKUivV71zU3gRGRX2pSwvJbsR4zx"></script>
+  <!-- Your code -->
 
     <style>
         :root {
@@ -372,7 +374,7 @@
     </div>
 
     <header class="header">
-        <div class="logo-container"> <a href="#" class="logo" id="logoLink"> <i class="fas fa-chalkboard-teacher"></i> <span class="logo-text">EduSagaR</span> </a> </div>
+        <div class="logo-container"> <a href="#" class="logo" id="logoLink"> <i class="fas fa-chalkboard-teacher"></i> <span class="logo-text">EduSparK</span> </a> </div>
         <div class="search-container" id="searchContainer"> <i class="fas fa-search search-icon"></i> <input type="text" class="search-input" id="searchInput" placeholder="Search batches..."> <div class="search-results" id="searchResults"></div> </div>
         <div class="header-actions"> <button class="search-toggle-btn" id="searchToggleBtn" aria-label="Toggle Search"> <i class="fas fa-search"></i> </button> <div class="user-avatar" id="userAvatar"> <span id="avatarInitials">E✨</span> </div> </div>
     </header>
@@ -519,7 +521,7 @@
 
         const firebaseConfig = { // IMPORTANT: REPLACE WITH YOUR ACTUAL FIREBASE CONFIG
             apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // Replace with your actual API key
-            authDomain: "edusparkk.xyz",
+            authDomain: "eduspark-new.firebaseapp.com",
             projectId: "eduspark-new",
             storageBucket: "eduspark-new.appspot.com",
             messagingSenderId: "564501033350",
@@ -530,14 +532,14 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
-        const appCheck = firebase.appCheck();
-
-        try {
-            // self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; 
-            // appCheck.activate(self.FIREBASE_APPCHECK_DEBUG_TOKEN, true);
-             appCheck.activate('6LdDiuMpAAAAAGoO-_P1cO55PpTRwxQw5QRI90e1', true); // REPLACE with your actual reCAPTCHA v3 site key for production
-            console.log("Firebase App Check activated.");
-        } catch (error) { console.error("Error initializing Firebase App Check:", error); }
+        
+       
+  function onClick(e) {
+    e.preventDefault();
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6Lf781IrAAAAAKUivV71zU3gRGRX2pSwvJbsR4zx', {action: 'LOGIN'});
+    });
+  }
 
         const $ = (s) => document.querySelector(s);
         const $$ = (s) => document.querySelectorAll(s);
