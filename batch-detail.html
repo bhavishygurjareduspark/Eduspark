@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Copy ALL meta tags, CSP, title, links from batches.html -->
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
+               script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/api.js https://*.google.com https://www.gstatic.com/recaptcha/;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: blob: https: http://via.placeholder.com https://firebasestorage.googleapis.com;
+               connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://firebaseappcheck.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
+    <title>EduSparK - Batch Details</title> <!-- Dynamic Title -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- NO Firebase Storage needed here unless uploading from frontend detail pages -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script>
+
+    <!-- Copy ALL styles from batches.html -->
+    <style>
+        :root {
+            --primary-color: #ff3333; /* EduSparK Red */
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000; /* Dark Theme Secondary */
+            --secondary-light: #2a2a2a;
+            --secondary-dark: #000000;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --card-bg-dark: #1a1a1a;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --gradient-light: linear-gradient(135deg, #ff6666, #ff3333);
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.35);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 70px;
+            --nav-height: 70px;
+            --max-width: 1200px;
+            --skeleton-bg: #303030;
+            --skeleton-highlight: #404040;
+            --profile-header-bg: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(18, 18, 18, 0.98));
+            --notification-unread-dot: #3498db;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: var(--text-dark);
+            min-height: 100vh; padding-top: var(--header-height); padding-bottom: var(--nav-height);
+            line-height: 1.6; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Header, Nav, Loader, Modals, Toast --- (Copied from batches.html) --- */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.7s ease, visibility 0.7s ease; opacity: 1; visibility: visible; }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-logo-container { display: flex; align-items: center; margin-bottom: 25px; animation: logoPulse 2s infinite ease-in-out; }
+        .loading-logo-icon { font-size: 3.5rem; color: var(--primary-color); margin-right: 15px; }
+        .loading-logo-text { font-size: 2.2rem; font-weight: 700; color: var(--primary-light); letter-spacing: 1px; }
+        .loading-dots { display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
+        .loading-dots span { width: 12px; height: 12px; margin: 0 6px; background-color: var(--primary-color); border-radius: 50%; animation: loadingBounce 1.4s infinite ease-in-out both; }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; } .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loading-message { color: var(--text-muted); font-size: 1rem; min-height:1.2em; text-align:center; width:80%;}
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes loadingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+
+        .header { background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px) saturate(180%); color: var(--text-light); height: var(--header-height); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-md); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 20px; transition: height 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; border-bottom: 1px solid rgba(255, 51, 51, 0.1); }
+        .header.scrolled { height: 65px; background-color: rgba(18, 18, 18, 0.95); box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25); }
+        .logo-container { display: flex; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; text-decoration: none; transition: transform 0.3s ease; }
+        .logo:hover { transform: scale(1.05); }
+        .logo i { margin-right: 10px; font-size: 1.6rem; }
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; font-size: 1rem; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%;}
+        .user-avatar:hover { transform: scale(1.1); box-shadow: 0 0 15px rgba(255, 51, 51, 0.5); }
+        
+        .search-container { position: relative; width: 250px; transition: all 0.3s ease; margin-left: auto; margin-right: 10px; }
+        .search-input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; background-color: rgba(255, 255, 255, 0.05); color: var(--text-light); font-family: 'Poppins', sans-serif; transition: all 0.3s ease; font-size: 0.9rem; }
+        .search-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .search-input:focus { outline: none; background-color: rgba(255, 255, 255, 0.1); box-shadow: 0 0 0 2px var(--primary-light); border-color: var(--primary-light); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); opacity: 0.6; font-size: 1rem; }
+        .search-results { /* Not strictly needed for detail page but part of template */ display: none; }
+        .search-toggle-btn { display:none; } /* Not needed in detail page as search bar always visible */
+
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: rgba(26, 26, 26, 0.9); backdrop-filter: blur(12px) saturate(180%); display: flex; justify-content: space-around; align-items: center; height: var(--nav-height); z-index: 1000; box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.2); border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .nav-item { color: var(--text-muted); font-size: 1.3rem; padding: 10px; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s ease, color 0.3s ease; position: relative; }
+        .nav-item:hover { color: var(--primary-light); transform: translateY(-4px); }
+        .nav-item.active { color: var(--primary-color); transform: translateY(-4px); }
+        .nav-item.active::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background-color: var(--primary-color); border-radius: 50%; box-shadow: 0 0 10px var(--primary-color); }
+        .action-nav-btn { background: var(--gradient); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; transform: translateY(-20px); box-shadow: 0 8px 25px rgba(255, 51, 51, 0.45); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; border: none; outline: none; z-index: 1001; }
+        .action-nav-btn:hover { transform: translateY(-25px) scale(1.1); box-shadow: 0 12px 30px rgba(255, 51, 51, 0.6); background: var(--gradient-light); }
+        
+        #toastContainer { position: fixed; top: 25px; right: 25px; z-index: 3000; display:flex; flex-direction:column; gap:10px; }
+        .toast { padding: 15px 25px; border-radius: var(--border-radius-sm); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-md); transform: translateX(calc(100% + 30px)); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; max-width:380px; border-left:5px solid var(--primary-color); pointer-events:all; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
+        .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
+        .toast i { margin-right: 12px; font-size:1.3rem; }
+        .toast span { flex-grow:1;}
+        .toast-close { margin-left:15px; cursor:pointer; opacity:0.7; font-size:1.2rem; background:none; border:none; color:white; padding:0;}
+        .toast-close:hover { opacity:1; }
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); width:100%; display:none; flex-direction:column; align-items:center; justify-content:center; min-height:200px;}
+        .empty-state i { font-size: 3.5rem; margin-bottom: 20px; color: var(--primary-color); opacity:0.5;}
+        .empty-state h3 { margin-bottom: 12px; color:var(--text-light); font-size:1.3rem; }
+        .empty-state p { font-size:0.95rem; }
+
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right:5px; }
+        .submit-btn .spinner, .batch-action-btn .spinner, .mark-all-read-btn .spinner { display:none; }
+        .submit-btn.loading .spinner, .batch-action-btn.loading .spinner, .mark-all-read-btn.loading .spinner { display:inline-block; }
+        .submit-btn.loading span:not(.spinner), .batch-action-btn.loading span:not(.spinner), .mark-all-read-btn.loading span:not(.icon-text) { opacity:0.5; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Batch Detail Page Specific Styles */
+        .container { padding: 20px; max-width: var(--max-width); margin: 0 auto; }
+        .batch-detail-header {
+            background: var(--profile-header-bg); /* Reuse profile header style for consistency */
+            padding: 40px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative; /* For back button alignment if needed */
+        }
+        .batch-detail-image {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+        .batch-detail-name { font-size: 2.2rem; font-weight: 700; color: var(--primary-light); margin-bottom: 10px; }
+        .batch-detail-instructor { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 15px; }
+        .batch-detail-instructor i { margin-right: 8px; color: var(--primary-color); }
+        .batch-detail-meta { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; margin-bottom: 20px; color: var(--text-dark); }
+        .batch-detail-meta span { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        .batch-detail-meta span i { color: var(--primary-light); opacity: 0.8; }
+        .batch-detail-description { color: var(--text-dark); line-height: 1.8; margin-bottom: 25px; text-align: left; background: var(--card-bg-dark); padding:20px; border-radius:var(--border-radius-sm); font-size: 0.95rem;}
+        .batch-enroll-button {
+            background: var(--gradient); color: white; border: none; padding: 15px 30px;
+            border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition);
+            font-weight: 600; font-size: 1.1rem; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .batch-enroll-button:hover { background: var(--gradient-light); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(255,51,51,0.4); }
+        .batch-enroll-button.enrolled { background: var(--secondary-light); cursor: default; }
+        .batch-enroll-button.enrolled:hover { transform: none; box-shadow: none; }
+         .page-back-button-header {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: var(--primary-light);
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            z-index: 5; /* Ensure above image */
+        }
+        .page-back-button-header:hover { background: rgba(0,0,0,0.5); transform: scale(1.1); }
+
+
+        .section-title { font-size: 1.8rem; margin-bottom: 20px; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-dark); padding-bottom:10px; }
+        
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .subject-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .subject-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-md), 0 0 15px rgba(255,51,51,0.2); }
+        .subject-card-icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 15px; text-align: center; }
+        .subject-card-image { width: 100%; height: 120px; object-fit: cover; border-radius: var(--border-radius-sm); margin-bottom: 15px; background-color: var(--skeleton-bg); }
+        .subject-card-name { font-size: 1.25rem; font-weight: 600; color: var(--primary-light); margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 2.5em; line-height:1.25;}
+        .subject-card-description { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; flex-grow: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;}
+        .subject-card-cta {
+            background: transparent; color: var(--primary-light); border: 2px solid var(--primary-light); padding: 10px 15px;
+            border-radius: var(--border-radius-sm); cursor: pointer; transition: var(--transition);
+            font-weight: 500; font-size: 0.9rem; text-align: center;
+            margin-top: auto; align-self:stretch; /* Ensures button is at bottom */
+        }
+        .subject-card-cta:hover { background: var(--primary-light); color: white; }
+
+        .skeleton-batch-detail-header .batch-detail-image { background-color: var(--skeleton-bg); height: 350px; animation: pulse-bg 1.5s infinite; }
+        .skeleton-batch-detail-header .batch-detail-name { width: 60%; height: 2.2rem; background-color: var(--skeleton-bg); margin:0 auto 10px auto; animation: pulse-bg 1.5s infinite; border-radius: 6px; }
+        .skeleton-batch-detail-header .batch-detail-instructor { width: 40%; height: 1.1rem; background-color: var(--skeleton-bg); margin:0 auto 15px auto; animation: pulse-bg 1.5s infinite; border-radius: 4px; }
+        .skeleton-batch-detail-header .batch-detail-meta span { background-color: var(--skeleton-bg); width: 100px; height: 1rem; animation: pulse-bg 1.5s infinite; border-radius: 4px; }
+        .skeleton-batch-detail-header .batch-detail-description { background-color: var(--skeleton-bg); min-height:80px; animation: pulse-bg 1.5s infinite;}
+        .skeleton-batch-detail-header .batch-enroll-button { background-color: var(--skeleton-bg); width: 150px; height: 50px; animation: pulse-bg 1.5s infinite; color:transparent; }
+
+        .skeleton-subject-card .subject-card-image { background-color: var(--skeleton-bg); animation: pulse-bg 1.5s infinite; }
+        .skeleton-subject-card .subject-card-name { background-color: var(--skeleton-bg); width: 80%; height: 1.5em; margin-bottom: 10px; border-radius:4px; animation: pulse-bg 1.5s infinite; }
+        .skeleton-subject-card .subject-card-description { background-color: var(--skeleton-bg); height: 3em; border-radius:4px; animation: pulse-bg 1.5s infinite;}
+        .skeleton-subject-card .subject-card-cta { background-color: var(--skeleton-bg); height: 40px; border-radius: var(--border-radius-sm); animation: pulse-bg 1.5s infinite; border-color:transparent; color:transparent; }
+
+        @media (max-width: 768px) {
+             .batch-detail-name { font-size: 1.8rem;}
+             .batch-detail-meta {gap: 15px;}
+             .batch-detail-header { padding: 30px 15px;}
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-logo-container"> <i class="fas fa-chalkboard-teacher loading-logo-icon"></i> <span class="loading-logo-text">EduSparK</span> </div>
+        <div class="loading-dots"> <span></span><span></span><span></span> </div>
+        <p class="loading-message" id="loadingMessage">Loading Batch Details...</p>
+    </div>
+
+    <header class="header">
+        <div class="logo-container"> <a href="batches.html" class="logo"> <i class="fas fa-chalkboard-teacher"></i> <span class="logo-text">EduSparK</span> </a> </div>
+        <!-- Search bar might not be primary on detail page, or make it global search -->
+        <div class="header-actions">
+            <!-- User Avatar -->
+            <div class="user-avatar" id="userAvatar"> <span id="avatarInitials">U</span> </div>
+        </div>
+    </header>
+    
+    <div id="batchDetailPageContent" class="page-content active"> <!-- Add page-content class for consistency if using profile.js modals -->
+        <div class="container">
+            <div id="batchDetailHeader" class="batch-detail-header skeleton-batch-detail-header">
+                <a href="batches.html" class="page-back-button-header" aria-label="Back to Batches"><i class="fas fa-arrow-left"></i></a>
+                <img src="" alt="Batch Image" class="batch-detail-image" id="batchDetailImage" style="display:none;">
+                <h1 class="batch-detail-name" id="batchDetailName"></h1>
+                <p class="batch-detail-instructor" id="batchDetailInstructor"></p>
+                <div class="batch-detail-meta" id="batchDetailMeta">
+                    <!-- Populated by JS, e.g., duration, lessons -->
+                </div>
+                <p class="batch-detail-description" id="batchDetailDescription"></p>
+                <a href="#" class="batch-enroll-button" id="batchEnrollButton" target="_blank">
+                    <span class="spinner" style="display:none;"></span>
+                    <span>Explore & Enroll</span>
+                </a>
+            </div>
+            
+            <h2 class="section-title" id="subjectsSectionTitle" style="display:none;">Subjects Offered</h2>
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- Subject cards loaded here -->
+            </div>
+            <div class="empty-state" id="emptyStateSubjects" style="display:none;"> <i class="fas fa-book-open"></i> <h3>No Subjects Found</h3> <p>Subjects for this batch will appear here soon.</p> </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <!-- Re-use bottom nav from batches.html for consistent navigation -->
+        <a href="notifications.html" class="nav-item" id="notificationsNavBtn" data-tooltip="Notifications"><i class="fas fa-bell"></i> <span class="unread-badge" id="unreadNotificationsBadge" style="display: none;">0</span></a>
+        <a href="batches.html" class="nav-item active" id="allBatchesNavBtn" data-tooltip="All Batches"><i class="fas fa-th-large"></i></a>
+        <a href="support.html" class="action-nav-btn" id="supportNavBtn" data-tooltip="Support Chat"><i class="fas fa-headset"></i></a>
+        <a href="my-batches.html" class="nav-item" id="myBatchesNavBtn" data-tooltip="My Batches"><i class="fas fa-bookmark"></i></a>
+        <a href="profile.html" class="nav-item" id="profileNavBtn" data-tooltip="Profile"><i class="fas fa-user"></i></a>
+    </nav>
+    
+    <div id="toastContainer"></div>
+    <!-- Add Modals (Login, Signup, etc.) if they can be triggered from this page, copy from batches.html -->
+
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 50 });
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+            authDomain: "eduspark-new.firebaseapp.com",
+            projectId: "eduspark-new",
+            storageBucket: "eduspark-new.appspot.com",
+            messagingSenderId: "564501033350",
+            appId: "1:564501033350:web:70c0f96e9bd74fc07", // Corrected last part
+            measurementId: "G-NM2SE3DE7J"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        // const storage = firebase.storage(); No direct use on this page
+        const appCheck = firebase.appCheck();
+        try { appCheck.activate('6LdDiuMpAAAAAGoO-_P1cO55PpTRwxQw5QRI90e1', true); } 
+        catch (error) { console.error("Error initializing Firebase App Check:", error); }
+
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => document.querySelectorAll(s);
+
+        // Re-use helper functions from batches.html (showToast, escapeHTML, etc.)
+        function escapeHTML(str) { if (str === null || str === undefined) return ''; return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+        function showToast(message, type = "info", duration = 3500) { const toastId='toast-'+Date.now();const t=document.createElement('div');t.className=`toast ${type}`;t.id=toastId;let i='fas fa-info-circle';type==='success'&&(i='fas fa-check-circle');type==='error'&&(i='fas fa-times-circle');t.innerHTML=`<i class="${i}"></i><span>${escapeHTML(message)}</span><button class="toast-close" aria-label="Close toast">&times;</button>`;$('#toastContainer').appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));t.querySelector('.toast-close').onclick=()=>{t.classList.remove('show');setTimeout(()=>{t.parentElement&&t.remove()},500)};setTimeout(()=>{const ct=document.getElementById(toastId);if(ct){ct.classList.remove('show');setTimeout(()=>{ct.parentElement&&ct.remove()},500)}},duration);}
+        function getInitials(name) { if(!name || typeof name !=='string')return 'U';const p=name.trim().split(' ').filter(s=>s.length>0);if(p.length===0)return 'U';if(p.length===1)return p[0].charAt(0).toUpperCase();return(p[0].charAt(0)+p[p.length-1].charAt(0)).toUpperCase(); }
+
+
+        const elements = {
+            loadingOverlay: $('#loadingOverlay'), loadingMessage: $('#loadingMessage'),
+            userAvatar: $('#userAvatar'), avatarInitials: $('#avatarInitials'),
+            batchDetailName: $('#batchDetailName'),
+            batchDetailImage: $('#batchDetailImage'),
+            batchDetailInstructor: $('#batchDetailInstructor'),
+            batchDetailMeta: $('#batchDetailMeta'),
+            batchDetailDescription: $('#batchDetailDescription'),
+            batchEnrollButton: $('#batchEnrollButton'),
+            subjectsGrid: $('#subjectsGrid'),
+            emptyStateSubjects: $('#emptyStateSubjects'),
+            subjectsSectionTitle: $('#subjectsSectionTitle'),
+            batchDetailHeaderDiv: $('#batchDetailHeader')
+        };
+        
+        let currentUser = null;
+        let userData = null;
+        let userEnrolledBatchesIds = [];
+
+        function renderSkeletonBatchHeader() {
+            elements.batchDetailHeaderDiv.classList.add('skeleton-batch-detail-header');
+            elements.batchDetailImage.style.display = 'none'; // Hide real image during skeleton
+        }
+        function removeSkeletonBatchHeader() {
+            elements.batchDetailHeaderDiv.classList.remove('skeleton-batch-detail-header');
+            elements.batchDetailImage.style.display = 'block';
+        }
+        function renderSkeletonSubjects(count = 3) {
+            let skeletons = '';
+            for (let i = 0; i < count; i++) {
+                skeletons += `
+                    <div class="subject-card skeleton-subject-card" data-aos="fade-up">
+                        <div class="subject-card-image"></div>
+                        <div class="subject-card-name"></div>
+                        <div class="subject-card-description"></div>
+                        <div class="subject-card-cta"></div>
+                    </div>`;
+            }
+            elements.subjectsGrid.innerHTML = skeletons;
+            AOS.refresh();
+        }
+
+        async function loadBatchDetails(batchId) {
+            renderSkeletonBatchHeader();
+            renderSkeletonSubjects();
+            elements.subjectsSectionTitle.style.display = 'none';
+
+            try {
+                const batchDoc = await db.collection('batches').doc(batchId).get();
+                if (!batchDoc.exists) {
+                    showToast("Batch not found.", "error");
+                    elements.loadingMessage.textContent = "Batch not found or has been removed.";
+                    $('#batchDetailPageContent').innerHTML = '<div class="empty-state" style="display:flex;"><i class="fas fa-search-minus"></i><h3>Batch Not Found</h3><p>The batch you are looking for does not exist or may have been removed.</p><a href="batches.html" class="batch-enroll-button" style="margin-top:20px;">Go to All Batches</a></div>';
+                    elements.loadingOverlay.classList.remove('hidden'); // keep overlay if batch is gone entirely
+                    setTimeout(()=> elements.loadingOverlay.classList.add('hidden'), 500); // allow slight pause before hiding if it shows error quickly
+                    return;
+                }
+                const batchData = { id: batchDoc.id, ...batchDoc.data() };
+                
+                document.title = `EduSparK - ${escapeHTML(batchData.name)}`;
+                elements.batchDetailName.textContent = batchData.name;
+                elements.batchDetailImage.src = batchData.imageUrl || 'https://via.placeholder.com/800x350/333/888?text=EduSpark+Batch';
+                elements.batchDetailImage.alt = batchData.name;
+                elements.batchDetailInstructor.innerHTML = batchData.instructorName ? `<i class="fas fa-chalkboard-teacher"></i> By ${escapeHTML(batchData.instructorName)}` : '';
+                
+                let metaHTML = '';
+                if (batchData.durationText) metaHTML += `<span><i class="far fa-clock"></i> ${escapeHTML(batchData.durationText)}</span>`;
+                // If lessonsCount is stored directly, use it. Otherwise, you might fetch lectures count.
+                // For now, let's assume it might come from the batch document.
+                if (batchData.lessonsCount) metaHTML += `<span><i class="fas fa-book-open"></i> ${escapeHTML(batchData.lessonsCount)} Lessons</span>`;
+                if (batchData.difficulty) metaHTML += `<span><i class="fas fa-signal"></i> ${escapeHTML(batchData.difficulty)}</span>`;
+                if (batchData.priceDisplay) metaHTML += `<span><i class="fas fa-tag"></i> ${escapeHTML(batchData.priceDisplay)}</span>`;
+                elements.batchDetailMeta.innerHTML = metaHTML;
+
+                elements.batchDetailDescription.innerHTML = batchData.description ? escapeHTML(batchData.description).replace(/\n/g, '<br>') : 'No description available for this batch.';
+                
+                const isEnrolled = userEnrolledBatchesIds.includes(batchId);
+                if (isEnrolled) {
+                    elements.batchEnrollButton.textContent = 'Go to Course (Enrolled)';
+                    elements.batchEnrollButton.classList.add('enrolled');
+                    // Maybe update link to specific course content if available or keep batchLink
+                    elements.batchEnrollButton.href = batchData.batchLink || '#';
+                } else {
+                    elements.batchEnrollButton.textContent = 'Explore & Enroll';
+                    elements.batchEnrollButton.classList.remove('enrolled');
+                    elements.batchEnrollButton.href = batchData.batchLink || '#'; 
+                    // Add enrollment logic here or let it be an external link
+                     elements.batchEnrollButton.onclick = async (e) => {
+                         if (!currentUser) { e.preventDefault(); /* showLoginModal(); */ showToast("Please login to enroll.", "info"); return; }
+                         if (batchData.batchLink && batchData.batchLink !== '#') return; // Let it navigate if it's an external link for enrollment
+                         e.preventDefault(); // Prevent navigation if we handle enrollment here
+                         
+                         const enrollBtn = e.currentTarget;
+                         const spinner = enrollBtn.querySelector('.spinner') || document.createElement('span'); // Create if not exists
+                         if (!enrollBtn.querySelector('.spinner')) { spinner.className='spinner'; enrollBtn.prepend(spinner); }
+                         
+                         spinner.style.display = 'inline-block';
+                         enrollBtn.querySelector('span:not(.spinner)').style.opacity = '0.5';
+                         enrollBtn.disabled = true;
+
+                         try {
+                            await db.collection('users').doc(currentUser.uid).update({
+                                enrolledBatches: firebase.firestore.FieldValue.arrayUnion(batchId)
+                            });
+                            // Increment batch enrollment count if you track that
+                            // const batchRef = db.collection('batches').doc(batchId);
+                            // await batchRef.update({ enrollmentCount: firebase.firestore.FieldValue.increment(1) });
+
+                            showToast(`Successfully enrolled in ${batchData.name}!`, "success");
+                            userEnrolledBatchesIds.push(batchId); // Optimistic update
+                            elements.batchEnrollButton.textContent = 'Go to Course (Enrolled)';
+                            elements.batchEnrollButton.classList.add('enrolled');
+                             // If batchLink is not for enrollment but for course access after enrollment
+                            elements.batchEnrollButton.href = batchData.batchLink || '#'; 
+                         } catch (err) {
+                             console.error("Enrollment error:", err);
+                             showToast("Enrollment failed. Please try again.", "error");
+                         } finally {
+                            spinner.style.display = 'none';
+                            enrollBtn.querySelector('span:not(.spinner)').style.opacity = '1';
+                            enrollBtn.disabled = false;
+                         }
+                     };
+                }
+
+                removeSkeletonBatchHeader();
+                await loadSubjectsForBatch(batchId);
+
+            } catch (error) {
+                console.error("Error loading batch details:", error);
+                showToast("Could not load batch details.", "error");
+                elements.loadingMessage.textContent = "Error loading batch.";
+                removeSkeletonBatchHeader(); // Remove skeleton to show any error message
+                elements.subjectsGrid.innerHTML = ''; // Clear subject skeletons too
+            } finally {
+                 // Moved hiding overlay to individual load functions or after all promises
+            }
+        }
+
+        async function loadSubjectsForBatch(batchId) {
+            elements.subjectsGrid.innerHTML = ''; // Clear skeletons
+            try {
+                const subjectsSnapshot = await db.collection('subjects')
+                    .where('batchId', '==', batchId)
+                    .orderBy('order', 'asc')
+                    .get();
+
+                if (subjectsSnapshot.empty) {
+                    elements.emptyStateSubjects.style.display = 'flex';
+                    elements.subjectsSectionTitle.style.display = 'none';
+                    return;
+                }
+                elements.emptyStateSubjects.style.display = 'none';
+                elements.subjectsSectionTitle.style.display = 'block';
+
+                subjectsSnapshot.forEach(doc => {
+                    const subject = { id: doc.id, ...doc.data() };
+                    const subjectCard = document.createElement('a'); // Make it a link
+                    subjectCard.href = `subject-detail.html?batchId=${batchId}&subjectId=${subject.id}`;
+                    subjectCard.className = 'subject-card';
+                    subjectCard.setAttribute('data-aos', 'fade-up');
+                    
+                    let imageOrIconHTML = '';
+                    if (subject.coverImageUrl) {
+                        imageOrIconHTML = `<img src="${escapeHTML(subject.coverImageUrl)}" alt="${escapeHTML(subject.name)}" class="subject-card-image">`;
+                    } else if (subject.iconClass) {
+                        imageOrIconHTML = `<div class="subject-card-icon"><i class="${escapeHTML(subject.iconClass)}"></i></div>`;
+                    } else {
+                        // Placeholder if no image or icon
+                         imageOrIconHTML = `<div class="subject-card-image" style="display:flex; align-items:center; justify-content:center; font-size: 2rem; color: var(--text-muted);">${getInitials(subject.name)}</div>`;
+                    }
+
+                    subjectCard.innerHTML = `
+                        ${imageOrIconHTML}
+                        <h3 class="subject-card-name">${escapeHTML(subject.name)}</h3>
+                        <p class="subject-card-description">${escapeHTML(subject.description || 'No description available.')}</p>
+                        <span class="subject-card-cta">View Content <i class="fas fa-arrow-right"></i></span>
+                    `;
+                    elements.subjectsGrid.appendChild(subjectCard);
+                });
+                AOS.refreshHard(); // For newly added AOS elements
+
+            } catch (error) {
+                console.error("Error loading subjects:", error);
+                showToast("Could not load subjects for this batch.", "error");
+                elements.emptyStateSubjects.style.display = 'flex';
+                 elements.subjectsSectionTitle.style.display = 'none';
+            }
+        }
+        
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user;
+            if (user) {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    userData = { id: userDoc.id, ...userDoc.data() };
+                    userEnrolledBatchesIds = userData.enrolledBatches || [];
+                     if (userData.profilePictureURL) elements.userAvatar.innerHTML = `<img src="${escapeHTML(userData.profilePictureURL)}" alt="User Avatar">`;
+                    else elements.userAvatar.innerHTML = `<span id="avatarInitials">${getInitials(userData.name)}</span>`;
+                } else {
+                    // Handle case where user exists in Auth but not Firestore (shouldn't happen with batches.html setup)
+                    elements.userAvatar.innerHTML = `<span id="avatarInitials">${getInitials(user.displayName)}</span>`;
+                }
+            } else {
+                userData = null;
+                userEnrolledBatchesIds = [];
+                elements.userAvatar.innerHTML = `<span id="avatarInitials">U</span>`;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const batchId = urlParams.get('batchId');
+
+            if (batchId) {
+                await loadBatchDetails(batchId);
+            } else {
+                showToast("No batch specified.", "error");
+                elements.loadingMessage.textContent = "No batch ID provided in URL.";
+                // Optionally redirect or show a prominent error message
+                $('#batchDetailPageContent').innerHTML = '<div class="empty-state" style="display:flex;"><i class="fas fa-exclamation-triangle"></i><h3>No Batch Specified</h3><p>Please select a batch from the main page.</p><a href="batches.html" class="batch-enroll-button" style="margin-top:20px;">Go to All Batches</a></div>';
+            }
+            elements.loadingOverlay.classList.add('hidden');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // Auth listener will handle the main loading logic
+        });
+    </script>
+</body>
+</html>
