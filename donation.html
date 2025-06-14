@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net https://api.qrserver.com;
+               script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: blob: https: https://api.qrserver.com;
+               connect-src 'self' https://*.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self';">
+    <title>Support EduSparK - Donate Securely</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e;
+            --bg-dark: #121212;
+            --card-bg: #212121;
+            --card-bg-dark: #1a1a1a;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --gradient-light: linear-gradient(135deg, #ff6666, #ff3333);
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.35);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 70px;
+            --primary-color-rgb: 255, 51, 51;
+            --google-pay-color: #4285F4;
+            --phonepe-color: #6739B7;
+            --paytm-color: #00B9F1;
+            --fampay-color: #FF8717; /* Approximate */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: var(--text-dark);
+            min-height: 100vh; padding-top: var(--header-height); padding-bottom: 50px; /* Adjusted padding */
+            line-height: 1.6; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        .loading-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1; visibility: visible;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-logo-container { display: flex; align-items: center; margin-bottom: 25px; animation: logoPulse 2s infinite ease-in-out; }
+        .loading-logo-icon { font-size: 3.5rem; color: var(--primary-color); margin-right: 15px; }
+        .loading-logo-text { font-size: 2.2rem; font-weight: 700; color: var(--primary-light); letter-spacing: 1px; }
+        .loading-dots { display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
+        .loading-dots span { width: 12px; height: 12px; margin: 0 6px; background-color: var(--primary-color); border-radius: 50%; animation: loadingBounce 1.4s infinite ease-in-out both; }
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loading-message { color: var(--text-muted); font-size: 1rem; font-style: italic; max-width: 80%; text-align: center; animation: fadeInText 1.5s ease-out forwards; opacity: 0; animation-delay: 0.5s;}
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes loadingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        @keyframes fadeInText { to { opacity: 1; } }
+
+        .header {
+            background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px) saturate(180%); color: var(--text-light); height: var(--header-height); display: flex; justify-content: center; /* Center logo */ align-items: center; box-shadow: var(--shadow-md); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 20px; transition: height 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
+        }
+        .header.scrolled { height: 65px; background-color: rgba(18, 18, 18, 0.95); box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25); }
+        .logo-container { display: flex; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; text-decoration: none; transition: transform 0.3s ease; position: relative; padding: 5px 0; }
+        .logo:hover { transform: scale(1.05); }
+        .logo i { margin-right: 10px; font-size: 1.6rem; color: var(--primary-color); transition: transform 0.3s ease; }
+        .logo:hover i { transform: rotate(-10deg); }
+        .logo-text { display: inline-block; position: relative; transition: opacity 0.3s ease; }
+        
+        .donation-page-wrapper {
+            opacity: 0; transform: translateY(20px);
+            animation: pageEntranceWrapper 0.8s ease-out 0.2s forwards;
+        }
+        @keyframes pageEntranceWrapper {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container { padding: 40px 20px; max-width: 750px; margin: 0 auto; text-align: center; }
+        .page-title {
+            font-size: 2.3rem; margin-bottom: 30px; color: var(--primary-color); position: relative;
+            display: inline-block; font-weight: 700; padding-bottom: 12px; letter-spacing: 0.5px;
+            animation: titleEntrance 0.8s ease-out 0.3s forwards; opacity: 0;
+        }
+        .page-title::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) scaleX(0);
+            width: 90px; height: 4px; background: var(--gradient); border-radius: 4px;
+            animation: scaleInMain 0.6s ease-out 0.8s forwards; /* Delay to start after title entrance */
+        }
+        @keyframes titleEntrance { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleInMain { from { transform: translateX(-50%) scaleX(0); } to { transform: translateX(-50%) scaleX(1); } }
+
+        .donation-intro {
+            background-color: var(--card-bg-dark); padding: 30px 35px; border-radius: var(--border-radius);
+            margin-bottom: 45px; border-left: 6px solid var(--primary-color); box-shadow: var(--shadow-lg);
+            text-align: left; position: relative; overflow: hidden;
+        }
+        .donation-intro::before {
+            content: "\f004"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+            position: absolute; top: 15px; right: 20px; font-size: 3.5rem; color: var(--primary-color);
+            opacity: 0.07; animation: heartBeat 2.8s infinite ease-in-out 0.5s;
+        }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1) rotate(-5deg); opacity: 0.07; }
+            50% { transform: scale(1.15) rotate(5deg); opacity: 0.13; }
+        }
+        .donation-intro h3 { font-size: 1.45rem; color: var(--primary-light); margin-bottom: 18px; font-weight: 600; }
+        .donation-intro p { color: var(--text-dark); font-size: 1.05rem; line-height: 1.85; }
+        .donation-intro p + p { margin-top: 15px; }
+
+        .donation-section {
+            background-color: var(--card-bg); padding: 35px; border-radius: var(--border-radius);
+            box-shadow: var(--shadow-xl); margin-bottom: 40px;
+        }
+        .donation-section-title {
+            font-size: 1.7rem; color: var(--primary-light); margin-bottom: 30px; font-weight: 600;
+            padding-bottom: 10px; border-bottom: 2px solid var(--primary-color); display: inline-block;
+            animation: titleEntrance 0.7s ease-out 0.2s forwards; opacity:0; 
+        }
+
+        .amount-selection-container { margin-bottom: 35px; }
+        .amount-options { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin-bottom: 25px; }
+        .amount-option-btn {
+            background-color: var(--secondary-light); color: var(--text-light); border: 2px solid transparent;
+            padding: 14px 28px; border-radius: var(--border-radius-sm); font-size: 1.05rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); min-width: 130px;
+            box-shadow: var(--shadow-sm); transform: perspective(1px) translateZ(0); /* For smoother transforms */
+        }
+        .amount-option-btn:hover {
+            background-color: #383838; transform: translateY(-5px) scale(1.05); border-color: var(--primary-light);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.35);
+        }
+        .amount-option-btn.active {
+            background: var(--gradient); color: white; font-weight: 600; border-color: var(--primary-dark);
+            box-shadow: 0 7px 20px rgba(var(--primary-color-rgb), 0.55);
+            transform: translateY(-5px) scale(1.1);
+        }
+        .custom-amount-input {
+            width: 100%; max-width: 280px; padding: 14px 18px; border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-sm); font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light); color: var(--text-dark); transition: var(--transition);
+            font-size: 1.05rem; text-align: center; margin: 0 auto;
+        }
+        .custom-amount-input::placeholder { color: var(--text-muted); }
+        .custom-amount-input:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.4), var(--shadow-md);
+        }
+
+        .payment-methods-container { margin-top: 30px; }
+        .upi-apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .upi-app-btn {
+            background-color: var(--secondary-light); color: var(--text-light); border: 2px solid transparent;
+            padding: 12px 15px; border-radius: var(--border-radius-sm); font-size: 0.9rem; font-weight: 500;
+            cursor: pointer; transition: var(--transition); display: flex; align-items: center;
+            justify-content: center; gap: 8px; text-decoration: none;
+            box-shadow: var(--shadow-sm);
+        }
+        .upi-app-btn i { font-size: 1.3rem; }
+        .upi-app-btn:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.03); box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .upi-app-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important;}
+        .upi-app-btn.can-pay:not(:disabled) {
+            animation: upiButtonGlow 2.5s infinite ease-in-out;
+        }
+        @keyframes upiButtonGlow {
+            0%, 100% { box-shadow: var(--shadow-sm); }
+            50% { box-shadow: 0 0 15px 2px var(--btn-glow-color, rgba(var(--primary-color-rgb),0.3)); }
+        }
+        
+        .upi-app-btn.google-pay { --btn-glow-color: rgba(66, 133, 244, 0.4); border-color: var(--google-pay-color); }
+        .upi-app-btn.google-pay:hover:not(:disabled) { background-color: var(--google-pay-color); color: white;}
+        .upi-app-btn.phonepe { --btn-glow-color: rgba(103, 57, 183, 0.4); border-color: var(--phonepe-color); }
+        .upi-app-btn.phonepe:hover:not(:disabled) { background-color: var(--phonepe-color); color: white;}
+        .upi-app-btn.paytm { --btn-glow-color: rgba(0, 185, 241, 0.4); border-color: var(--paytm-color); }
+        .upi-app-btn.paytm:hover:not(:disabled) { background-color: var(--paytm-color); color: white;}
+        .upi-app-btn.fampay { --btn-glow-color: rgba(255, 135, 23, 0.4); border-color: var(--fampay-color); }
+        .upi-app-btn.fampay:hover:not(:disabled) { background-color: var(--fampay-color); color: white;}
+        
+        .payment-separator {
+            display: flex; align-items: center; text-align: center; color: var(--text-muted);
+            margin: 30px 0; font-size: 0.9rem;
+        }
+        .payment-separator::before, .payment-separator::after {
+            content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .payment-separator:not(:empty)::before { margin-right: .75em; }
+        .payment-separator:not(:empty)::after { margin-left: .75em; }
+
+
+        .payment-info { display: flex; flex-direction: column; align-items: center; gap: 25px; }
+        .qr-code-wrapper { position: relative; width: 230px; height: 230px; }
+        .qr-code-spinner {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; border: 4px solid rgba(var(--primary-color-rgb), 0.3);
+            border-top-color: var(--primary-color); border-radius: 50%;
+            animation: spin 1s linear infinite; display: none;
+        }
+        .qr-code-container {
+            background-color: white; padding: 15px; border-radius: var(--border-radius-sm);
+            box-shadow: var(--shadow-lg); width: 230px; height: 230px;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, opacity 0.3s ease;
+            opacity: 0; transform: scale(0.85) rotate(-5deg); /* Initial state for animation */
+        }
+        .qr-code-container.visible { opacity: 1; transform: scale(1) rotate(0deg); }
+        .qr-code-container:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        
+        #donationQrCode {
+            width: 200px; height: 200px; object-fit: contain; display: block;
+            border-radius: 4px; opacity: 0; transition: opacity 0.5s ease 0.1s; /* Slight delay for reveal */
+        }
+        #donationQrCode.loaded { opacity: 1; }
+
+        .qr-code-placeholder {
+            width: 200px; height: 200px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: #444; font-size: 0.95rem;
+            text-align: center; transition: opacity 0.3s ease;
+        }
+        .qr-code-placeholder i { font-size: 3.5rem; margin-bottom: 12px; color: #bbb; }
+        .qr-code-placeholder.hidden { opacity: 0; pointer-events: none; display:none !important; }
+
+        .generic-donate-btn {
+            background: var(--gradient); color: white; border: none; padding: 16px 40px;
+            border-radius: var(--border-radius-sm); font-size: 1.15rem; font-weight: 600;
+            cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-lg);
+            display: inline-flex; align-items: center; gap: 12px; text-decoration: none;
+            position: relative; overflow: hidden; margin-top: 10px;
+        }
+        .generic-donate-btn i { font-size: 1.25rem; }
+        .generic-donate-btn:hover:not(:disabled) {
+            background: var(--gradient-light); transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(var(--primary-color-rgb), 0.6);
+        }
+        .generic-donate-btn:disabled {
+             background: var(--secondary-light) !important; opacity: 0.5; cursor: not-allowed;
+             transform: none !important; box-shadow: var(--shadow-sm) !important;
+        }
+        .generic-donate-btn.can-pay:not(:disabled) { animation: buttonPulse 2s infinite ease-in-out; }
+        @keyframes buttonPulse {
+            0%, 100% { transform: scale(1); box-shadow: var(--shadow-lg); }
+            50% { transform: scale(1.03); box-shadow: 0 10px 28px rgba(var(--primary-color-rgb), 0.55); }
+        }
+
+        .donation-note { font-size: 0.9rem; color: var(--text-muted); margin-top: 15px; font-style: italic; }
+        #scanOrPayText { font-size: 0.95rem; color: var(--text-light); margin-top: 20px; font-weight: 500;}
+        
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-loading-dots-container { display: inline-flex; align-items: center; margin-left: 8px; }
+        .btn-loading-dots-container span { display: inline-block; width: 6px; height: 6px; margin: 0 1px; background-color: currentColor; border-radius: 50%; animation: btnLoadingBounce 1.4s infinite ease-in-out both; }
+        .btn-loading-dots-container span:nth-child(1) { animation-delay: -0.32s; }
+        .btn-loading-dots-container span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes btnLoadingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        
+        .button-is-loading { position: relative; overflow: hidden; }
+        .button-is-loading::before { content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); transform: skewX(-25deg); animation: loadingShimmer 1.8s infinite linear; pointer-events: none; }
+        @keyframes loadingShimmer { 0% { left: -150%; } 100% { left: 150%; } }
+
+        .generic-donate-btn > .button-text-content, .upi-app-btn > .button-text-content { transition: opacity 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .generic-donate-btn.loading > .button-text-content, .upi-app-btn.loading > .button-text-content { opacity: 0.7; }
+        
+        .thank-you-message { margin-top: 50px; color: var(--primary-light); font-size: 1.2rem; font-weight: 500; }
+
+        #toastContainer { position: fixed; top: 25px; right: 25px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 25px; border-radius: var(--border-radius-sm); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-xl); transform: translateX(calc(100% + 30px)); transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; max-width: 380px; border-left: 5px solid var(--primary-color); }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
+        .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
+        .toast.warning { background-color: #f39c12; border-left-color: #f1c40f; }
+        .toast.info { background-color: #3498db; border-left-color: #2980b9; }
+        .toast i { margin-right: 12px; font-size: 1.3rem; }
+        .toast span:not(.toast-close) { flex-grow: 1; word-break: break-word; }
+        .toast-close { margin-left: 15px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s ease; font-size: 1.2rem; background: none; border: none; color: white; padding: 5px; }
+        .toast-close:hover { opacity: 1; }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px 15px; }
+            .page-title { font-size: 2rem; }
+            .donation-intro { padding: 25px; }
+            .donation-intro h3 { font-size: 1.3rem; }
+            .donation-intro p { font-size: 1rem; }
+            .donation-section { padding: 30px 25px; }
+            .donation-section-title { font-size: 1.5rem; }
+            .amount-option-btn { padding: 12px 22px; font-size: 1rem; min-width: 110px; }
+            .custom-amount-input { font-size: 1rem; }
+            .qr-code-wrapper, .qr-code-container { width: 200px; height: 200px; }
+            #donationQrCode, .qr-code-placeholder { width: 180px; height: 180px; }
+            .generic-donate-btn { padding: 14px 35px; font-size: 1.1rem; }
+            .upi-apps-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .upi-app-btn { font-size: 0.85rem; padding: 10px 12px; }
+        }
+        @media (max-width: 576px) {
+            body { padding-bottom: 30px; }
+            .page-title { font-size: 1.9rem; margin-bottom: 25px;}
+            .donation-intro { margin-bottom: 35px; padding: 20px; }
+            .donation-intro::before { font-size: 3rem; top: 10px; right: 15px; }
+            .donation-section { padding: 25px 20px; margin-bottom: 30px;}
+            .donation-section-title { font-size: 1.45rem; }
+            .amount-options { gap: 12px; }
+            .amount-option-btn { padding: 10px 15px; width: calc(50% - 6px); min-width: unset; font-size: 0.9rem;}
+            .custom-amount-input { max-width: 100%; font-size: 0.95rem; }
+            .payment-info { gap: 20px; }
+            .qr-code-wrapper, .qr-code-container { width: 180px; height: 180px; padding: 8px;}
+            #donationQrCode, .qr-code-placeholder { width: 164px; height: 164px; }
+            .generic-donate-btn { width: 100%; justify-content: center; font-size: 1.05rem; padding: 14px 20px; }
+            .upi-apps-grid { grid-template-columns: 1fr; gap: 10px; } /* Single column for very small screens */
+            .donation-note { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-logo-container"> <i class="fas fa-book-reader loading-logo-icon"></i> <span class="loading-logo-text">EduSparK</span> </div>
+        <div class="loading-dots"> <span></span><span></span><span></span> </div>
+        <p class="loading-message" id="loadingMessage">Loading Support Page...</p>
+    </div>
+
+    <header class="header">
+        <div class="logo-container"> 
+            <a href="books.html" class="logo" id="logoLink"> <!-- Link to your main page -->
+                <i class="fas fa-book-reader"></i> <span class="logo-text">EduSparK</span> 
+            </a> 
+        </div>
+    </header>
+    
+    <div class="donation-page-wrapper">
+        <div class="container">
+            <h1 class="page-title" data-aos="fade-down" data-aos-duration="600">Support EduSparK</h1>
+
+            <div class="donation-intro" data-aos="fade-up" data-aos-delay="100" data-aos-duration="700">
+                <h3>A Heartfelt Note from Us</h3>
+                <p>At EduSparK, we are passionately committed to fostering a vibrant community where knowledge is shared freely and learning is accessible to all. Our mission is to empower individuals through high-quality educational resources.</p>
+                <p>We believe in transparency and want to assure you: <strong>donations are entirely voluntary.</strong> Your presence and participation are what truly enrich our platform.</p>
+                <p>However, if you find EduSparK valuable, are pleased with our efforts, and wish to express your appreciation, your contribution would be immensely helpful. Donations enable us to maintain server infrastructure, enhance platform features, and continue our work of making education open and engaging for everyone.</p>
+            </div>
+
+            <div class="donation-section" data-aos="fade-up" data-aos-delay="200" data-aos-duration="700">
+                <h2 class="donation-section-title">Choose Your Contribution (₹)</h2>
+                <div class="amount-selection-container">
+                    <div class="amount-options" id="amountOptions">
+                        <button class="amount-option-btn" data-amount="50">₹50</button>
+                        <button class="amount-option-btn" data-amount="100">₹100</button>
+                        <button class="amount-option-btn" data-amount="200">₹200</button>
+                        <button class="amount-option-btn" data-amount="500">₹500</button>
+                    </div>
+                    <input type="number" id="customAmount" class="custom-amount-input" placeholder="Enter Custom Amount (Min ₹10)" min="10">
+                </div>
+            </div>
+
+            <div class="donation-section" data-aos="fade-up" data-aos-delay="300" data-aos-duration="700">
+                <h2 class="donation-section-title">Make Your Payment</h2>
+                
+                <div class="payment-methods-container">
+                    <p class="donation-note" style="margin-bottom: 20px; font-size: 1rem; color: var(--text-light);">Pay directly using your favorite UPI app:</p>
+                    <div class="upi-apps-grid" id="upiAppsGrid">
+                        <button class="upi-app-btn google-pay" data-app="gpay" disabled><i class="fab fa-google-pay"></i> <span class="button-text-content">Google Pay</span></button>
+                        <button class="upi-app-btn phonepe" data-app="phonepe" disabled><i class="fas fa-mobile-alt"></i> <span class="button-text-content">PhonePe</span></button> <!-- Using generic mobile icon as PhonePe specific might not exist in FA -->
+                        <button class="upi-app-btn paytm" data-app="paytm" disabled><i class="fas fa-wallet"></i> <span class="button-text-content">Paytm</span></button>
+                        <button class="upi-app-btn fampay" data-app="fampay" disabled><i class="fas fa-feather-alt"></i> <span class="button-text-content">FamPay</span></button>
+                    </div>
+                </div>
+
+                <div class="payment-separator">OR</div>
+
+                <div class="payment-info">
+                    <div class="qr-code-wrapper">
+                        <div class="qr-code-spinner" id="qrSpinner"></div>
+                        <div class="qr-code-container" id="qrCodeContainer">
+                            <div id="qrCodePlaceholder" class="qr-code-placeholder">
+                                <i class="fas fa-qrcode"></i>
+                                <span id="qrPlaceholderText">Select amount to generate QR</span>
+                            </div>
+                            <img id="donationQrCode" src="" alt="Donation QR Code">
+                        </div>
+                    </div>
+                    <p id="scanOrPayText" class="donation-note" style="font-weight:bold; font-size: 1rem; color: var(--text-light);">
+                        Scan QR with any UPI App
+                    </p>
+                    <button class="generic-donate-btn" id="genericPayWithUpiBtn" disabled>
+                         <span class="button-text-content"><i class="fas fa-shield-alt"></i> Generic UPI Payment</span>
+                    </button>
+                    
+                </div>
+            </div>
+            <p class="thank-you-message" data-aos="fade-up" data-aos-delay="400" data-aos-duration="700">
+                Your generosity fuels our mission. Thank you for being a part of EduSparK!
+            </p>
+        </div>
+    </div>
+    
+    <div id="toastContainer"></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        
+    <script>
+        const $ = (selector) => document.querySelector(selector);
+        const $$ = (selector) => document.querySelectorAll(selector);
+
+        const elements = {
+            loadingOverlay: $('#loadingOverlay'), loadingMessage: $('#loadingMessage'),
+            header: $('.header'), logoLink: $('#logoLink'),
+            
+            amountOptionsContainer: $('#amountOptions'), customAmountInput: $('#customAmount'),
+            qrCodeWrapper: $('.qr-code-wrapper'), qrSpinner: $('#qrSpinner'),
+            qrCodeContainer: $('#qrCodeContainer'), qrCodePlaceholder: $('#qrCodePlaceholder'),
+            qrPlaceholderText: $('#qrPlaceholderText'),
+            donationQrCodeImg: $('#donationQrCode'), 
+            genericPayWithUpiBtn: $('#genericPayWithUpiBtn'),
+            upiAppsGrid: $('#upiAppsGrid'),
+            scanOrPayText: $('#scanOrPayText'),
+            
+            toastContainer: $('#toastContainer')
+        };
+
+        const PAYEE_NAME = "EduSparK"; // For UPI intent description
+        const UPI_IDS = {
+            gpay: "niteshprakash555@okaxis",
+            phonepe: "7368932901@ybl",
+            paytm: "7368932901@pthdfc",
+            fampay: "niteshprakash@fam",
+            generic: "niteshprakash555@okaxis" // A default/primary one for generic QR
+        };
+        let selectedAmount = 0;
+        
+        function hideLoadingOverlay() { if (elements.loadingOverlay) elements.loadingOverlay.classList.add('hidden'); }
+        
+
+        function showToast(message, type = "info", duration = 3500) { 
+            if (!elements.toastContainer) return;
+            const toastId = 'toast-' + Date.now(); const toast = document.createElement('div');
+            toast.className = `toast ${type}`; toast.id = toastId;
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle';
+            else if (type === 'error') iconClass = 'fas fa-times-circle';
+            else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+            toast.innerHTML = `<i class="${iconClass}"></i><span>${escapeHTML(message)}</span><button class="toast-close" aria-label="Close toast">×</button>`;
+            elements.toastContainer.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            const closeBtn = toast.querySelector('.toast-close');
+            closeBtn.onclick = () => { toast.classList.remove('show'); setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500); };
+            setTimeout(() => { if (document.getElementById(toastId)) { toast.classList.remove('show'); setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500); } }, duration);
+        }
+
+        function updatePaymentButtonStates(enable) {
+            elements.genericPayWithUpiBtn.disabled = !enable;
+            elements.genericPayWithUpiBtn.classList.toggle('can-pay', enable);
+            $$('#upiAppsGrid .upi-app-btn').forEach(btn => {
+                btn.disabled = !enable;
+                btn.classList.toggle('can-pay', enable);
+            });
+        }
+
+        function handleAmountSelection(newAmountStr) {
+            const newAmount = parseInt(newAmountStr);
+            const isValidAmount = !isNaN(newAmount) && newAmount >= 10;
+
+            if (isValidAmount) {
+                selectedAmount = newAmount;
+                elements.qrPlaceholderText.textContent = `Generating QR for ₹${selectedAmount}...`;
+                generateQrCode();
+                updatePaymentButtonStates(true);
+                elements.scanOrPayText.textContent = `Scan QR or use an App to pay ₹${selectedAmount}`;
+            } else {
+                selectedAmount = 0;
+                elements.donationQrCodeImg.classList.remove('loaded');
+                elements.donationQrCodeImg.style.display = 'none'; // Hide img
+                elements.donationQrCodeImg.src = '';
+                elements.qrCodePlaceholder.classList.remove('hidden');
+                elements.qrPlaceholderText.textContent = 'Select amount to generate QR';
+                elements.qrCodeContainer.classList.remove('visible');
+                elements.qrSpinner.style.display = 'none';
+                updatePaymentButtonStates(false);
+                elements.scanOrPayText.textContent = `Scan QR with any UPI App`;
+                if (newAmountStr && parseInt(newAmountStr) > 0 && parseInt(newAmountStr) < 10) {
+                    showToast("Minimum donation is ₹10.", "warning");
+                }
+            }
+        }
+
+        elements.amountOptionsContainer.addEventListener('click', (e) => {
+            const targetBtn = e.target.closest('.amount-option-btn');
+            if (targetBtn) {
+                $$('.amount-option-btn').forEach(btn => btn.classList.remove('active'));
+                targetBtn.classList.add('active');
+                elements.customAmountInput.value = ''; 
+                handleAmountSelection(targetBtn.dataset.amount);
+            }
+        });
+
+        elements.customAmountInput.addEventListener('input', (e) => {
+            $$('.amount-option-btn').forEach(btn => btn.classList.remove('active'));
+            handleAmountSelection(e.target.value);
+        });
+        
+        elements.customAmountInput.addEventListener('focus', () => {
+             $$('.amount-option-btn').forEach(btn => btn.classList.remove('active'));
+        });
+
+        function generateUpiIntentString(appType = 'generic') {
+            if (selectedAmount < 10) return null;
+            const upiIdToUse = UPI_IDS[appType] || UPI_IDS.generic;
+            const note = `Donation to ${PAYEE_NAME} (EduSparK)`; // Generic note
+            
+            // Basic UPI Intent string
+            let baseUpiString = `upi://pay?pa=${upiIdToUse}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${selectedAmount.toFixed(2)}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+            // App-specific parameters (these are not standardized and might not work everywhere)
+            // For GPay, PhonePe, Paytm, generic string is usually sufficient.
+            // Some apps might look for `mc` (merchant code), `tr` (transaction ref id - ideally unique), etc.
+            // but for simple P2P/P2M donations, the basic string is most compatible.
+            // Example: PhonePe specific could be phonepe://pay?pa=... (but upi:// is preferred for broader compatibility)
+
+            return baseUpiString;
+        }
+
+        function generateQrCode() {
+            const upiString = generateUpiIntentString('generic'); // QR always uses generic for max compatibility
+            if (upiString) {
+                elements.qrSpinner.style.display = 'block';
+                elements.qrCodePlaceholder.classList.add('hidden');
+                elements.donationQrCodeImg.classList.remove('loaded');
+                elements.donationQrCodeImg.style.display = 'block'; 
+                elements.donationQrCodeImg.src = ''; 
+
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}&ecc=M&margin=1&color=1C1C1C&bgcolor=FFFFFF`;
+                
+                elements.donationQrCodeImg.onload = () => {
+                    elements.qrSpinner.style.display = 'none';
+                    elements.donationQrCodeImg.classList.add('loaded');
+                    elements.qrCodeContainer.classList.add('visible');
+                };
+                elements.donationQrCodeImg.onerror = () => {
+                    elements.qrSpinner.style.display = 'none';
+                    elements.donationQrCodeImg.style.display = 'none'; // Hide broken img
+                    elements.qrCodePlaceholder.classList.remove('hidden');
+                    elements.qrPlaceholderText.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:red;"></i><span>QR Error. Try again.</span>';
+                    elements.qrCodeContainer.classList.remove('visible');
+                    showToast("Failed to load QR Code. Check connection.", "error");
+                };
+                elements.donationQrCodeImg.src = qrUrl;
+            } else {
+                // This state should be handled by handleAmountSelection if amount is invalid
+                elements.qrSpinner.style.display = 'none';
+            }
+        }
+        
+        function toggleButtonLoading(btn, show, loadingText = "Processing") {
+            if (!btn) return;
+            const textSpan = btn.querySelector('.button-text-content');
+            let loadingDotsContainer = btn.querySelector('.btn-loading-dots-container');
+
+            if (show) {
+                btn.classList.add('loading', 'button-is-loading');
+                btn.disabled = true; // Keep disabled while loading
+                if (textSpan) {
+                    if(!textSpan.dataset.originalText) textSpan.dataset.originalText = textSpan.innerHTML;
+                    textSpan.innerHTML = `${escapeHTML(loadingText)}`;
+                    if (!loadingDotsContainer) {
+                        loadingDotsContainer = document.createElement('span');
+                        loadingDotsContainer.className = 'btn-loading-dots-container';
+                        loadingDotsContainer.innerHTML = '<span></span><span></span><span></span>';
+                        textSpan.appendChild(loadingDotsContainer);
+                    }
+                    loadingDotsContainer.style.display = 'inline-flex';
+                }
+            } else {
+                btn.classList.remove('loading', 'button-is-loading');
+                // Re-enable based on selectedAmount validity
+                btn.disabled = selectedAmount < 10; 
+                if (textSpan && textSpan.dataset.originalText) {
+                    textSpan.innerHTML = textSpan.dataset.originalText;
+                    delete textSpan.dataset.originalText;
+                }
+                if (loadingDotsContainer) loadingDotsContainer.remove();
+            }
+        }
+
+        function initiateUpiPayment(appType = 'generic', buttonElement) {
+            const upiString = generateUpiIntentString(appType);
+            if (upiString) {
+                if (buttonElement) toggleButtonLoading(buttonElement, true, "Redirecting");
+                showToast(`Attempting to open ${appType === 'generic' ? 'UPI app' : appType.toUpperCase()}...`, "info");
+                
+                // Forcing a new tab for desktop, direct for mobile.
+                // However, `upi://` schemes are best handled by direct assignment on mobile.
+                // window.open(upiString, '_blank'); // This can sometimes be blocked or less effective than direct assignment
+                window.location.href = upiString;
+                
+                if (buttonElement) {
+                    setTimeout(() => toggleButtonLoading(buttonElement, false), 3500);
+                }
+            } else {
+                showToast("Please select or enter a valid amount (min ₹10).", "warning");
+            }
+        }
+
+        elements.genericPayWithUpiBtn.addEventListener('click', (e) => {
+            initiateUpiPayment('generic', e.currentTarget);
+        });
+
+        elements.upiAppsGrid.addEventListener('click', (e) => {
+            const targetBtn = e.target.closest('.upi-app-btn');
+            if (targetBtn && !targetBtn.disabled) {
+                const app = targetBtn.dataset.app;
+                initiateUpiPayment(app, targetBtn);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 700, easing: 'ease-out-cubic', once: true, offset: 30 });
+            
+            const loadingMessages = [ "Polishing the Donation Box...", "Fueling the Spark...", "Warming Up the Servers...", "Crafting a Thank You Note..."];
+            if (elements.loadingMessage) elements.loadingMessage.textContent = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+            
+            setTimeout(() => {
+                if (elements.loadingOverlay && !elements.loadingOverlay.classList.contains('hidden')) {
+                     hideLoadingOverlay();
+                }
+            }, 2000); // Reduced timeout as Firebase is not critical path here.
+            window.scrollTo(0, 0);
+            updatePaymentButtonStates(false); // Initially disable payment buttons
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50 && elements.header) elements.header.classList.add('scrolled');
+            else if (elements.header) elements.header.classList.remove('scrolled');
+        });
+
+    </script>
+</body>
+</html>
