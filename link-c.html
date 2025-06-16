@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M3U8 Link Transformer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #555;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        textarea, input[type="text"] {
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+            resize: vertical; /* Allow vertical resize for textarea */
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output-area {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>M3U8 Link Transformer</h1>
+
+    <label for="inputLink">Enter Original Link(s) (one per line):</label>
+    <textarea id="inputLinks" rows="5" placeholder="https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4355458/174508004648941097666/index_3.m3u8"></textarea>
+
+    <button onclick="transformLinks()">Transform Links</button>
+
+    <div class="output-area">
+        <label for="outputLinks">Transformed Link(s):</label>
+        <textarea id="outputLinks" rows="5" readonly></textarea>
+    </div>
+</div>
+
+<script>
+    function transformSingleLink(originalUrl) {
+        if (!originalUrl || originalUrl.trim() === "") {
+            return ""; // Skip empty lines
+        }
+
+        // Regex to capture the parts:
+        // Group 1: The base path up to (but not including) the first occurrence of the middle number.
+        //          e.g., "https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4355458"
+        // Group 2: The middle number.
+        //          e.g., "174508004648941097666"
+        // It also ensures the end matches "index_NUMBER.m3u8"
+        const regex = /^(https:\/\/[^/]+\/file_library\/videos\/channel_vod_non_drm_hls\/[^/]+)\/([^/]+)\/index_\d+\.m3u8$/;
+        const match = originalUrl.match(regex);
+
+        if (match && match[1] && match[2]) {
+            const basePath = match[1];      // e.g., https://.../4355458
+            const middleNumber = match[2]; // e.g., 174508004648941097666
+
+            if (middleNumber.length < 7) {
+                return `Error: Middle number '${middleNumber}' in '${originalUrl}' is too short (less than 7 digits).`;
+            }
+
+            const last7Digits = middleNumber.slice(-7);
+            const newFilename = `${middleNumber}_${last7Digits}.m3u8`;
+            
+            // Construct the new URL
+            // basePath / middleNumber / newFilename
+            const newUrl = `${basePath}/${middleNumber}/${newFilename}`;
+            return newUrl;
+        } else {
+            return `Error: URL '${originalUrl}' does not match the expected pattern.`;
+        }
+    }
+
+    function transformLinks() {
+        const inputTextArea = document.getElementById('inputLinks');
+        const outputTextArea = document.getElementById('outputLinks');
+        
+        const inputUrls = inputTextArea.value.trim().split('\n');
+        const outputUrls = [];
+
+        inputUrls.forEach(url => {
+            const transformed = transformSingleLink(url.trim());
+            if (transformed) { // Don't add empty strings from skipped lines
+                outputUrls.push(transformed);
+            }
+        });
+
+        outputTextArea.value = outputUrls.join('\n');
+
+        // Optional: Provide some feedback
+        if (outputUrls.some(url => url.startsWith("Error:"))) {
+            outputTextArea.classList.add('error');
+            outputTextArea.classList.remove('success');
+        } else if (outputUrls.length > 0 && outputUrls.every(url => !url.startsWith("Error:"))) {
+            outputTextArea.classList.add('success');
+            outputTextArea.classList.remove('error');
+        } else {
+            outputTextArea.classList.remove('error', 'success');
+        }
+    }
+
+    // Example usage for testing in console:
+    // const testUrl = "https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4355458/174508004648941097666/index_3.m3u8";
+    // console.log("Original:", testUrl);
+    // console.log("Transformed:", transformSingleLink(testUrl));
+
+    // const testUrlInvalidPattern = "https://example.com/some/other/path/video.m3u8";
+    // console.log("Original:", testUrlInvalidPattern);
+    // console.log("Transformed:", transformSingleLink(testUrlInvalidPattern));
+
+    // const testUrlShortMiddle = "https://d1qcficr3lu37x.cloudfront.net/file_library/videos/channel_vod_non_drm_hls/4355458/12345/index_1.m3u8";
+    // console.log("Original:", testUrlShortMiddle);
+    // console.log("Transformed:", transformSingleLink(testUrlShortMiddle));
+
+</script>
+
+</body>
+          </html>
