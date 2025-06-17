@@ -1,0 +1,2451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://*.firebaseio.com https://*.firebasedatabase.app https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://unpkg.com https://cdn.jsdelivr.net;
+               script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/ https://unpkg.com https://cdn.jsdelivr.net https://www.google.com/recaptcha/api.js https://*.google.com https://www.gstatic.com/recaptcha/;
+               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com;
+               font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
+               img-src 'self' data: https: http://via.placeholder.com; /* Add domains for ad images if needed */
+               connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://firebaseappcheck.googleapis.com;
+               object-src 'none';
+               base-uri 'self';
+               form-action 'self';
+               frame-src 'self' https://www.google.com/recaptcha/ https://*.google.com;">
+    <title>EduSparK - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app-check.js"></script>
+
+    <style>
+        /* ALL CSS FROM YOUR PROVIDED FILE - NO CHANGES NEEDED HERE FOR CSS */
+        :root {
+            --admin-primary-color: #3498db; /* Professional Blue */
+            --admin-primary-light: #5dade2;
+            --admin-primary-dark: #2e86c1;
+            --admin-secondary-color: #2c3e50; /* Dark Slate Blue */
+            --admin-secondary-light: #34495e;
+            --admin-success-color: #2ecc71;
+            --admin-warning-color: #f39c12;
+            --admin-error-color: #e74c3c;
+            --admin-info-color: #3498db;
+
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea; /* For main text on dark backgrounds */
+            --text-muted: #a4b0be;
+            --bg-light: #1e1e1e; /* Slightly lighter dark bg for elements */
+            --bg-dark: #121212; /* Very dark bg for page */
+            --card-bg: #212121; /* Darker card bg */
+            --card-bg-dark: #1a1a1a; /* Darker modal/panel bg */
+
+            --gradient: linear-gradient(135deg, var(--admin-primary-color), var(--admin-primary-dark));
+            --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.35);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --skeleton-bg: #303030;
+            --skeleton-highlight: #404040;
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex; /* For admin layout */
+            flex-direction: column; /* For login page centering */
+        }
+
+        /* --- Admin Login Page --- */
+        .admin-login-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            padding: 20px;
+        }
+        .admin-login-container {
+            background-color: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .admin-login-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--admin-primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .admin-login-logo i { font-size: 1.8rem; }
+        .admin-login-title {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .admin-form-group { margin-bottom: 20px; text-align: left; }
+        .admin-form-label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-dark); font-size: 0.9rem; }
+        .admin-form-input, .admin-form-textarea, .admin-form-select { /* Added select */
+            width: 100%; padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--border-radius-sm);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            transition: var(--transition); font-size: 0.95rem;
+        }
+        .admin-form-textarea { min-height: 80px; resize: vertical;}
+        .admin-form-input:focus, .admin-form-textarea:focus, .admin-form-select:focus {
+            outline: none; border-color: var(--admin-primary-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-primary-color) 30%, transparent);
+        }
+        .admin-submit-btn {
+            background: var(--gradient); color: white; border: none;
+            padding: 12px 18px; border-radius: var(--border-radius-sm);
+            font-size: 1rem; font-weight: 500; cursor: pointer;
+            width: 100%; transition: var(--transition); margin-top: 10px;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+        }
+        .admin-submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px color-mix(in srgb, var(--admin-primary-color) 40%, transparent);
+            background: linear-gradient(135deg, var(--admin-primary-light), var(--admin-primary-color));
+        }
+        .admin-submit-btn:disabled { background: var(--admin-secondary-light) !important; opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .admin-submit-btn .spinner {
+            display: none; /* Controlled by JS */
+            width: 18px; height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%; border-top-color: white;
+            animation: spin 1s linear infinite;
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        }
+        .admin-submit-btn > span:not(.spinner), .admin-submit-btn > i { transition: opacity 0.2s ease; }
+        .admin-submit-btn.loading > span:not(.spinner), .admin-submit-btn.loading > i { opacity: 0; }
+
+
+        /* --- Main Admin Panel Layout (Hidden initially) --- */
+        .admin-app {
+            display: none; /* Shown by JS after admin login */
+            flex-direction: row;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg-dark);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            z-index: 1000;
+            transition: width 0.3s ease, padding 0.3s ease; /* Added padding transition */
+        }
+        .admin-sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--admin-primary-light);
+            font-size: 1.6rem;
+            font-weight: 700;
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            white-space: nowrap; /* Prevent logo text wrapping when sidebar collapses */
+        }
+        .admin-sidebar-logo i { font-size: 1.5rem; }
+        .admin-sidebar-logo span { transition: opacity 0.2s ease; }
+        .admin-nav-list { list-style: none; padding: 0; margin: 0; flex-grow: 1; overflow-y: auto; overflow-x: hidden; }
+        .admin-nav-item {
+            display: flex; align-items: center;
+            padding: 12px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        .admin-nav-item i { margin-right: 15px; width: 20px; text-align: center; font-size: 1rem; flex-shrink: 0; }
+        .admin-nav-item span { transition: opacity 0.2s ease; }
+        .admin-nav-item:hover { background-color: rgba(255,255,255,0.05); color: var(--text-light); }
+        .admin-nav-item.active {
+            background-color: color-mix(in srgb, var(--admin-primary-color) 15%, transparent);
+            color: var(--admin-primary-light);
+            border-left-color: var(--admin-primary-color);
+            font-weight: 600;
+        }
+        .admin-sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            white-space: nowrap;
+        }
+         .admin-sidebar-footer button span { transition: opacity 0.2s ease; }
+
+
+        /* Main Content Area */
+        .admin-main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            padding-top: var(--topbar-height);
+            height: 100vh;
+            overflow-y: auto;
+            transition: margin-left 0.3s ease;
+        }
+        .admin-topbar {
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            z-index: 999;
+            transition: left 0.3s ease;
+        }
+        .admin-topbar-title { font-size: 1.3rem; font-weight: 600; color: var(--text-light); }
+        .admin-topbar-actions { display: flex; align-items: center; gap: 15px; }
+        .admin-user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--gradient); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 1rem;
+            cursor: pointer;
+        }
+        .admin-logout-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.3rem; cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .admin-logout-btn:hover { color: var(--admin-error-color); }
+
+        .admin-page-content { padding: 25px; }
+        .admin-section { display: none; animation: fadeIn 0.5s ease; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Common Admin Styles */
+        .admin-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .admin-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap; /* Allow wrapping for filters */
+            gap: 10px; /* Space between title and filters if they wrap */
+        }
+        .admin-card-title { font-size: 1.2rem; font-weight: 600; color: var(--admin-primary-light); flex-shrink: 0; margin-right:auto; }
+        .admin-btn {
+            padding: 8px 15px; border-radius: var(--border-radius-sm);
+            font-size: 0.9rem; font-weight: 500; cursor: pointer;
+            transition: var(--transition); border: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .admin-btn-primary { background: var(--gradient); color: white; }
+        .admin-btn-primary:hover { background: linear-gradient(135deg, var(--admin-primary-light), var(--admin-primary-color)); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .admin-btn-secondary { background-color: var(--admin-secondary-light); color: white; }
+        .admin-btn-secondary:hover { background-color: var(--admin-secondary-color); transform: translateY(-2px); }
+        .admin-btn-danger { background-color: var(--admin-error-color); color: white; }
+        .admin-btn-danger:hover { background-color: color-mix(in srgb, var(--admin-error-color) 80%, black); transform: translateY(-2px); }
+        .admin-btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+        .admin-btn.active { /* For filter/tab buttons */
+             background: var(--gradient) !important;
+             box-shadow: 0 2px 5px color-mix(in srgb, var(--admin-primary-color) 30%, transparent);
+        }
+
+        /* Tables */
+        .admin-table-wrapper { overflow-x: auto; }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            vertical-align: middle;
+            white-space: nowrap; /* Prevent text wrapping in cells initially */
+        }
+        .admin-table th {
+            background-color: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-table tbody tr:hover { background-color: rgba(255,255,255,0.02); }
+        .admin-table td .admin-btn { margin-right: 5px; margin-bottom: 5px;}
+        .admin-table td.wrap-text { white-space: normal; } /* Allow specific columns to wrap */
+        .admin-table .status-badge {
+            padding: 4px 8px; border-radius: var(--border-radius-sm);
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+            color: white; display: inline-block;
+        }
+        .status-approved, .status-active, .status-completed { background-color: var(--admin-success-color); }
+        .status-pending, .status-suspended { background-color: var(--admin-warning-color); }
+        .status-rejected, .status-banned, .status-inactive { background-color: var(--admin-error-color); }
+        .status-active-batch { background-color: var(--admin-success-color); }
+        .status-inactive-batch { background-color: var(--admin-secondary-light); }
+
+        .admin-table input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--admin-primary-color); }
+
+        /* Filters and Bulk Actions Bar */
+        .admin-filter-bar {
+            display: flex; flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 20px;
+        }
+        .admin-filter-bar .admin-form-input { width: auto; min-width: 200px; }
+        .admin-filter-bar .admin-form-select { width: auto; min-width: 150px; }
+        .admin-bulk-actions-bar {
+            display: none; /* Shown when items are selected */
+            padding: 10px 15px; background-color: var(--admin-secondary-color);
+            border-radius: var(--border-radius-sm); margin-bottom: 20px;
+            align-items: center; gap: 10px; color: var(--text-light);
+        }
+
+        /* Dashboard Stats */
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .admin-stat-card {
+            background-color: var(--card-bg-dark);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--admin-primary-color);
+        }
+        .admin-stat-card-icon {
+            font-size: 2rem; color: var(--admin-primary-light);
+            width: 50px; height: 50px;
+            background-color: color-mix(in srgb, var(--admin-primary-color) 15%, transparent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .admin-stat-card-info .value { font-size: 1.8rem; font-weight: 700; color: var(--text-light); }
+        .admin-stat-card-info .label { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Modals (General) */
+        .admin-modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 3000; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(5px);
+            padding: 20px; /* Allow scrolling for tall modals */
+        }
+        .admin-modal.active { display: flex; opacity: 1; }
+        .admin-modal-content {
+            background-color: var(--card-bg-dark);
+            border-radius: var(--border-radius);
+            width: 100%; max-width: 600px; /* Default, can be overridden */
+            padding: 30px; box-shadow: var(--shadow-lg); /* Changed from XL for consistency */
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .admin-modal.active .admin-modal-content { transform: translateY(0) scale(1); }
+        .admin-modal-close {
+            position: absolute; top: 10px; right: 10px; font-size: 1.8rem;
+            color: var(--text-muted); cursor: pointer; background: none; border: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; line-height: 1; z-index: 1; /* Ensure above content */
+        }
+        .admin-modal-close:hover { color: var(--admin-primary-color); transform: rotate(90deg) scale(1.1); }
+        .admin-modal-title {
+            font-size: 1.4rem; margin-bottom: 25px; color: var(--admin-primary-light);
+            text-align: center; font-weight: 600;
+        }
+        .admin-modal .admin-form-textarea { /* Style already defined, ensures consistency */
+            /* width: 100%; padding: 12px 15px; min-height: 100px; resize: vertical; ... */
+        }
+        .admin-modal .admin-form-textarea:focus { /* Style already defined */
+            /* outline: none; border-color: var(--admin-primary-color); ... */
+        }
+        .admin-modal-actions { margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* Toast Notifications */
+        #adminToastContainer {
+            position: fixed; bottom: 25px; right: 25px; z-index: 4000;
+            display: flex; flex-direction: column-reverse; gap: 10px; /* Reverse for bottom-up stacking */
+        }
+        .admin-toast {
+            padding: 15px 20px; border-radius: var(--border-radius-sm);
+            background-color: var(--admin-secondary-color); color: white;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+            display: flex; align-items: center; max-width: 380px;
+            border-left: 5px solid var(--admin-primary-color); opacity: 0;
+        }
+        .admin-toast.show { transform: translateX(0); opacity: 1; }
+        .admin-toast.success { background-color: var(--admin-success-color); border-left-color: color-mix(in srgb, var(--admin-success-color) 80%, white); }
+        .admin-toast.error { background-color: var(--admin-error-color); border-left-color: color-mix(in srgb, var(--admin-error-color) 80%, white); }
+        .admin-toast.warning { background-color: var(--admin-warning-color); border-left-color: color-mix(in srgb, var(--admin-warning-color) 80%, white); }
+        .admin-toast.info { background-color: var(--admin-info-color); border-left-color: color-mix(in srgb, var(--admin-info-color) 80%, white); }
+        .admin-toast i { margin-right: 12px; font-size: 1.2rem; }
+        .admin-toast span { flex-grow: 1; word-break: break-word; font-size: 0.9rem;}
+        .admin-toast-close {
+            margin-left: 15px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s ease;
+            font-size: 1.2rem; background: none; border: none; color: white; padding: 5px;
+        }
+        .admin-toast-close:hover { opacity: 1; }
+
+        /* Skeleton Loader */
+        .skeleton { background-color: var(--skeleton-bg); animation: pulse-bg 1.5s infinite ease-in-out; border-radius: 4px; }
+        .skeleton-text { height: 1em; margin-bottom: 0.5em; }
+        .skeleton-line { width: 100%; height: 12px; margin-bottom: 8px; }
+        .skeleton-table-row td { padding: 12px 15px !important; }
+        .skeleton-table-row td div { height: 20px; background-color: var(--skeleton-bg); animation: pulse-bg 1.5s infinite ease-in-out; border-radius: 4px; }
+        @keyframes pulse-bg { 0% { background-color: var(--skeleton-bg); } 50% { background-color: var(--skeleton-highlight); } 100% { background-color: var(--skeleton-bg); } }
+
+        /* Empty State */
+        .admin-empty-state {
+            text-align: center; padding: 40px 20px; color: var(--text-muted);
+            width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 200px; border: 2px dashed rgba(255,255,255,0.1); border-radius: var(--border-radius);
+        }
+        .admin-empty-state i { font-size: 3rem; margin-bottom: 15px; color: var(--admin-primary-color); opacity: 0.6; }
+        .admin-empty-state h3 { margin-bottom: 10px; color: var(--text-light); font-size: 1.2rem; }
+
+        .book-cover-small { width: 50px; height: 70px; object-fit: cover; border-radius: 4px; margin-right: 10px; background-color:var(--skeleton-bg); }
+        .ad-image-small { width: 100px; height: 50px; object-fit: contain; border-radius: 4px; background-color:var(--skeleton-bg); }
+        .item-cover-small { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color:var(--skeleton-bg); vertical-align: middle; margin-right:10px; } /* For Batches, Subjects, Lectures general cover */
+        
+        .rejection-reason-input { margin-top: 10px; }
+        .ai-scan-result {
+            font-size: 0.8rem; margin-top: 8px; padding: 8px;
+            border-radius: var(--border-radius-sm);
+            background-color: rgba(255,255,255,0.03);
+        }
+        .ai-scan-result.good { border-left: 3px solid var(--admin-success-color); }
+        .ai-scan-result.warning { border-left: 3px solid var(--admin-warning-color); }
+
+        #recentAnnouncementsList ul { padding-left: 0; list-style: none; }
+        #recentAnnouncementsList li {
+            background-color: rgba(255,255,255,0.02);
+            border-radius: var(--border-radius-sm);
+            padding: 15px; margin-bottom:10px;
+            border-left: 3px solid var(--admin-info-color);
+            display: flex; 
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        #recentAnnouncementsList li .announcement-content { flex-grow: 1; }
+        #recentAnnouncementsList li.type-success { border-left-color: var(--admin-success-color); }
+        #recentAnnouncementsList li.type-warning { border-left-color: var(--admin-warning-color); }
+        #recentAnnouncementsList li.type-error { border-left-color: var(--admin-error-color); }
+        #recentAnnouncementsList li.type-announcement { border-left-color: var(--admin-primary-color); }
+
+        .admin-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; }
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                width: 60px;
+                padding: 20px 0;
+                overflow: hidden;
+            }
+            .admin-sidebar.open { width: var(--sidebar-width); }
+
+            .admin-sidebar .admin-sidebar-logo span,
+            .admin-sidebar .admin-nav-item span,
+            .admin-sidebar .admin-sidebar-footer button span {
+                opacity: 0;
+                pointer-events: none; 
+                width: 0; display: inline-block; overflow: hidden;
+            }
+            .admin-sidebar.open .admin-sidebar-logo span,
+            .admin-sidebar.open .admin-nav-item span,
+            .admin-sidebar.open .admin-sidebar-footer button span {
+                 opacity: 1;
+                 pointer-events: auto;
+                 width: auto;
+                 margin-left: 0;
+            }
+             .admin-sidebar .admin-sidebar-logo { padding-left: 15px; padding-right:15px; justify-content: center; }
+             .admin-sidebar.open .admin-sidebar-logo { padding-left: 20px; padding-right:20px; justify-content: flex-start; }
+             .admin-sidebar .admin-nav-item i { margin-right: 0; }
+             .admin-sidebar.open .admin-nav-item i { margin-right: 15px; }
+
+            .admin-main-content { margin-left: 60px; }
+            .admin-sidebar.open ~ .admin-main-content { margin-left: var(--sidebar-width); }
+            
+            .admin-topbar { left: 60px; }
+            .admin-sidebar.open ~ .admin-main-content .admin-topbar { left: var(--sidebar-width); }
+
+            .admin-menu-toggle { display: block; }
+        }
+        @media (max-width: 768px) {
+            .admin-stats-grid { grid-template-columns: 1fr; }
+            .admin-filter-bar { flex-direction: column; align-items: stretch; }
+            .admin-filter-bar .admin-form-input, .admin-filter-bar .admin-form-select { width: 100%; }
+            .admin-topbar-title { font-size: 1.1rem; }
+            .admin-modal-content { max-width:95%; padding:20px;}
+            .admin-table th, .admin-table td {white-space:normal;} /* Allow text wrap on smaller screens */
+            .admin-table th:nth-child(2), .admin-table td:nth-child(2), /* Cover images */
+            .admin-table th:nth-child(5), .admin-table td:nth-child(5), /* Submitted by/category etc. */
+            .admin-table th:nth-child(6), .admin-table td:nth-child(6)  /* Dates */
+            {
+                min-width: 120px; /* Give some min width */
+            }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Login Page -->
+    <div class="admin-login-page" id="adminLoginPage">
+        <div class="admin-login-container" data-aos="fade-up">
+            <div class="admin-login-logo"> <i class="fas fa-user-shield"></i> <span>EduSparK Admin</span> </div>
+            <h1 class="admin-login-title">Administrator Access</h1>
+            <form id="adminLoginForm">
+                <div class="admin-form-group"> <label for="adminLoginEmail" class="admin-form-label">Email</label> <input type="email" id="adminLoginEmail" class="admin-form-input" placeholder="admin@example.com" required> </div>
+                <div class="admin-form-group"> <label for="adminLoginPassword" class="admin-form-label">Password</label> <input type="password" id="adminLoginPassword" class="admin-form-input" placeholder="••••••••" required> </div>
+                <button type="submit" class="admin-submit-btn" id="adminLoginBtn"> <span class="spinner"></span> <span>Login</span> </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel (hidden by default) -->
+    <div class="admin-app" id="adminAppPanel">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-logo"> <i class="fas fa-chalkboard-teacher"></i> <span>EduSparK</span> </div>
+            <ul class="admin-nav-list">
+                <li><a class="admin-nav-item active" data-target="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <!-- NEW Sections -->
+                <li><a class="admin-nav-item" data-target="courseBatches"><i class="fas fa-layer-group"></i><span>Batches</span></a></li>
+                <li><a class="admin-nav-item" data-target="courseSubjects"><i class="fas fa-book"></i><span>Subjects</span></a></li>
+                <li><a class="admin-nav-item" data-target="courseLectures"><i class="fas fa-photo-video"></i><span>Lectures/Notes</span></a></li>
+                <!-- End NEW Sections -->
+                <li><a class="admin-nav-item" data-target="users"><i class="fas fa-users-cog"></i><span>Users</span></a></li>
+                <li><a class="admin-nav-item" data-target="books"><i class="fas fa-book-open"></i><span>Book Submissions</span></a></li>
+                <li><a class="admin-nav-item" data-target="withdrawals"><i class="fas fa-hand-holding-usd"></i><span>Withdrawals</span></a></li>
+                <li><a class="admin-nav-item" data-target="advertisements"><i class="fas fa-ad"></i><span>Advertisements</span></a></li>
+                <li><a class="admin-nav-item" data-target="notifications"><i class="fas fa-bullhorn"></i><span>Announcements</span></a></li>
+            </ul>
+            <div class="admin-sidebar-footer"> <button class="admin-btn admin-btn-danger" id="adminLogoutBtnSidebar" style="width:100%;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button> </div>
+        </aside>
+
+        <main class="admin-main-content">
+            <header class="admin-topbar">
+                <div style="display:flex; align-items:center; gap:15px;"> <button class="admin-menu-toggle" id="adminMenuToggle"><i class="fas fa-bars"></i></button> <h2 class="admin-topbar-title" id="adminPageTitle">Dashboard</h2> </div>
+                <div class="admin-topbar-actions"> <div class="admin-user-avatar" id="adminUserAvatar">A</div> <button class="admin-logout-btn" id="adminLogoutBtnTopbar" title="Logout"><i class="fas fa-sign-out-alt"></i></button> </div>
+            </header>
+
+            <div class="admin-page-content">
+                <section id="dashboardSection" class="admin-section active" data-aos="fade-in"> <div class="admin-stats-grid" id="dashboardStatsGrid"></div> </section>
+                
+                <!-- NEW: Course Batches Section -->
+                <section id="courseBatchesSection" class="admin-section" data-aos="fade-in">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">Manage Course Batches</h3>
+                            <button class="admin-btn admin-btn-primary" id="addCourseBatchModalBtn"><i class="fas fa-plus"></i> Add Batch</button>
+                        </div>
+                        <input type="text" id="courseBatchSearchInput" class="admin-form-input" placeholder="Search batches..." style="margin-bottom: 15px;">
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table" id="courseBatchesTable">
+                                <thead><tr><th>Image</th><th>Name</th><th>Instructor</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="courseBatchesTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="admin-empty-state" id="courseBatchesEmptyState" style="display:none;"><i class="fas fa-layer-group"></i><h3>No Batches Found</h3><p>Add new course batches to get started.</p></div>
+                    </div>
+                </section>
+
+                <!-- NEW: Course Subjects Section -->
+                <section id="courseSubjectsSection" class="admin-section" data-aos="fade-in">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">Manage Subjects</h3>
+                             <button class="admin-btn admin-btn-primary" id="addCourseSubjectModalBtn"><i class="fas fa-plus"></i> Add Subject</button>
+                        </div>
+                        <div class="admin-filter-bar">
+                             <select id="courseSubjectBatchFilter" class="admin-form-select"> <option value="">All Batches</option> </select>
+                             <input type="text" id="courseSubjectSearchInput" class="admin-form-input" placeholder="Search subjects...">
+                        </div>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table" id="courseSubjectsTable">
+                                <thead><tr><th>Cover</th><th>Name</th><th>Batch</th><th>Order</th><th>Actions</th></tr></thead>
+                                <tbody id="courseSubjectsTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="admin-empty-state" id="courseSubjectsEmptyState" style="display:none;"><i class="fas fa-book"></i><h3>No Subjects Found</h3><p>Add subjects to batches.</p></div>
+                    </div>
+                </section>
+
+                <!-- NEW: Course Lectures/Notes Section -->
+                <section id="courseLecturesSection" class="admin-section" data-aos="fade-in">
+                     <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">Manage Lectures & Notes</h3>
+                            <button class="admin-btn admin-btn-primary" id="addCourseLectureModalBtn"><i class="fas fa-plus"></i> Add Content</button>
+                        </div>
+                        <div class="admin-filter-bar">
+                            <select id="courseLectureBatchFilter" class="admin-form-select" style="min-width:180px;"><option value="">All Batches</option></select>
+                            <select id="courseLectureSubjectFilter" class="admin-form-select" style="min-width:180px;"><option value="">All Subjects</option></select>
+                            <input type="text" id="courseLectureSearchInput" class="admin-form-input" placeholder="Search content..." style="flex-grow:1;">
+                        </div>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table" id="courseLecturesTable">
+                                <thead><tr><th>Title</th><th>Type</th><th>Subject/Batch</th><th>Order</th><th>Free Preview</th><th>Actions</th></tr></thead>
+                                <tbody id="courseLecturesTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="admin-empty-state" id="courseLecturesEmptyState" style="display:none;"><i class="fas fa-photo-video"></i><h3>No Content Found</h3><p>Add lectures or notes to subjects.</p></div>
+                    </div>
+                </section>
+
+                <section id="usersSection" class="admin-section" data-aos="fade-in"> <div class="admin-card"> <div class="admin-card-header"> <h3 class="admin-card-title">Manage Users</h3> <input type="text" id="userSearchInput" class="admin-form-input" placeholder="Search users..." style="max-width:300px;"> </div> <div class="admin-table-wrapper"> <table class="admin-table" id="usersTable"> <thead> <tr> <th>Name</th> <th>Email</th> <th>Username</th> <th>Points</th> <th>Credits</th> <th>Status</th> <th>Joined</th> <th>Actions</th> </tr> </thead> <tbody id="usersTableBody"></tbody> </table> </div> <div class="admin-empty-state" id="usersEmptyState" style="display:none;"><i class="fas fa-users-slash"></i><h3>No Users Found</h3></div> </div> </section>
+                <section id="booksSection" class="admin-section" data-aos="fade-in"> <div class="admin-card"> <div class="admin-card-header" style="flex-direction: column; align-items: flex-start;"> <h3 class="admin-card-title" style="margin-bottom:15px;">Manage Book Submissions</h3> <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;" id="bookStatusTabs"> <button class="admin-btn admin-btn-secondary active" data-status="pending">Pending (<span id="pendingBooksCount">0</span>)</button> <button class="admin-btn admin-btn-secondary" data-status="approved">Approved (<span id="approvedBooksCount">0</span>)</button> <button class="admin-btn admin-btn-secondary" data-status="rejected">Rejected (<span id="rejectedBooksCount">0</span>)</button> <button class="admin-btn admin-btn-secondary" data-status="all">All (<span id="allBooksCount">0</span>)</button> </div> <div class="admin-filter-bar" style="width:100%;"> <input type="text" id="bookSearchInput" class="admin-form-input" placeholder="Search books..."> </div> </div> <div class="admin-bulk-actions-bar" id="booksBulkActionsBar"> <span><span id="selectedBooksCount">0</span> book(s) selected</span> <button class="admin-btn admin-btn-sm admin-btn-primary" id="bulkApproveBooksBtn"><i class="fas fa-check-circle"></i> Approve</button> <button class="admin-btn admin-btn-sm admin-btn-warning" id="bulkRejectBooksBtn"><i class="fas fa-times-circle"></i> Reject</button> <button class="admin-btn admin-btn-sm admin-btn-danger" id="bulkDeleteBooksBtn"><i class="fas fa-trash-alt"></i> Delete</button> </div> <div class="admin-table-wrapper"> <table class="admin-table" id="booksTable"> <thead><tr><th><input type="checkbox" id="selectAllBooksCheckbox"></th><th>Cover</th><th>Title / Author</th><th>Category</th><th>Submitted By</th><th>Date</th><th>Status</th><th>Downloads</th><th>Actions</th></tr></thead> <tbody id="booksTableBody"></tbody> </table> </div> <div class="admin-empty-state" id="booksEmptyState" style="display:none;"><i class="fas fa-book"></i><h3>No Books Found</h3></div> </div> </section>
+                <section id="withdrawalsSection" class="admin-section" data-aos="fade-in"> <div class="admin-card"> <div class="admin-card-header"> <h3 class="admin-card-title">Manage Withdrawals</h3> <div style="display:flex; gap:10px;" id="withdrawalStatusTabs"> <button class="admin-btn admin-btn-secondary active" data-status="pending">Pending (<span id="pendingWithdrawalsCount">0</span>)</button> <button class="admin-btn admin-btn-secondary" data-status="completed">Completed (<span id="completedWithdrawalsCount">0</span>)</button> <button class="admin-btn admin-btn-secondary" data-status="rejected">Rejected (<span id="rejectedWithdrawalsCount">0</span>)</button> </div> </div> <div class="admin-table-wrapper"> <table class="admin-table" id="withdrawalsTable"> <thead><tr><th>User (Email)</th><th>Amount (Pts/Rs)</th><th>Method</th><th>Details</th><th>Requested At</th><th>Status</th><th>Actions</th></tr></thead> <tbody id="withdrawalsTableBody"></tbody> </table> </div> <div class="admin-empty-state" id="withdrawalsEmptyState" style="display:none;"><i class="fas fa-file-invoice-dollar"></i><h3>No Withdrawals Found</h3></div> </div> </section>
+                <section id="advertisementsSection" class="admin-section" data-aos="fade-in"> <div class="admin-card"> <div class="admin-card-header"> <h3 class="admin-card-title">Create New Advertisement</h3> </div> <form id="addAdvertisementForm"> <div class="admin-form-group"> <label for="adTitleInput" class="admin-form-label">Title *</label> <input type="text" id="adTitleInput" class="admin-form-input" required> </div> <div class="admin-form-group"> <label for="adDescriptionInput" class="admin-form-label">Description (Optional - for fullscreen ad)</label> <textarea id="adDescriptionInput" class="admin-form-textarea" rows="2"></textarea> </div> <div class="admin-form-group"> <label for="adImageUrlInput" class="admin-form-label">Image URL *</label> <input type="url" id="adImageUrlInput" class="admin-form-input" placeholder="https://example.com/ad-image.png" required> </div> <div class="admin-form-group"> <label for="adTargetUrlInput" class="admin-form-label">Target URL (Link) *</label> <input type="url" id="adTargetUrlInput" class="admin-form-input" placeholder="https://advertiser.com/offer" required> </div> <div class="admin-form-group"> <label for="adPlacementInput" class="admin-form-label">Placement *</label> <select id="adPlacementInput" class="admin-form-select"> <option value="initial_fullscreen">Initial Fullscreen</option> <option value="inline_spot_1">Inline Spot 1</option> <option value="inline_spot_2">Inline Spot 2</option> <option value="inline_spot_3">Inline Spot 3</option> </select> </div> <div class="admin-form-group"> <label for="adDisplayDurationInput" class="admin-form-label">Display Duration (sec, Fullscreen)</label> <input type="number" id="adDisplayDurationInput" class="admin-form-input" value="5" min="1"> </div> <div class="admin-form-group"> <label class="admin-form-label"> <input type="checkbox" id="adIsActiveInput" checked style="width:auto; margin-right:8px; vertical-align:middle;"> Is Active? </label> </div> <button type="submit" class="admin-btn admin-btn-primary" id="saveAdvertisementBtn"> <span class="spinner"></span> <i class="fas fa-plus-circle"></i> Add Advertisement </button> </form> </div> <div class="admin-card" style="margin-top:30px;"> <div class="admin-card-header"> <h3 class="admin-card-title">Manage Advertisements</h3> <input type="text" id="advertisementSearchInput" class="admin-form-input" placeholder="Search ads..." style="max-width:300px;"> </div> <div class="admin-table-wrapper"> <table class="admin-table" id="advertisementsTable"> <thead> <tr> <th>Image</th> <th>Title</th> <th>Placement</th> <th class="wrap-text">Target URL</th> <th>Status</th> <th>Actions</th> </tr> </thead> <tbody id="advertisementsTableBody"></tbody> </table> </div> <div class="admin-empty-state" id="advertisementsEmptyState" style="display:none;"><i class="fas fa-ad"></i><h3>No Advertisements Found</h3></div> </div> </section>
+                <section id="notificationsSection" class="admin-section" data-aos="fade-in"> <div class="admin-card"> <div class="admin-card-header"> <h3 class="admin-card-title">Send Announcement</h3> </div> <form id="sendAnnouncementForm"> <div class="admin-form-group"> <label for="announcementTitle" class="admin-form-label">Title *</label> <input type="text" id="announcementTitle" class="admin-form-input" required> </div> <div class="admin-form-group"> <label for="announcementMessage" class="admin-form-label">Message *</label> <textarea id="announcementMessage" class="admin-form-textarea" rows="4" required></textarea> </div> <div class="admin-form-group"> <label for="announcementType" class="admin-form-label">Type</label> <select id="announcementType" class="admin-form-select"> <option value="info">Info</option> <option value="success">Success</option> <option value="warning">Warning</option> <option value="error">Error</option> <option value="announcement">Announcement (Theme)</option></select> </div> <div class="admin-form-group"> <label for="announcementIcon" class="admin-form-label">Icon Class</label> <input type="text" id="announcementIcon" class="admin-form-input" placeholder="fas fa-info-circle"> </div> <div class="admin-form-group"> <label for="announcementActionLink" class="admin-form-label">Action Link</label> <input type="text" id="announcementActionLink" class="admin-form-input"> </div> <button type="submit" class="admin-btn admin-btn-primary" id="sendAnnouncementBtnLocal"> <span class="spinner"></span> <i class="fas fa-paper-plane"></i> Send</button> </form> </div> <div class="admin-card" style="margin-top:30px;"> <div class="admin-card-header"> <h3 class="admin-card-title">Recent Announcements</h3> </div> <div id="recentAnnouncementsList"><div class="admin-empty-state" id="announcementsEmptyState" style="min-height:100px; padding:20px;"><i class="fas fa-scroll"></i><p>No announcements.</p></div></div> </div> </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (Existing and New) -->
+    <div class="admin-modal" id="editBookModal"><div class="admin-modal-content" style="max-width: 700px;"><button class="admin-modal-close" data-modal-id="editBookModal">&times;</button><h2 class="admin-modal-title">Edit Book Details</h2><form id="editBookForm"><input type="hidden" id="editBookId"><input type="hidden" id="editBookSourceCollection"><div class="admin-form-group"><label for="editBookName" class="admin-form-label">Book Title *</label><input type="text" id="editBookName" class="admin-form-input" required></div><div class="admin-form-group"><label for="editAuthorName" class="admin-form-label">Author(s) *</label><input type="text" id="editAuthorName" class="admin-form-input" required></div><div class="admin-form-group"><label for="editBookCategory" class="admin-form-label">Category *</label><input type="text" id="editBookCategory" class="admin-form-input" required></div><div class="admin-form-group"><label for="editBookImageUrl" class="admin-form-label">Cover Image URL *</label><input type="url" id="editBookImageUrl" class="admin-form-input" required></div><div class="admin-form-group"><label for="editDriveLink" class="admin-form-label">Google Drive Link *</label><input type="url" id="editDriveLink" class="admin-form-input" required></div><div class="admin-form-group"><label for="editBookDescription" class="admin-form-label">Description</label><textarea id="editBookDescription" class="admin-form-textarea" rows="3"></textarea></div><div class="admin-modal-actions"><button type="button" class="admin-btn admin-btn-secondary" data-modal-id="editBookModal">Cancel</button><button type="submit" class="admin-btn admin-btn-primary" id="saveBookChangesBtnLocal"><span class="spinner"></span>Save Changes</button></div></form></div></div>
+    <div class="admin-modal" id="viewUserModal"><div class="admin-modal-content" style="max-width: 750px;"><button class="admin-modal-close" data-modal-id="viewUserModal">&times;</button><h2 class="admin-modal-title">User Details & Actions</h2><div id="viewUserContent"></div><div class="admin-modal-actions" id="viewUserActions" style="margin-top:20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:20px;"></div></div></div>
+    <div class="admin-modal" id="rejectionReasonModal"><div class="admin-modal-content" style="max-width: 500px;"><button class="admin-modal-close" data-modal-id="rejectionReasonModal">&times;</button><h2 class="admin-modal-title">Provide Rejection Reason</h2><form id="rejectionReasonForm"><input type="hidden" id="rejectionBookId"><div class="admin-form-group"><label for="rejectionReasonInput" class="admin-form-label">Reason *</label><textarea id="rejectionReasonInput" class="admin-form-textarea" rows="3" required placeholder="Briefly explain..."></textarea></div><div class="admin-modal-actions"><button type="button" class="admin-btn admin-btn-secondary" data-modal-id="rejectionReasonModal">Cancel</button><button type="submit" class="admin-btn admin-btn-danger" id="confirmRejectionBtnLocal"><span class="spinner"></span>Confirm Rejection</button></div></form></div></div>
+    <div class="admin-modal" id="withdrawalActionModal"><div class="admin-modal-content" style="max-width: 550px;"><button class="admin-modal-close" data-modal-id="withdrawalActionModal">&times;</button><h2 class="admin-modal-title">Process Withdrawal</h2><div id="withdrawalActionDetails"></div><form id="withdrawalActionForm" style="margin-top:20px;"><div class="admin-form-group"><label for="withdrawalAdminNotes" class="admin-form-label">Admin Notes (Optional)</label><textarea id="withdrawalAdminNotes" class="admin-form-textarea" rows="2" placeholder="Transaction ID..."></textarea></div><div class="admin-modal-actions"><button type="button" class="admin-btn admin-btn-secondary" data-modal-id="withdrawalActionModal">Cancel</button><button type="button" class="admin-btn admin-btn-danger" id="rejectWithdrawalBtnLocal"><i class="fas fa-times-circle"></i> Reject</button><button type="button" class="admin-btn admin-btn-primary" id="approveWithdrawalBtnLocal"><i class="fas fa-check-circle"></i> Mark as Completed</button></div></form></div></div>
+    <div class="admin-modal" id="editAdvertisementModal"><div class="admin-modal-content" style="max-width: 700px;"><button class="admin-modal-close" data-modal-id="editAdvertisementModal">&times;</button><h2 class="admin-modal-title">Edit Advertisement</h2><form id="editAdvertisementForm"><input type="hidden" id="editAdId"><div class="admin-form-group"><label for="editAdTitleInput" class="admin-form-label">Title *</label><input type="text" id="editAdTitleInput" class="admin-form-input" required></div><div class="admin-form-group"><label for="editAdDescriptionInput" class="admin-form-label">Description</label><textarea id="editAdDescriptionInput" class="admin-form-textarea" rows="2"></textarea></div><div class="admin-form-group"><label for="editAdImageUrlInput" class="admin-form-label">Image URL *</label><input type="url" id="editAdImageUrlInput" class="admin-form-input" required></div><div class="admin-form-group"><label for="editAdTargetUrlInput" class="admin-form-label">Target URL *</label><input type="url" id="editAdTargetUrlInput" class="admin-form-input" required></div><div class="admin-form-group"><label for="editAdPlacementInput" class="admin-form-label">Placement *</label><select id="editAdPlacementInput" class="admin-form-select"><option value="initial_fullscreen">Initial Fullscreen</option><option value="inline_spot_1">Inline Spot 1</option><option value="inline_spot_2">Inline Spot 2</option><option value="inline_spot_3">Inline Spot 3</option></select></div><div class="admin-form-group"><label for="editAdDisplayDurationInput" class="admin-form-label">Duration (sec, Fullscreen)</label><input type="number" id="editAdDisplayDurationInput" class="admin-form-input" value="5" min="1"></div><div class="admin-form-group"><label class="admin-form-label"><input type="checkbox" id="editAdIsActiveInput" style="width:auto; margin-right:8px; vertical-align:middle;">Is Active?</label></div><div class="admin-modal-actions"><button type="button" class="admin-btn admin-btn-secondary" data-modal-id="editAdvertisementModal">Cancel</button><button type="submit" class="admin-btn admin-btn-primary" id="saveAdChangesBtnLocal"><span class="spinner"></span>Save Changes</button></div></form></div></div>
+    
+    <!-- NEW Modals for Batches, Subjects, Lectures -->
+    <div class="admin-modal" id="courseBatchModal">
+        <div class="admin-modal-content" style="max-width: 700px;">
+            <button class="admin-modal-close" data-modal-id="courseBatchModal">&times;</button>
+            <h2 class="admin-modal-title" id="courseBatchModalTitle">Add New Batch</h2>
+            <form id="courseBatchForm">
+                <input type="hidden" id="courseBatchEditId">
+                <div class="admin-form-group"> <label for="courseBatchName" class="admin-form-label">Batch Name *</label> <input type="text" id="courseBatchName" class="admin-form-input" required> </div>
+                <div class="admin-form-group"> <label for="courseBatchDescription" class="admin-form-label">Description</label> <textarea id="courseBatchDescription" class="admin-form-textarea" rows="2"></textarea> </div>
+                <div class="admin-form-group"> <label for="courseBatchImageUrl" class="admin-form-label">Image URL *</label> <input type="url" id="courseBatchImageUrl" class="admin-form-input" placeholder="https://..." required> </div>
+                <div class="admin-form-group"> <label for="courseBatchInstructorName" class="admin-form-label">Instructor Name</label> <input type="text" id="courseBatchInstructorName" class="admin-form-input"> </div>
+                <div class="admin-form-group"> <label for="courseBatchDurationText" class="admin-form-label">Duration Text</label> <input type="text" id="courseBatchDurationText" class="admin-form-input" placeholder="e.g., 1 Year, 6 Months"> </div>
+                <div class="admin-form-group"> <label for="courseBatchPriceDisplay" class="admin-form-label">Price Display *</label> <input type="text" id="courseBatchPriceDisplay" class="admin-form-input" placeholder="e.g., ₹4999 or Free" required> </div>
+                <div class="admin-form-group"> <label for="courseBatchDifficulty" class="admin-form-label">Difficulty</label> <input type="text" id="courseBatchDifficulty" class="admin-form-input" placeholder="e.g., Beginner, Intermediate"> </div>
+                <div class="admin-form-group"> <label for="courseBatchLink" class="admin-form-label">Enrollment/External Link</label> <input type="url" id="courseBatchLink" class="admin-form-input" placeholder="https://..."> </div>
+                <div class="admin-form-group"> <label for="courseBatchOrder" class="admin-form-label">Display Order (Optional)</label> <input type="number" id="courseBatchOrder" class="admin-form-input" value="0"> </div>
+                <div class="admin-form-group"> <label class="admin-form-label"> <input type="checkbox" id="courseBatchStatus" checked style="width:auto; margin-right:8px; vertical-align:middle;"> Is Active? </label> </div>
+                <div class="admin-modal-actions">
+                    <button type="button" class="admin-btn admin-btn-secondary" data-modal-id="courseBatchModal">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary" id="saveCourseBatchBtn"> <span class="spinner"></span>Save Batch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="courseSubjectModal">
+        <div class="admin-modal-content">
+            <button class="admin-modal-close" data-modal-id="courseSubjectModal">&times;</button>
+            <h2 class="admin-modal-title" id="courseSubjectModalTitle">Add New Subject</h2>
+            <form id="courseSubjectForm">
+                <input type="hidden" id="courseSubjectEditId">
+                <div class="admin-form-group">
+                    <label for="courseSubjectParentBatch" class="admin-form-label">Parent Batch *</label>
+                    <select id="courseSubjectParentBatch" class="admin-form-select" required></select>
+                </div>
+                <div class="admin-form-group"> <label for="courseSubjectName" class="admin-form-label">Subject Name *</label> <input type="text" id="courseSubjectName" class="admin-form-input" required> </div>
+                <div class="admin-form-group"> <label for="courseSubjectDescription" class="admin-form-label">Description</label> <textarea id="courseSubjectDescription" class="admin-form-textarea" rows="2"></textarea> </div>
+                <div class="admin-form-group"> <label for="courseSubjectCoverImageUrl" class="admin-form-label">Cover Image URL</label> <input type="url" id="courseSubjectCoverImageUrl" class="admin-form-input" placeholder="https://..."> </div>
+                <div class="admin-form-group"> <label for="courseSubjectIconClass" class="admin-form-label">Icon Class (Font Awesome)</label> <input type="text" id="courseSubjectIconClass" class="admin-form-input" placeholder="e.g., fas fa-flask"> </div>
+                <div class="admin-form-group"> <label for="courseSubjectOrder" class="admin-form-label">Display Order *</label> <input type="number" id="courseSubjectOrder" class="admin-form-input" value="0" required> </div>
+                <div class="admin-modal-actions">
+                    <button type="button" class="admin-btn admin-btn-secondary" data-modal-id="courseSubjectModal">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary" id="saveCourseSubjectBtn"><span class="spinner"></span>Save Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admin-modal" id="courseLectureModal">
+        <div class="admin-modal-content" style="max-width: 750px;">
+            <button class="admin-modal-close" data-modal-id="courseLectureModal">&times;</button>
+            <h2 class="admin-modal-title" id="courseLectureModalTitle">Add New Content</h2>
+            <form id="courseLectureForm">
+                <input type="hidden" id="courseLectureEditId">
+                <div class="admin-form-group">
+                    <label for="courseLectureParentBatchModal" class="admin-form-label">Parent Batch *</label>
+                    <select id="courseLectureParentBatchModal" class="admin-form-select" required></select>
+                </div>
+                <div class="admin-form-group">
+                    <label for="courseLectureParentSubjectModal" class="admin-form-label">Parent Subject *</label>
+                    <select id="courseLectureParentSubjectModal" class="admin-form-select" required></select>
+                </div>
+                <div class="admin-form-group"> <label for="courseLectureTitle" class="admin-form-label">Title *</label> <input type="text" id="courseLectureTitle" class="admin-form-input" required> </div>
+                <div class="admin-form-group"> <label for="courseLectureType" class="admin-form-label">Type *</label> <select id="courseLectureType" class="admin-form-select" required> <option value="lecture">Lecture (Video)</option> <option value="notes">Notes (PDF)</option> </select> </div>
+                <div class="admin-form-group"> <label for="courseLectureDescription" class="admin-form-label">Description</label> <textarea id="courseLectureDescription" class="admin-form-textarea" rows="2"></textarea> </div>
+                <div class="admin-form-group" id="courseLectureVideoUrlGroup"> <label for="courseLectureVideoUrl" class="admin-form-label">Video URL (YouTube, Vimeo, etc.)</label> <input type="url" id="courseLectureVideoUrl" class="admin-form-input" placeholder="https://..."> </div>
+                <div class="admin-form-group" id="courseLecturePdfUrlGroup" style="display:none;"> <label for="courseLecturePdfUrl" class="admin-form-label">PDF URL</label> <input type="url" id="courseLecturePdfUrl" class="admin-form-input" placeholder="https://..."> </div>
+                 <div class="admin-form-group" id="courseLectureDurationGroup"> <label for="courseLectureDurationMinutes" class="admin-form-label">Duration (Minutes)</label> <input type="number" id="courseLectureDurationMinutes" class="admin-form-input" min="0"> </div>
+                <div class="admin-form-group"> <label for="courseLectureOrder" class="admin-form-label">Display Order *</label> <input type="number" id="courseLectureOrder" class="admin-form-input" value="0" required> </div>
+                <div class="admin-form-group"> <label class="admin-form-label"> <input type="checkbox" id="courseLectureIsFreePreview" style="width:auto; margin-right:8px; vertical-align:middle;"> Free Preview? </label> </div>
+                <div class="admin-modal-actions">
+                    <button type="button" class="admin-btn admin-btn-secondary" data-modal-id="courseLectureModal">Cancel</button>
+                    <button type="submit" class="admin-btn admin-btn-primary" id="saveCourseLectureBtn"><span class="spinner"></span>Save Content</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="adminToastContainer"></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+    // SCRIPT START
+    AOS.init({ duration: 400, easing: 'ease-out-cubic', once: true, offset: 20 });
+
+    const firebaseConfigGeo = {
+        apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", // FROM YOUR FILE
+        authDomain: "eduspark-new.firebaseapp.com", // FROM YOUR FILE
+        projectId: "eduspark-new", // FROM YOUR FILE
+        storageBucket: "eduspark-new.appspot.com", // FROM YOUR FILE
+        messagingSenderId: "564501033350", // FROM YOUR FILE
+        appId: "1:564501033350:web:70c0f9873f96e9bd74fc07", // FROM YOUR FILE
+        measurementId: "G-NM2SE3DE7J" // FROM YOUR FILE
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfigGeo);
+    }
+    
+    const authGeo = firebase.auth();
+    const dbGeo = firebase.firestore();
+    const storageGeo = firebase.storage(); // Added for potential file uploads if needed later
+    const appCheckGeo = firebase.appCheck(); 
+
+    try {
+        appCheckGeo.activate('6LdDiuMpAAAAAGoO-_P1cO55PpTRwxQw5QRI90e1', true); // Key from your batches.html (should be different for admin if domain specific)
+    } catch (error) {
+        console.warn("Firebase App Check for admin panel not activated or error:", error.message);
+    }
+
+    // DOM Helper
+    const $geo = (selector) => document.querySelector(selector);
+    const $$geo = (selector) => document.querySelectorAll(selector);
+
+    // Admin Elements
+    const adminElementsGeo = {
+        loginPage: $geo('#adminLoginPage'),
+        loginForm: $geo('#adminLoginForm'),
+        loginBtn: $geo('#adminLoginBtn'),
+        appPanel: $geo('#adminAppPanel'),
+        sidebar: $geo('#adminSidebar'),
+        menuToggle: $geo('#adminMenuToggle'),
+        pageTitle: $geo('#adminPageTitle'),
+        adminUserAvatar: $geo('#adminUserAvatar'),
+        logoutBtnSidebar: $geo('#adminLogoutBtnSidebar'),
+        logoutBtnTopbar: $geo('#adminLogoutBtnTopbar'),
+        navItems: $$geo('.admin-nav-item'),
+        sections: $$geo('.admin-section'),
+        // Dashboard
+        dashboardStatsGrid: $geo('#dashboardStatsGrid'),
+        // Users
+        usersTableBody: $geo('#usersTableBody'),
+        userSearchInput: $geo('#userSearchInput'),
+        usersEmptyState: $geo('#usersEmptyState'),
+        // Book Submissions
+        booksTableBody: $geo('#booksTableBody'),
+        bookSearchInput: $geo('#bookSearchInput'),
+        booksEmptyState: $geo('#booksEmptyState'),
+        bookStatusTabs: $geo('#bookStatusTabs'),
+        pendingBooksCount: $geo('#pendingBooksCount'),
+        approvedBooksCount: $geo('#approvedBooksCount'),
+        rejectedBooksCount: $geo('#rejectedBooksCount'),
+        allBooksCount: $geo('#allBooksCount'),
+        selectAllBooksCheckbox: $geo('#selectAllBooksCheckbox'),
+        booksBulkActionsBar: $geo('#booksBulkActionsBar'),
+        selectedBooksCount: $geo('#selectedBooksCount'),
+        bulkApproveBooksBtn: $geo('#bulkApproveBooksBtn'),
+        bulkRejectBooksBtn: $geo('#bulkRejectBooksBtn'),
+        bulkDeleteBooksBtn: $geo('#bulkDeleteBooksBtn'),
+        // Withdrawals
+        withdrawalsTableBody: $geo('#withdrawalsTableBody'),
+        withdrawalsEmptyState: $geo('#withdrawalsEmptyState'),
+        withdrawalStatusTabs: $geo('#withdrawalStatusTabs'),
+        pendingWithdrawalsCount: $geo('#pendingWithdrawalsCount'),
+        completedWithdrawalsCount: $geo('#completedWithdrawalsCount'),
+        rejectedWithdrawalsCount: $geo('#rejectedWithdrawalsCount'),
+        // Announcements
+        sendAnnouncementForm: $geo('#sendAnnouncementForm'),
+        sendAnnouncementBtn: $geo('#sendAnnouncementBtnLocal'),
+        recentAnnouncementsList: $geo('#recentAnnouncementsList'),
+        announcementsEmptyState: $geo('#announcementsEmptyState'),
+        // Advertisements
+        advertisementsSection: $geo('#advertisementsSection'),
+        addAdvertisementForm: $geo('#addAdvertisementForm'),
+        saveAdvertisementBtn: $geo('#saveAdvertisementBtn'),
+        advertisementsTableBody: $geo('#advertisementsTableBody'),
+        advertisementsEmptyState: $geo('#advertisementsEmptyState'),
+        advertisementSearchInput: $geo('#advertisementSearchInput'),
+        editAdvertisementModal: $geo('#editAdvertisementModal'),
+        editAdvertisementForm: $geo('#editAdvertisementForm'),
+        saveAdChangesBtn: $geo('#saveAdChangesBtnLocal'),
+        // Modals (Existing)
+        editBookModal: $geo('#editBookModal'),
+        editBookForm: $geo('#editBookForm'),
+        saveBookChangesBtn: $geo('#saveBookChangesBtnLocal'),
+        viewUserModal: $geo('#viewUserModal'),
+        viewUserContent: $geo('#viewUserContent'),
+        viewUserActions: $geo('#viewUserActions'),
+        rejectionReasonModal: $geo('#rejectionReasonModal'),
+        rejectionReasonForm: $geo('#rejectionReasonForm'),
+        confirmRejectionBtn: $geo('#confirmRejectionBtnLocal'),
+        withdrawalActionModal: $geo('#withdrawalActionModal'),
+        withdrawalActionDetails: $geo('#withdrawalActionDetails'),
+        withdrawalActionForm: $geo('#withdrawalActionForm'),
+        approveWithdrawalBtn: $geo('#approveWithdrawalBtnLocal'),
+        rejectWithdrawalBtn: $geo('#rejectWithdrawalBtnLocal'),
+        // Toast
+        toastContainer: $geo('#adminToastContainer'),
+
+        // --- NEW Elements for Batches, Subjects, Lectures ---
+        // Course Batches
+        courseBatchesSection: $geo('#courseBatchesSection'),
+        addCourseBatchModalBtn: $geo('#addCourseBatchModalBtn'),
+        courseBatchModal: $geo('#courseBatchModal'),
+        courseBatchModalTitle: $geo('#courseBatchModalTitle'),
+        courseBatchForm: $geo('#courseBatchForm'),
+        saveCourseBatchBtn: $geo('#saveCourseBatchBtn'),
+        courseBatchSearchInput: $geo('#courseBatchSearchInput'),
+        courseBatchesTableBody: $geo('#courseBatchesTableBody'),
+        courseBatchesEmptyState: $geo('#courseBatchesEmptyState'),
+        // Course Subjects
+        courseSubjectsSection: $geo('#courseSubjectsSection'),
+        addCourseSubjectModalBtn: $geo('#addCourseSubjectModalBtn'),
+        courseSubjectModal: $geo('#courseSubjectModal'),
+        courseSubjectModalTitle: $geo('#courseSubjectModalTitle'),
+        courseSubjectForm: $geo('#courseSubjectForm'),
+        courseSubjectParentBatchSelect: $geo('#courseSubjectParentBatch'), // For subject form
+        saveCourseSubjectBtn: $geo('#saveCourseSubjectBtn'),
+        courseSubjectBatchFilter: $geo('#courseSubjectBatchFilter'), // For subject table filter
+        courseSubjectSearchInput: $geo('#courseSubjectSearchInput'),
+        courseSubjectsTableBody: $geo('#courseSubjectsTableBody'),
+        courseSubjectsEmptyState: $geo('#courseSubjectsEmptyState'),
+        // Course Lectures
+        courseLecturesSection: $geo('#courseLecturesSection'),
+        addCourseLectureModalBtn: $geo('#addCourseLectureModalBtn'),
+        courseLectureModal: $geo('#courseLectureModal'),
+        courseLectureModalTitle: $geo('#courseLectureModalTitle'),
+        courseLectureForm: $geo('#courseLectureForm'),
+        courseLectureParentBatchModalSelect: $geo('#courseLectureParentBatchModal'), // For lecture form
+        courseLectureParentSubjectModalSelect: $geo('#courseLectureParentSubjectModal'), // For lecture form
+        courseLectureTypeSelect: $geo('#courseLectureType'),
+        courseLectureVideoUrlGroup: $geo('#courseLectureVideoUrlGroup'),
+        courseLecturePdfUrlGroup: $geo('#courseLecturePdfUrlGroup'),
+        courseLectureDurationGroup: $geo('#courseLectureDurationGroup'),
+        saveCourseLectureBtn: $geo('#saveCourseLectureBtn'),
+        courseLectureBatchFilter: $geo('#courseLectureBatchFilter'), // For lecture table filter
+        courseLectureSubjectFilter: $geo('#courseLectureSubjectFilter'), // For lecture table filter
+        courseLectureSearchInput: $geo('#courseLectureSearchInput'),
+        courseLecturesTableBody: $geo('#courseLecturesTableBody'),
+        courseLecturesEmptyState: $geo('#courseLecturesEmptyState'),
+    };
+    
+    // Global State
+    let currentAdminUserGeo = null;
+    let currentAdminDataGeo = null;
+    let currentBookViewGeo = 'pending'; // For book submissions
+    let currentWithdrawalViewGeo = 'pending';
+    let selectedBookIdsForBulkActionGeo = [];
+    // Caches for existing features
+    let pendingBooksCacheGeo = [];
+    let approvedBooksCacheGeo = [];
+    let rejectedBooksCacheGeo = [];
+    let usersCacheGeo = [];
+    let withdrawalsCacheGeo = [];
+    let adsCacheGeo = []; 
+    // --- NEW Caches ---
+    let courseBatchesCacheGeo = [];
+    let courseSubjectsCacheGeo = [];
+    let courseLecturesCacheGeo = [];
+    
+    let currentWithdrawalIdForActionGeo = null; // For withdrawals modal
+    let currentEditingCourseBatchId = null;
+    let currentEditingCourseSubjectId = null;
+    let currentEditingCourseLectureId = null;
+    
+    let listenersGeo = {}; // To store Firebase listeners
+
+    // --- UTILITY FUNCTIONS --- (Same as your provided code, with slight tweaks if necessary)
+    function escapeHTMLGeo(str) { 
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>"']/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match]));
+    }
+    function showAdminToastGeo(message, type = "info", duration = 3500) { 
+        if (!adminElementsGeo.toastContainer) { console.warn("Toast container not found."); return; }
+        const toastId = 'toast-' + Date.now();
+        const toast = document.createElement('div');
+        toast.className = `admin-toast ${type}`;
+        toast.id = toastId;
+        let iconClass = 'fas fa-info-circle';
+        if (type === 'success') iconClass = 'fas fa-check-circle';
+        else if (type === 'error') iconClass = 'fas fa-times-circle';
+        else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+
+        toast.innerHTML = `<i class="${iconClass}"></i><span>${escapeHTMLGeo(message)}</span><button class="admin-toast-close" aria-label="Close toast">&times;</button>`;
+        adminElementsGeo.toastContainer.appendChild(toast);
+        requestAnimationFrame(() => {toast.style.opacity = '1'; toast.classList.add('show'); });
+
+        const closeBtn = toast.querySelector('.admin-toast-close');
+        if (closeBtn) closeBtn.onclick = () => {
+            toast.classList.remove('show');
+            toast.style.opacity = '0';
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500);
+        };
+        const timeoutId = setTimeout(() => {
+            if(document.getElementById(toastId)){ 
+                toast.classList.remove('show');
+                toast.style.opacity = '0';
+                setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500);
+            }
+        }, duration);
+        toast.dataset.timeoutId = timeoutId; // Store for potential clearing
+    }
+    function toggleAdminSpinnerGeo(btn, show) { 
+        if (!btn) return;
+        const spinner = btn.querySelector('.spinner');
+        if (show) {
+            btn.classList.add('loading');
+            btn.disabled = true;
+            if (spinner) spinner.style.display = 'inline-block';
+            btn.childNodes.forEach(child => { if ((child.nodeName === "SPAN" && !child.classList.contains("spinner")) || child.nodeName === "I" ) { if(child.style) child.style.opacity = '0'; } });
+        } else {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+            if (spinner) spinner.style.display = 'none';
+            btn.childNodes.forEach(child => { if ((child.nodeName === "SPAN" && !child.classList.contains("spinner")) || child.nodeName === "I" ) { if(child.style) child.style.opacity = '1'; } });
+        }
+    }
+    function openAdminModalGeo(modalId) { 
+        const modal = $geo(`#${modalId}`);
+            if (modal) {
+                modal.classList.add('active');
+                if(document.body) document.body.style.overflow = 'hidden';
+                 AOS.refresh(); // Refresh AOS for modal content if it uses AOS
+            } else {
+                console.warn(`Modal with ID "${modalId}" not found.`);
+            }
+    }
+    function closeAdminModalGeo(modalId) {
+         const modal = $geo(`#${modalId}`);
+        if (modal) modal.classList.remove('active');
+        const anyModalActive = $$geo('.admin-modal.active').length > 0;
+        if (!anyModalActive && document.body) {
+            document.body.style.overflow = 'auto';
+        }
+    }
+    function formatDateGeo(ts, includeTime = false) {
+        if (!ts) return 'N/A';
+        const date = ts.toDate ? ts.toDate() : new Date(ts);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        if (includeTime) {
+            options.hour = 'numeric';
+            options.minute = '2-digit';
+            options.hour12 = true;
+        }
+        try {
+            return date.toLocaleDateString(undefined, options);
+        } catch (e) { return 'Invalid Date'; }
+     }
+    function getInitialsGeo(name) {
+        if (!name || typeof name !== 'string') return 'A';
+        const parts = name.trim().split(' ').filter(p => p.length > 0);
+        if (parts.length === 0) return 'A';
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+    
+    function cleanupAllListenersGeo() {
+        for (const key in listenersGeo) {
+            if (listenersGeo[key]) {
+                try { listenersGeo[key](); } // Firebase returns an unsubscribe function
+                catch (e) { console.warn("Error unsubscribing listener:", key, e); }
+                listenersGeo[key] = null;
+            }
+        }
+        console.log("All Firebase listeners cleaned up.");
+    }
+
+
+    // Add modal close button listeners universally
+    $$geo('.admin-modal-close').forEach(btn => {
+        if(btn) btn.addEventListener('click', (e) => {
+             const modalId = e.currentTarget.dataset.modalId || e.currentTarget.closest('.admin-modal')?.id;
+             if (modalId) closeAdminModalGeo(modalId);
+        });
+    });
+    $$geo('.admin-modal').forEach(modal => { // Close on backdrop click
+        if (modal) modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeAdminModalGeo(modal.id);
+        });
+    });
+
+
+    // --- AUTHENTICATION ---
+    authGeo.onAuthStateChanged(async user => {
+        cleanupAllListenersGeo(); // Important: Cleanup before setting new ones or on logout
+        if (user) {
+            try {
+                const userDocRef = dbGeo.collection('ak_users').doc(user.uid);
+                const doc = await userDocRef.get();
+                if (doc.exists && doc.data().role === 'admin') {
+                    currentAdminUserGeo = user;
+                    currentAdminDataGeo = { id: doc.id, ...doc.data() };
+                    if (adminElementsGeo.loginPage) adminElementsGeo.loginPage.style.display = 'none';
+                    if (adminElementsGeo.appPanel) adminElementsGeo.appPanel.style.display = 'flex';
+                    if (adminElementsGeo.adminUserAvatar) adminElementsGeo.adminUserAvatar.textContent = getInitialsGeo(currentAdminDataGeo.name);
+                    if (document.body) document.body.style.flexDirection = 'row'; 
+                    initializeAdminPanelGeo();
+                } else {
+                    showAdminToastGeo("Access Denied. Admin privileges required.", "error");
+                    authGeo.signOut().catch(e => console.error("Sign out error during admin check fail", e)); 
+                    displayLoginPageGeo();
+                }
+            } catch (error) {
+                console.error("Error checking admin role:", error);
+                showAdminToastGeo("Error verifying admin status: " + error.message, "error");
+                authGeo.signOut().catch(e => console.error("Sign out error during admin check error", e));
+                displayLoginPageGeo();
+            }
+        } else {
+            currentAdminUserGeo = null;
+            currentAdminDataGeo = null;
+            displayLoginPageGeo();
+        }
+    });
+    function displayLoginPageGeo() { 
+        if(adminElementsGeo.loginPage) adminElementsGeo.loginPage.style.display = 'flex';
+        if(adminElementsGeo.appPanel) adminElementsGeo.appPanel.style.display = 'none';
+        if(document.body) document.body.style.flexDirection = 'column';
+    }
+    if(adminElementsGeo.loginForm && adminElementsGeo.loginBtn) { 
+        adminElementsGeo.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailEl = $geo('#adminLoginEmail');
+            const passwordEl = $geo('#adminLoginPassword');
+            if(!emailEl || !passwordEl) return;
+
+            const email = emailEl.value;
+            const password = passwordEl.value;
+            toggleAdminSpinnerGeo(adminElementsGeo.loginBtn, true);
+            try {
+                await authGeo.signInWithEmailAndPassword(email, password);
+                // Auth listener will handle UI change
+            } catch (error) {
+                showAdminToastGeo(error.message, "error");
+            } finally {
+                toggleAdminSpinnerGeo(adminElementsGeo.loginBtn, false); 
+            }
+        });
+    }
+    const adminLogoutGeo = async () => {
+         try {
+            await authGeo.signOut();
+             // onAuthStateChanged will handle UI cleanup and listener detachment.
+        } catch (error) {
+            showAdminToastGeo("Logout failed: " + error.message, "error");
+        }
+    };
+    if(adminElementsGeo.logoutBtnSidebar) adminElementsGeo.logoutBtnSidebar.addEventListener('click', adminLogoutGeo);
+    if(adminElementsGeo.logoutBtnTopbar) adminElementsGeo.logoutBtnTopbar.addEventListener('click', adminLogoutGeo);
+
+
+    // --- CORE INITIALIZATION AND NAVIGATION ---
+    function initializeAdminPanelGeo() {
+        if(!currentAdminDataGeo || !adminElementsGeo.pageTitle) return;
+        console.log("Admin panel initialized for:", currentAdminDataGeo.name);
+        
+        setupNavigationGeo(); 
+        preloadCachesGeo(); 
+        
+        loadDashboardDataGeo();
+
+        // Setup for existing sections (books, users, etc.)
+        setupBookStatusTabsGeo(); 
+        setupWithdrawalStatusTabsGeo();
+        setupBookSearchGeo();
+        setupUserSearchGeo();
+        setupBulkActionsGeo();
+        loadRecentAnnouncementsGeo();
+        setupAdvertisementFormGeo();
+        setupAdvertisementSearchGeo();
+
+        // --- NEW Setup for Course Management ---
+        setupCourseBatchManagement();
+        setupCourseSubjectManagement();
+        setupCourseLectureManagement();
+        // --- END NEW ---
+
+        if (adminElementsGeo.menuToggle && adminElementsGeo.sidebar) {
+             adminElementsGeo.menuToggle.addEventListener('click', () => {
+                adminElementsGeo.sidebar.classList.toggle('open');
+            });
+        }
+        if(adminElementsGeo.navItems && adminElementsGeo.sidebar) {
+            adminElementsGeo.navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 992 && adminElementsGeo.sidebar.classList.contains('open')) {
+                        adminElementsGeo.sidebar.classList.remove('open');
+                    }
+                });
+            });
+        }
+        
+        const dashboardNavItem = $geo('.admin-nav-item[data-target="dashboard"]');
+        if(dashboardNavItem) {
+           dashboardNavItem.click(); 
+           adminElementsGeo.pageTitle.textContent = dashboardNavItem.querySelector('span')?.textContent || 'Dashboard';
+        } else {
+             adminElementsGeo.pageTitle.textContent = 'Dashboard';
+        }
+    }
+    function setupNavigationGeo() { 
+        if(!adminElementsGeo.navItems || !adminElementsGeo.sections || !adminElementsGeo.pageTitle) return;
+        adminElementsGeo.navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetSectionId = item.dataset.target + 'Section';
+                adminElementsGeo.navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                adminElementsGeo.sections.forEach(s => { if(s) s.classList.remove('active'); });
+                const targetSection = $geo(`#${targetSectionId}`);
+                if (targetSection) targetSection.classList.add('active');
+                else console.warn(`Target section #${targetSectionId} not found.`);
+                
+                const spanContent = item.querySelector('span');
+                if (spanContent) adminElementsGeo.pageTitle.textContent = spanContent.textContent;
+                AOS.refresh();
+
+                // Call render/load functions for the target section
+                const target = item.dataset.target;
+                if (target === 'dashboard') loadDashboardDataGeo();
+                else if (target === 'users') renderUsersFromCacheGeo(adminElementsGeo.userSearchInput ? adminElementsGeo.userSearchInput.value : '');
+                else if (target === 'books') renderBooksFromCacheGeo(adminElementsGeo.bookSearchInput ? adminElementsGeo.bookSearchInput.value : '');
+                else if (target === 'withdrawals') renderWithdrawalsFromCacheGeo();
+                else if (target === 'advertisements') renderAdvertisementsFromCacheGeo(adminElementsGeo.advertisementSearchInput ? adminElementsGeo.advertisementSearchInput.value : '');
+                else if (target === 'notifications') loadRecentAnnouncementsGeo();
+                // --- NEW Section loading calls ---
+                else if (target === 'courseBatches') renderCourseBatchesGeo();
+                else if (target === 'courseSubjects') renderCourseSubjectsGeo();
+                else if (target === 'courseLectures') renderCourseLecturesGeo();
+                // --- END NEW ---
+            });
+        });
+    }
+    async function preloadCachesGeo() {
+        if (!dbGeo) return;
+        cleanupAllListenersGeo(); // Ensure no duplicate listeners
+
+        // Book Submissions
+        listenersGeo.pendingBooks = dbGeo.collection('ak_pending_books').where('status', '==', 'pending')
+            .onSnapshot(snapshot => { pendingBooksCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), sourceCollection: 'pending_books' })); updateBookCountsGeo(); if ($geo('#booksSection')?.classList.contains('active') && currentBookViewGeo === 'pending') renderBooksFromCacheGeo(adminElementsGeo.bookSearchInput ? adminElementsGeo.bookSearchInput.value : '');}, err => { console.error("Error caching pending books:", err); showAdminToastGeo("Error loading pending books.", "error");});
+        listenersGeo.rejectedBooks = dbGeo.collection('ak_pending_books').where('status', '==', 'rejected')
+            .onSnapshot(snapshot => { rejectedBooksCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), sourceCollection: 'pending_books' })); updateBookCountsGeo(); if ($geo('#booksSection')?.classList.contains('active') && currentBookViewGeo === 'rejected') renderBooksFromCacheGeo(adminElementsGeo.bookSearchInput ? adminElementsGeo.bookSearchInput.value : ''); }, err => { console.error("Error caching rejected books:", err); showAdminToastGeo("Error loading rejected books.", "error");});
+        listenersGeo.approvedBooks = dbGeo.collection('books').where('status', '==', 'approved')
+            .onSnapshot(snapshot => { approvedBooksCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), sourceCollection: 'books', status: 'approved' })); updateBookCountsGeo(); if ($geo('#booksSection')?.classList.contains('active') && currentBookViewGeo === 'approved') renderBooksFromCacheGeo(adminElementsGeo.bookSearchInput ? adminElementsGeo.bookSearchInput.value : ''); if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo(); }, err => { console.error("Error caching approved books:", err); showAdminToastGeo("Error loading approved books.", "error");});
+        // Users
+        listenersGeo.users = dbGeo.collection('ak_users').onSnapshot(snapshot => { usersCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); if ($geo('#usersSection')?.classList.contains('active')) renderUsersFromCacheGeo(adminElementsGeo.userSearchInput ? adminElementsGeo.userSearchInput.value : ''); if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo();}, err => { console.error("Error caching users:", err); showAdminToastGeo("Error loading users.", "error");});
+        // Withdrawals
+        listenersGeo.withdrawals = dbGeo.collection('withdrawals').orderBy('requestedAt', 'desc').onSnapshot(snapshot => { withdrawalsCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); updateWithdrawalCountsGeo(); if ($geo('#withdrawalsSection')?.classList.contains('active')) renderWithdrawalsFromCacheGeo(); if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo(); }, err => { console.error("Error caching withdrawals:", err); showAdminToastGeo("Error loading withdrawals.", "error");});
+        // Ads
+        listenersGeo.ads = dbGeo.collection('advertisements').orderBy('createdAt', 'desc')
+            .onSnapshot(snapshot => { adsCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); if ($geo('#advertisementsSection')?.classList.contains('active')) renderAdvertisementsFromCacheGeo(adminElementsGeo.advertisementSearchInput ? adminElementsGeo.advertisementSearchInput.value : ''); if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo();}, err => { console.error("Error caching advertisements:", err); showAdminToastGeo("Error loading ads.", "error");});
+
+        // --- NEW Data Listeners ---
+        listenersGeo.courseBatches = dbGeo.collection('batches').orderBy('order', 'asc').orderBy('name', 'asc') // Use the batch collection from batches.html for courses
+            .onSnapshot(snapshot => { 
+                courseBatchesCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                if ($geo('#courseBatchesSection')?.classList.contains('active')) renderCourseBatchesGeo();
+                populateBatchSelectsGeo(); // Populate dropdowns in other forms
+                if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo();
+            }, err => { console.error("Error caching course batches:", err); showAdminToastGeo("Error loading course batches.", "error"); });
+
+        listenersGeo.courseSubjects = dbGeo.collection('subjects').orderBy('batchId').orderBy('order', 'asc').orderBy('name', 'asc')
+            .onSnapshot(snapshot => { 
+                courseSubjectsCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                if ($geo('#courseSubjectsSection')?.classList.contains('active')) renderCourseSubjectsGeo();
+                populateSubjectSelectsGeo(); // For lecture form's subject dropdown
+                if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo();
+            }, err => { console.error("Error caching course subjects:", err); showAdminToastGeo("Error loading course subjects.", "error"); });
+        
+        listenersGeo.courseLectures = dbGeo.collection('lectures').orderBy('batchId').orderBy('subjectId').orderBy('order', 'asc')
+            .onSnapshot(snapshot => { 
+                courseLecturesCacheGeo = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
+                if ($geo('#courseLecturesSection')?.classList.contains('active')) renderCourseLecturesGeo();
+                if ($geo('#dashboardSection')?.classList.contains('active')) loadDashboardDataGeo();
+            }, err => { console.error("Error caching course lectures:", err); showAdminToastGeo("Error loading course lectures.", "error"); });
+        // --- END NEW ---
+    }
+    function populateBatchSelectsGeo() {
+        const batchSelects = [
+            adminElementsGeo.courseSubjectParentBatchSelect, 
+            adminElementsGeo.courseLectureParentBatchModalSelect,
+            adminElementsGeo.courseSubjectBatchFilter, // Filter on subject list page
+            adminElementsGeo.courseLectureBatchFilter  // Filter on lecture list page
+        ];
+        batchSelects.forEach(select => {
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">All Batches</option>'; // Default for filters, will be required for forms
+             if(select.id === 'courseSubjectParentBatch' || select.id === 'courseLectureParentBatchModal'){ // For forms where it is required
+                select.innerHTML = '<option value="">-- Select Batch --</option>';
+            }
+            courseBatchesCacheGeo.forEach(batch => {
+                const option = document.createElement('option');
+                option.value = batch.id;
+                option.textContent = batch.name;
+                select.appendChild(option);
+            });
+            if(currentVal && select.querySelector(`option[value="${currentVal}"]`)) select.value = currentVal; // Preserve selection if possible
+             else if (select.options.length > 1 && (select.id === 'courseSubjectParentBatch' || select.id === 'courseLectureParentBatchModal')) {
+                 // Do not auto-select for forms if no previous value. Let user choose.
+             }
+        });
+        // Trigger change on dependent subject selects if their parent batch filter changes
+        if(adminElementsGeo.courseLectureBatchFilter){
+            adminElementsGeo.courseLectureBatchFilter.dispatchEvent(new Event('change'));
+        }
+    }
+    function populateSubjectSelectsGeo(selectedBatchId = null) {
+        const subjectSelects = [
+            adminElementsGeo.courseLectureParentSubjectModalSelect,
+            adminElementsGeo.courseLectureSubjectFilter // Filter on lecture list page
+        ];
+        subjectSelects.forEach(select => {
+             if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">All Subjects</option>';
+            if(select.id === 'courseLectureParentSubjectModal'){
+                 select.innerHTML = '<option value="">-- Select Subject --</option>';
+            }
+            
+            const relevantSubjects = selectedBatchId ? courseSubjectsCacheGeo.filter(s => s.batchId === selectedBatchId) : courseSubjectsCacheGeo;
+            
+            relevantSubjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = `${subject.name} (${courseBatchesCacheGeo.find(b=>b.id === subject.batchId)?.name || 'Unknown Batch'})`;
+                select.appendChild(option);
+            });
+             if(currentVal && select.querySelector(`option[value="${currentVal}"]`)) select.value = currentVal;
+             else if (select.options.length > 1 && select.id === 'courseLectureParentSubjectModal') {
+                 // Do not auto-select for forms.
+             }
+        });
+    }
+
+
+    // --- DASHBOARD ---
+    async function loadDashboardDataGeo() { 
+         if (!adminElementsGeo.dashboardStatsGrid || !currentAdminDataGeo) return;
+            
+        const totalUsers = usersCacheGeo.length;
+        const totalApprovedBooks = approvedBooksCacheGeo.length;
+        const pendingSubmissions = pendingBooksCacheGeo.length;
+        // const rejectedSubmissions = rejectedBooksCacheGeo.length; // Not used in current example
+        const pendingWithdrawals = withdrawalsCacheGeo.filter(w => w.status === 'pending').length;
+        const totalActiveAds = adsCacheGeo.filter(ad => ad.isActive).length; 
+        
+        // --- NEW Stats ---
+        const totalCourseBatches = courseBatchesCacheGeo.length;
+        const totalCourseSubjects = courseSubjectsCacheGeo.length;
+        const totalCourseLectures = courseLecturesCacheGeo.length;
+        // --- END NEW ---
+
+        adminElementsGeo.dashboardStatsGrid.innerHTML = `
+            <div class="admin-stat-card" data-aos="fade-up"> <div class="admin-stat-card-icon"><i class="fas fa-users"></i></div> <div class="admin-stat-card-info"><div class="value">${totalUsers}</div><div class="label">Total Users</div></div> </div>
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="50"> <div class="admin-stat-card-icon" style="border-left-color:var(--admin-success-color); background-color: color-mix(in srgb, var(--admin-success-color) 15%, transparent);"><i class="fas fa-book-medical" style="color:var(--admin-success-color);"></i></div> <div class="admin-stat-card-info"><div class="value">${totalApprovedBooks}</div><div class="label">Approved Submissions</div></div> </div>
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="100"> <div class="admin-stat-card-icon" style="border-left-color:var(--admin-warning-color); background-color: color-mix(in srgb, var(--admin-warning-color) 15%, transparent);"><i class="fas fa-hourglass-half" style="color:var(--admin-warning-color);"></i></div> <div class="admin-stat-card-info"><div class="value">${pendingSubmissions}</div><div class="label">Pending Submissions</div></div> </div>
+            
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="150"> <div class="admin-stat-card-icon"><i class="fas fa-layer-group"></i></div> <div class="admin-stat-card-info"><div class="value">${totalCourseBatches}</div><div class="label">Course Batches</div></div> </div>
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="200"> <div class="admin-stat-card-icon"><i class="fas fa-book"></i></div> <div class="admin-stat-card-info"><div class="value">${totalCourseSubjects}</div><div class="label">Course Subjects</div></div> </div>
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="250"> <div class="admin-stat-card-icon"><i class="fas fa-photo-video"></i></div> <div class="admin-stat-card-info"><div class="value">${totalCourseLectures}</div><div class="label">Lectures/Notes</div></div> </div>
+
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="300"> <div class="admin-stat-card-icon" style="border-left-color:var(--admin-warning-color); background-color: color-mix(in srgb, var(--admin-warning-color) 15%, transparent);"><i class="fas fa-file-invoice-dollar" style="color:var(--admin-warning-color);"></i></div> <div class="admin-stat-card-info"><div class="value">${pendingWithdrawals}</div><div class="label">Pending Withdrawals</div></div> </div>
+            <div class="admin-stat-card" data-aos="fade-up" data-aos-delay="350"> <div class="admin-stat-card-icon" style="border-left-color:var(--admin-info-color); background-color: color-mix(in srgb, var(--admin-info-color) 15%, transparent);"><i class="fas fa-ad" style="color:var(--admin-info-color);"></i></div> <div class="admin-stat-card-info"><div class="value">${totalActiveAds}</div><div class="label">Active Ads</div></div> </div>
+        `;
+        AOS.refresh();
+    }
+
+    // --- USER MANAGEMENT (Your existing functions) ---
+    function renderUsersFromCacheGeo(searchTerm = '') { 
+        const tbody = adminElementsGeo.usersTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = ''; 
+        const filteredUsers = usersCacheGeo.filter(user => {
+            const term = searchTerm.toLowerCase();
+            return (user.name && user.name.toLowerCase().includes(term)) ||
+                   (user.email && user.email.toLowerCase().includes(term)) ||
+                   (user.username && user.username.toLowerCase().includes(term));
+        });
+
+        if (filteredUsers.length === 0) {
+            adminElementsGeo.usersEmptyState.style.display = 'flex';
+            return;
+        }
+        adminElementsGeo.usersEmptyState.style.display = 'none';
+
+        filteredUsers.forEach(user => {
+            let statusClass = 'status-active';
+            let statusText = 'Active';
+            if (user.isBanned) { statusClass = 'status-banned'; statusText = 'Banned'; }
+            else if (user.isSuspended) { statusClass = 'status-suspended'; statusText = 'Suspended'; }
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${escapeHTMLGeo(user.name)}</td>
+                <td>${escapeHTMLGeo(user.email)}</td>
+                <td>@${escapeHTMLGeo(user.username)}</td>
+                <td>${user.points || 0}</td>
+                <td>${user.credits || 0}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${formatDateGeo(user.createdAt)}</td>
+                <td>
+                    <button class="admin-btn admin-btn-sm admin-btn-primary view-user-btn" data-userid="${user.id}"><i class="fas fa-eye"></i> View</button>
+                </td>
+            `;
+        });
+        $$geo('.view-user-btn').forEach(btn => btn.addEventListener('click', (e) => showUserDetailsGeo(e.currentTarget.dataset.userid)));
+    }
+    function setupUserSearchGeo() {
+         if (adminElementsGeo.userSearchInput) {
+            adminElementsGeo.userSearchInput.addEventListener('input', (e) => {
+                renderUsersFromCacheGeo(e.target.value);
+            });
+        }
+    }
+    async function showUserDetailsGeo(userId) {
+        const user = usersCacheGeo.find(u => u.id === userId);
+        if (!user || !adminElementsGeo.viewUserContent || !adminElementsGeo.viewUserActions) { 
+            showAdminToastGeo("User not found.", "error"); return; 
+        }
+
+        adminElementsGeo.viewUserContent.innerHTML = `<h4>${escapeHTMLGeo(user.name)} (@${escapeHTMLGeo(user.username)})</h4> <p><strong>Email:</strong> ${escapeHTMLGeo(user.email)}</p> <p><strong>Joined:</strong> ${formatDateGeo(user.createdAt, true)}</p> <p><strong>Last Active:</strong> ${user.lastActive ? formatDateGeo(user.lastActive, true) : 'N/A'}</p> <hr style="margin:10px 0; border-color:rgba(255,255,255,0.1);"> <p><strong>Points:</strong> ${user.points || 0}</p> <p><strong>Credits:</strong> ${user.credits || 0}</p> <p><strong>Books Submitted:</strong> ${user.booksSharedCount || 0}</p> <p><strong>Books Downloaded:</strong> ${user.booksDownloadedCount || 0}</p> <p><strong>Total Downloads of Shared Books:</strong> ${user.totalBookDownloads || 0}</p> <p><strong>Bio:</strong> ${escapeHTMLGeo(user.bio || 'N/A')}</p> <hr style="margin:10px 0; border-color:rgba(255,255,255,0.1);"> <p><strong>Status:</strong> ${user.isBanned ? 'Banned' : (user.isSuspended ? 'Suspended' : 'Active')}</p> <div class="admin-form-group" style="margin-top:15px;"> <label for="adminNotesForUser" class="admin-form-label">Admin Notes</label> <textarea id="adminNotesForUser" class="admin-form-textarea" rows="2">${escapeHTMLGeo(user.adminNotes || '')}</textarea> <button class="admin-btn admin-btn-sm admin-btn-primary" id="saveUserAdminNotesBtnGeo" style="margin-top:5px;">Save Notes</button> </div>`;
+        adminElementsGeo.viewUserActions.innerHTML = `<button type="button" class="admin-btn admin-btn-secondary" data-modal-id="viewUserModal">Close</button> ${!user.isBanned ? `<button class="admin-btn ${user.isSuspended ? 'admin-btn-primary' : 'admin-btn-warning'}" id="toggleSuspendUserBtnGeo">${user.isSuspended ? 'Unsuspend' : 'Suspend'}</button>` : ''} <button class="admin-btn ${user.isBanned ? 'admin-btn-primary' : 'admin-btn-danger'}" id="toggleBanUserBtnGeo">${user.isBanned ? 'Unban' : 'Ban'}</button>`;
+
+        const saveNotesBtn = $geo('#saveUserAdminNotesBtnGeo');
+        if(saveNotesBtn) saveNotesBtn.onclick = async () => { const notesEl = $geo('#adminNotesForUser'); if (!notesEl) return; const notes = notesEl.value; try { await dbGeo.collection('ak_users').doc(userId).update({ adminNotes: notes }); showAdminToastGeo("Admin notes saved.", "success"); const cachedUser = usersCacheGeo.find(u => u.id === userId); if(cachedUser) cachedUser.adminNotes = notes; } catch (e) { showAdminToastGeo("Failed to save notes: " + e.message, "error"); } };
+        const suspendBtn = $geo('#toggleSuspendUserBtnGeo');
+        if(suspendBtn) suspendBtn.addEventListener('click', () => toggleUserStatusGeo(userId, 'suspend'));
+        const banBtn = $geo('#toggleBanUserBtnGeo');
+        if(banBtn) banBtn.addEventListener('click', () => toggleUserStatusGeo(userId, 'ban'));
+        openAdminModalGeo('viewUserModal');
+    }
+    async function toggleUserStatusGeo(userId, type) { 
+        if (!dbGeo || !currentAdminUserGeo) return;
+        const userRef = dbGeo.collection('ak_users').doc(userId);
+        let updates = {}; let actionText = ""; // Moved declaration higher
+
+        try {
+            const userDoc = await userRef.get();
+            if (!userDoc.exists) { showAdminToastGeo("User not found.", "error"); return; }
+            const userData = userDoc.data();
+                      
+            if (type === 'suspend') {
+                updates.isSuspended = !userData.isSuspended;
+                actionText = updates.isSuspended ? "suspended" : "unsuspended";
+                if (updates.isSuspended) updates.isBanned = false; 
+            } else if (type === 'ban') {
+                updates.isBanned = !userData.isBanned;
+                actionText = updates.isBanned ? "banned" : "unbanned";
+                if (updates.isBanned) updates.isSuspended = false; 
+            }
+            await userRef.update(updates);
+            showAdminToastGeo(`User ${actionText} successfully.`, "success");
+            const cachedUser = usersCacheGeo.find(u => u.id === userId); // Update cache
+            if (cachedUser) Object.assign(cachedUser, updates);
+            if(adminElementsGeo.userSearchInput) renderUsersFromCacheGeo(adminElementsGeo.userSearchInput.value); 
+            else renderUsersFromCacheGeo();
+            closeAdminModalGeo('viewUserModal'); 
+        } catch (error) {
+             const errorMessage = `Failed to ${actionText ? (type === 'suspend' ? (updates.isSuspended ? 'suspend' : 'unsuspend') : (updates.isBanned ? 'ban' : 'unban')) : type} user: ${error.message}`;
+             showAdminToastGeo(errorMessage, "error");
+        }
+    }
+
+
+    // --- BOOK SUBMISSION MANAGEMENT (Your existing functions) ---
+    function setupBookStatusTabsGeo() {
+        if (!adminElementsGeo.bookStatusTabs) return;
+        adminElementsGeo.bookStatusTabs.addEventListener('click', (e) => {
+            const targetButton = e.target.closest('button');
+            if (targetButton) {
+                adminElementsGeo.bookStatusTabs.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                targetButton.classList.add('active');
+                currentBookViewGeo = targetButton.dataset.status;
+                if (adminElementsGeo.selectAllBooksCheckbox) adminElementsGeo.selectAllBooksCheckbox.checked = false; 
+                selectedBookIdsForBulkActionGeo = [];
+                updateBulkActionsBarVisibilityGeo();
+                renderBooksFromCacheGeo(adminElementsGeo.bookSearchInput ? adminElementsGeo.bookSearchInput.value : '');
+            }
+        });
+     }
+    function updateBookCountsGeo() { 
+        if(!adminElementsGeo.pendingBooksCount || !adminElementsGeo.approvedBooksCount || !adminElementsGeo.rejectedBooksCount || !adminElementsGeo.allBooksCount) return;
+        adminElementsGeo.pendingBooksCount.textContent = pendingBooksCacheGeo.length;
+        adminElementsGeo.approvedBooksCount.textContent = approvedBooksCacheGeo.length;
+        adminElementsGeo.rejectedBooksCount.textContent = rejectedBooksCacheGeo.length;
+        adminElementsGeo.allBooksCount.textContent = pendingBooksCacheGeo.length + approvedBooksCacheGeo.length + rejectedBooksCacheGeo.length;
+    }
+    function renderBooksFromCacheGeo(searchTerm = '') { 
+        const tbody = adminElementsGeo.booksTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        let booksToDisplay = [];
+        if (currentBookViewGeo === 'pending') booksToDisplay = pendingBooksCacheGeo;
+        else if (currentBookViewGeo === 'approved') booksToDisplay = approvedBooksCacheGeo;
+        else if (currentBookViewGeo === 'rejected') booksToDisplay = rejectedBooksCacheGeo;
+        else if (currentBookViewGeo === 'all') booksToDisplay = [...pendingBooksCacheGeo, ...approvedBooksCacheGeo, ...rejectedBooksCacheGeo];
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            booksToDisplay = booksToDisplay.filter(book =>
+                (book.bookName && book.bookName.toLowerCase().includes(term)) || (book.authorName && book.authorName.toLowerCase().includes(term)) ||
+                (book.category && book.category.toLowerCase().includes(term)) || (book.submittedByName && book.submittedByName.toLowerCase().includes(term)) ||
+                (book.submittedByUsername && book.submittedByUsername.toLowerCase().includes(term))
+            );
+        }
+        
+        booksToDisplay.sort((a,b) => {
+            const timeA = a.status === 'pending' ? a.submittedAt : (a.approvedAt || a.reviewedAt || a.submittedAt);
+            const timeB = b.status === 'pending' ? b.submittedAt : (b.approvedAt || b.reviewedAt || b.submittedAt);
+            return (timeB?.toDate?.() || new Date(0)) - (timeA?.toDate?.() || new Date(0));
+        });
+
+        const headerRowCheckbox = adminElementsGeo.selectAllBooksCheckbox;
+        const headerRowCheckboxTR = headerRowCheckbox ? headerRowCheckbox.closest('tr') : null;
+
+        if (booksToDisplay.length === 0) {
+            if(adminElementsGeo.booksEmptyState) adminElementsGeo.booksEmptyState.style.display = 'flex';
+            if(headerRowCheckboxTR) headerRowCheckboxTR.style.display = 'none'; // Hide header checkbox if no rows
+            return;
+        }
+        if(adminElementsGeo.booksEmptyState) adminElementsGeo.booksEmptyState.style.display = 'none';
+        if(headerRowCheckboxTR) headerRowCheckboxTR.style.display = '';
+
+        booksToDisplay.forEach(book => {
+            const row = tbody.insertRow();
+            row.dataset.bookId = book.id;
+            row.dataset.sourceCollection = book.sourceCollection; 
+            const dateToDisplay = book.status === 'approved' ? (book.approvedAt || book.submittedAt) : (book.reviewedAt || book.submittedAt);
+            row.innerHTML = `<td><input type="checkbox" class="book-select-checkbox" data-bookid="${book.id}" data-source="${book.sourceCollection}"></td> <td><img src="${escapeHTMLGeo(book.imageUrl) || 'https://via.placeholder.com/50x70?text=N/A'}" alt="Cover" class="book-cover-small" onerror="this.src='https://via.placeholder.com/50x70?text=Error'; this.style.border='1px solid var(--admin-error-color)';"></td> <td><strong>${escapeHTMLGeo(book.bookName)}</strong><br><small>${escapeHTMLGeo(book.authorName)}</small></td> <td>${escapeHTMLGeo(book.category)}</td> <td>${escapeHTMLGeo(book.submittedByName || book.submittedByUsername || 'N/A')}</td> <td>${formatDateGeo(dateToDisplay, true)}</td> <td><span class="status-badge status-${book.status.toLowerCase()}">${escapeHTMLGeo(book.status)}</span> ${book.status === 'rejected' && book.rejectionReason ? `<br><small style="color:var(--admin-warning-color);font-style:italic;">Reason: ${escapeHTMLGeo(book.rejectionReason)}</small>` : ''} ${(book.status === 'approved' || book.status === 'rejected') && book.reviewedByName ? `<br><small style="color:var(--admin-success-color);font-style:italic;">By: ${escapeHTMLGeo(book.reviewedByName)}</small>` : ''} </td> <td>${book.downloads || 0}</td> <td> <button class="admin-btn admin-btn-sm admin-btn-primary edit-book-btn" data-bookid="${book.id}" data-source="${book.sourceCollection}"><i class="fas fa-edit"></i></button> ${book.status === 'pending' ? `<button class="admin-btn admin-btn-sm admin-btn-primary approve-book-btn" data-bookid="${book.id}"><i class="fas fa-check"></i></button> <button class="admin-btn admin-btn-sm admin-btn-warning reject-book-btn" data-bookid="${book.id}"><i class="fas fa-times"></i></button>` : ''} <button class="admin-btn admin-btn-sm admin-btn-danger delete-book-btn" data-bookid="${book.id}" data-source="${book.sourceCollection}"><i class="fas fa-trash"></i></button> ${book.status === 'pending' ? `<button class="admin-btn admin-btn-sm admin-btn-secondary ai-scan-btn" data-bookid="${book.id}" style="margin-top:5px; width:100%;"><i class="fas fa-robot"></i> AI Scan</button><div class="ai-scan-result" id="aiScanResult-${book.id}"></div>` : ''} </td>`;
+        });
+        addBookActionListenersGeo();
+    }
+    function setupBookSearchGeo() {
+         if(adminElementsGeo.bookSearchInput) adminElementsGeo.bookSearchInput.addEventListener('input', e => renderBooksFromCacheGeo(e.target.value));
+    }
+    function addBookActionListenersGeo() {
+        $$geo('.edit-book-btn').forEach(btn => btn.onclick = (e) => openEditBookModalGeo(e.currentTarget.dataset.bookid, e.currentTarget.dataset.source));
+        $$geo('.approve-book-btn').forEach(btn => btn.onclick = (e) => updateBookStatusGeo(e.currentTarget.dataset.bookid, 'approved', null, e.currentTarget));
+        $$geo('.reject-book-btn').forEach(btn => btn.onclick = (e) => openRejectionReasonModalGeo(e.currentTarget.dataset.bookid, e.currentTarget));
+        $$geo('.delete-book-btn').forEach(btn => btn.onclick = (e) => deleteBookGeo(e.currentTarget.dataset.bookid, e.currentTarget.dataset.source));
+        $$geo('.ai-scan-btn').forEach(btn => btn.onclick = (e) => simulateAiScanGeo(e.currentTarget.dataset.bookid));
+        $$geo('.book-select-checkbox').forEach(cb => cb.onchange = handleBookCheckboxChangeGeo);
+    }
+    function openEditBookModalGeo(bookId, sourceCollection) { 
+        const book = (sourceCollection === 'pending_books' ? [...pendingBooksCacheGeo, ...rejectedBooksCacheGeo] : approvedBooksCacheGeo).find(b => b.id === bookId);
+        if (!book || !adminElementsGeo.editBookForm) { showAdminToastGeo("Book not found for editing.", "error"); return; }
+        const form = adminElementsGeo.editBookForm;
+        form.querySelector('#editBookId').value = book.id;
+        form.querySelector('#editBookSourceCollection').value = sourceCollection;
+        form.querySelector('#editBookName').value = book.bookName || '';
+        form.querySelector('#editAuthorName').value = book.authorName || '';
+        form.querySelector('#editBookCategory').value = book.category || '';
+        form.querySelector('#editBookImageUrl').value = book.imageUrl || '';
+        form.querySelector('#editDriveLink').value = book.driveLink || '';
+        form.querySelector('#editBookDescription').value = book.description || '';
+        openAdminModalGeo('editBookModal');
+    }
+    if (adminElementsGeo.editBookForm && adminElementsGeo.saveBookChangesBtn) {
+         adminElementsGeo.editBookForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = adminElementsGeo.editBookForm;
+            const bookId = form.querySelector('#editBookId').value;
+            const sourceCollection = form.querySelector('#editBookSourceCollection').value;
+            const updatedData = {
+                bookName: form.querySelector('#editBookName').value,
+                authorName: form.querySelector('#editAuthorName').value,
+                category: form.querySelector('#editBookCategory').value,
+                imageUrl: form.querySelector('#editBookImageUrl').value,
+                driveLink: form.querySelector('#editDriveLink').value,
+                description: form.querySelector('#editBookDescription').value,
+                // Do NOT update status here; status is managed by approve/reject flows
+            };
+            toggleAdminSpinnerGeo(adminElementsGeo.saveBookChangesBtn, true);
+            try {
+                await dbGeo.collection(sourceCollection).doc(bookId).update(updatedData);
+                showAdminToastGeo("Book details updated successfully!", "success");
+                closeAdminModalGeo('editBookModal');
+                // Cache will be updated by listeners, re-render triggered if on active page.
+            } catch (error) {
+                showAdminToastGeo("Failed to update book: " + error.message, "error");
+            } finally {
+                toggleAdminSpinnerGeo(adminElementsGeo.saveBookChangesBtn, false);
+            }
+        });
+    }
+    let targetButtonForRejection = null; // Store the button that triggered the modal
+    function openRejectionReasonModalGeo(bookId, buttonElement) {
+        const modalForm = adminElementsGeo.rejectionReasonForm;
+        if(!modalForm) return;
+        targetButtonForRejection = buttonElement; // Store button
+        modalForm.querySelector('#rejectionBookId').value = bookId;
+        modalForm.querySelector('#rejectionReasonInput').value = '';
+        openAdminModalGeo('rejectionReasonModal');
+     }
+    if (adminElementsGeo.rejectionReasonForm && adminElementsGeo.confirmRejectionBtn) {
+        adminElementsGeo.rejectionReasonForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookIdEl = adminElementsGeo.rejectionReasonForm.querySelector('#rejectionBookId');
+            if(!bookIdEl) return;
+            const bookId = bookIdEl.value;
+            if (!bookId) return;
+
+            const reasonEl = adminElementsGeo.rejectionReasonForm.querySelector('#rejectionReasonInput');
+            if(!reasonEl) return;
+            const reason = reasonEl.value.trim();
+            if (!reason) { showAdminToastGeo("Rejection reason is required.", "warning"); return; }
+            
+            toggleAdminSpinnerGeo(adminElementsGeo.confirmRejectionBtn, true);
+            await updateBookStatusGeo(bookId, 'rejected', reason, targetButtonForRejection); // Pass button
+            targetButtonForRejection = null; // Clear stored button
+            toggleAdminSpinnerGeo(adminElementsGeo.confirmRejectionBtn, false);
+            closeAdminModalGeo('rejectionReasonModal');
+        });
+    }
+    async function updateBookStatusGeo(bookId, newStatus, reason = null, actionButton = null) { 
+        let bookRef;
+        let bookData;
+        const pendingOrRejectedBook = pendingBooksCacheGeo.find(b => b.id === bookId) || rejectedBooksCacheGeo.find(b => b.id === bookId);
+
+        if (pendingOrRejectedBook && (newStatus === 'approved' || newStatus === 'rejected')) {
+            bookRef = dbGeo.collection('ak_pending_books').doc(bookId);
+            bookData = pendingOrRejectedBook;
+        } else {
+            showAdminToastGeo("Book not found or invalid status transition for submission.", "error"); 
+            return;
+        }
+        const submitterId = bookData.submittedBy;
+        const bookNameForNotif = bookData.bookName;
+        
+        // Use the passed button if available, otherwise try to find it (for bulk actions this won't work well)
+        const targetButton = actionButton || $geo(`.approve-book-btn[data-bookid="${bookId}"], .reject-book-btn[data-bookid="${bookId}"]`);
+        if(targetButton) toggleAdminSpinnerGeo(targetButton, true);
+
+        try {
+            if (newStatus === 'approved') {
+                const newBookInBooksCollectionRef = dbGeo.collection('books').doc(bookId); // Use same ID for consistency
+                const { status, rejectionReason, sourceCollection, ...approvedBookData } = bookData; // Destructure and omit unnecessary
+                const finalApprovedBookData = {
+                    ...approvedBookData, // Spread existing relevant data
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    reviewedBy: currentAdminUserGeo.uid,
+                    reviewedByName: currentAdminDataGeo.name || "Admin"
+                };
+                await dbGeo.runTransaction(async (transaction) => {
+                    const userRef = dbGeo.collection('ak_users').doc(submitterId);
+                    let userDocSnap = null;
+                    if (submitterId) userDocSnap = await transaction.get(userRef);
+
+                    transaction.set(newBookInBooksCollectionRef, finalApprovedBookData); 
+                    transaction.delete(bookRef); 
+
+                    if (submitterId && userDocSnap && userDocSnap.exists) {
+                        const userData = userDocSnap.data();
+                        const processedActions = userData.processedBookActions || {};
+                        if (!processedActions[bookId] || !processedActions[bookId].approval) {
+                            transaction.update(userRef, {
+                                points: firebase.firestore.FieldValue.increment(10), // Example points
+                                [`processedBookActions.${bookId}.approval`]: true
+                            });
+                        }
+                    }
+                });
+                showAdminToastGeo(`Book "${bookNameForNotif}" approved!`, "success");
+                 if (submitterId) { await dbGeo.collection('ak_users').doc(submitterId).collection('notifications').add({ title: "Book Approved!", message: `Your book "${escapeHTMLGeo(bookNameForNotif)}" is now live! +10 points.`, type: "success", timestamp: firebase.firestore.FieldValue.serverTimestamp(), read: false, actionLink: `/#bookDetail/${bookId}`, icon: "fas fa-book-reader" }).catch(e=>console.error("Notif error", e)); }
+            } else if (newStatus === 'rejected') {
+                const updates = { status: 'rejected', rejectionReason: reason, reviewedAt: firebase.firestore.FieldValue.serverTimestamp(), reviewedBy: currentAdminUserGeo.uid, reviewedByName: currentAdminDataGeo.name || "Admin" };
+                await bookRef.update(updates);
+                showAdminToastGeo(`Book "${bookNameForNotif}" rejected.`, "warning");
+                if (submitterId) { await dbGeo.collection('ak_users').doc(submitterId).collection('notifications').add({ title: "Book Submission Update", message: `Your submission "${escapeHTMLGeo(bookNameForNotif)}" was rejected. Reason: ${escapeHTMLGeo(reason || 'Not specified')}.`, type: "warning", timestamp: firebase.firestore.FieldValue.serverTimestamp(), read: false, icon: "fas fa-times-circle" }).catch(e=>console.error("Notif error", e));}
+            }
+             // Caches will be updated by listeners, re-render will be triggered.
+        } catch (error) { console.error("Error updating book status:", error); showAdminToastGeo("Failed: " + error.message, "error"); }
+        finally { if(targetButton) toggleAdminSpinnerGeo(targetButton, false); }
+    }
+    async function deleteBookGeo(bookId, sourceCollection) { 
+        if (!confirm("Delete this book? This cannot be undone.")) return;
+        try {
+            await dbGeo.collection(sourceCollection).doc(bookId).delete();
+            if (sourceCollection === 'books') { 
+                const feedbackSnapshot = await dbGeo.collection('books').doc(bookId).collection('feedback').get();
+                const batch = dbGeo.batch();
+                feedbackSnapshot.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+            }
+            showAdminToastGeo("Book deleted.", "success");
+             // Caches will update via listeners.
+        } catch (error) { showAdminToastGeo("Error deleting book: " + error.message, "error");}
+    }
+    function simulateAiScanGeo(bookId) { 
+        const resultDiv = $geo(`#aiScanResult-${bookId}`);
+        if(!resultDiv) return;
+        resultDiv.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Scanning...`;
+        resultDiv.className = 'ai-scan-result'; 
+
+        const book = pendingBooksCacheGeo.find(b => b.id === bookId);
+        if (!book) { resultDiv.innerHTML = 'Error: Book not found in pending list.'; return; }
+        setTimeout(() => {
+            let confidence = Math.random() * 30 + 70; let issues = [];
+            if (book.bookName.toLowerCase().includes("test") || book.description?.toLowerCase().includes("example")) { confidence -= 20; issues.push("Test keywords found."); }
+            if ((book.category || "").toLowerCase() === "other") confidence -=5;
+            let suggestedCategory = book.category;
+            if (book.bookName.toLowerCase().includes("python") || book.description?.toLowerCase().includes("programming")) suggestedCategory = "Coding";
+            if (book.bookName.toLowerCase().includes("novel") || book.description?.toLowerCase().includes("story")) suggestedCategory = "Fiction";
+            let resultHTML = `<strong>AI Confidence:</strong> ${confidence.toFixed(0)}% ${confidence > 85 ? '✅' : (confidence > 60 ? '🤔' : '⚠️')}<br>`;
+            resultDiv.className = `ai-scan-result ${confidence > 85 ? 'good' : (confidence > 60 ? '' : 'warning')}`;
+            if (issues.length > 0) resultHTML += `<strong>Potential Issues:</strong> ${issues.join(", ")}<br>`;
+            else resultHTML += `<strong>Potential Issues:</strong> None detected.<br>`;
+            resultHTML += `<strong>Suggested Category:</strong> ${escapeHTMLGeo(suggestedCategory)}`;
+            resultDiv.innerHTML = resultHTML;
+        }, 1500 + Math.random() * 1000);
+    }
+    function setupBulkActionsGeo() { 
+        if (adminElementsGeo.selectAllBooksCheckbox) {
+            adminElementsGeo.selectAllBooksCheckbox.onchange = (e) => {
+                const isChecked = e.target.checked;
+                $$geo('.book-select-checkbox').forEach(cb => {
+                    cb.checked = isChecked;
+                    handleBookCheckboxChangeGeo({target: cb}); 
+                });
+            };
+        }
+        if(adminElementsGeo.bulkApproveBooksBtn) adminElementsGeo.bulkApproveBooksBtn.onclick = () => bulkUpdateBookStatusGeo('approved');
+        if(adminElementsGeo.bulkRejectBooksBtn) adminElementsGeo.bulkRejectBooksBtn.onclick = () => { if (selectedBookIdsForBulkActionGeo.length === 0) { showAdminToastGeo("No books selected.", "warning"); return; } const reason = prompt(`Rejection reason for ${selectedBookIdsForBulkActionGeo.length} books:`); if (reason === null) return; bulkUpdateBookStatusGeo('rejected', reason.trim() || "Bulk rejected by admin"); };
+        if(adminElementsGeo.bulkDeleteBooksBtn) adminElementsGeo.bulkDeleteBooksBtn.onclick = () => bulkDeleteBooksGeo();
+    }
+    function handleBookCheckboxChangeGeo(event) { 
+         const checkbox = event.target;
+        const bookId = checkbox.dataset.bookid;
+        if (checkbox.checked) {
+            if (!selectedBookIdsForBulkActionGeo.includes(bookId)) selectedBookIdsForBulkActionGeo.push(bookId);
+        } else {
+            selectedBookIdsForBulkActionGeo = selectedBookIdsForBulkActionGeo.filter(id => id !== bookId);
+        }
+        updateBulkActionsBarVisibilityGeo();
+    }
+    function updateBulkActionsBarVisibilityGeo() { 
+        const count = selectedBookIdsForBulkActionGeo.length;
+        if (adminElementsGeo.selectedBooksCount) adminElementsGeo.selectedBooksCount.textContent = count;
+        
+        if(adminElementsGeo.booksBulkActionsBar){
+            adminElementsGeo.booksBulkActionsBar.style.display = count > 0 ? 'flex' : 'none';
+            const canApproveOrReject = currentBookViewGeo === 'pending';
+            if(adminElementsGeo.bulkApproveBooksBtn) adminElementsGeo.bulkApproveBooksBtn.style.display = canApproveOrReject ? 'inline-flex' : 'none';
+            if(adminElementsGeo.bulkRejectBooksBtn) adminElementsGeo.bulkRejectBooksBtn.style.display = canApproveOrReject ? 'inline-flex' : 'none';
+            if(adminElementsGeo.bulkDeleteBooksBtn) adminElementsGeo.bulkDeleteBooksBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+        }
+    }
+    async function bulkUpdateBookStatusGeo(newStatus, reason = null) { 
+         if (selectedBookIdsForBulkActionGeo.length === 0) { showAdminToastGeo("No books selected.", "warning"); return; }
+        if (!confirm(`Bulk ${newStatus} ${selectedBookIdsForBulkActionGeo.length} books?`)) return;
+        const btn = newStatus === 'approved' ? adminElementsGeo.bulkApproveBooksBtn : adminElementsGeo.bulkRejectBooksBtn;
+        if(btn) toggleAdminSpinnerGeo(btn, true);
+        let successCount = 0;
+        for (const bookId of selectedBookIdsForBulkActionGeo) {
+            try { await updateBookStatusGeo(bookId, newStatus, reason); successCount++; }
+            catch (error) { console.error(`Error processing book ${bookId} in bulk:`, error); }
+        }
+        showAdminToastGeo(`${successCount}/${selectedBookIdsForBulkActionGeo.length} books processed.`, "success");
+        if(btn) toggleAdminSpinnerGeo(btn, false);
+        selectedBookIdsForBulkActionGeo = [];
+        if(adminElementsGeo.selectAllBooksCheckbox) adminElementsGeo.selectAllBooksCheckbox.checked = false;
+        updateBulkActionsBarVisibilityGeo();
+    }
+    async function bulkDeleteBooksGeo() { 
+        if (selectedBookIdsForBulkActionGeo.length === 0) { showAdminToastGeo("No books for deletion.", "warning"); return; }
+        if (!confirm(`Bulk DELETE ${selectedBookIdsForBulkActionGeo.length} books? IRREVERSIBLE.`)) return;
+        if(adminElementsGeo.bulkDeleteBooksBtn) toggleAdminSpinnerGeo(adminElementsGeo.bulkDeleteBooksBtn, true);
+        const batchCommits = dbGeo.batch();
+        let deletedCount = 0;
+        for (const bookId of selectedBookIdsForBulkActionGeo) {
+            let sourceCol = 'pending_books'; 
+            const approved = approvedBooksCacheGeo.find(b => b.id === bookId);
+             const rejected = rejectedBooksCacheGeo.find(b => b.id === bookId);
+            if (approved) sourceCol = 'books';
+            else if (rejected) sourceCol = 'pending_books'; // Rejected books are still in pending_books
+
+            batchCommits.delete(dbGeo.collection(sourceCol).doc(bookId));
+            if (sourceCol === 'books') {
+                const feedbackSnapshot = await dbGeo.collection('books').doc(bookId).collection('feedback').get(); 
+                feedbackSnapshot.forEach(doc => batchCommits.delete(doc.ref));
+            }
+            deletedCount++;
+        }
+        try { await batchCommits.commit(); showAdminToastGeo(`${deletedCount} books deleted.`, "success"); }
+        catch (error) { showAdminToastGeo("Error during bulk delete: " + error.message, "error"); }
+        finally { if(adminElementsGeo.bulkDeleteBooksBtn) toggleAdminSpinnerGeo(adminElementsGeo.bulkDeleteBooksBtn, false); selectedBookIdsForBulkActionGeo = []; if(adminElementsGeo.selectAllBooksCheckbox) adminElementsGeo.selectAllBooksCheckbox.checked = false; updateBulkActionsBarVisibilityGeo(); }
+    }
+
+
+    // --- WITHDRAWAL MANAGEMENT (Your existing functions) ---
+    function setupWithdrawalStatusTabsGeo() {
+        if (!adminElementsGeo.withdrawalStatusTabs) return;
+        adminElementsGeo.withdrawalStatusTabs.addEventListener('click', (e) => {
+            const targetButton = e.target.closest('button');
+            if (targetButton) {
+                adminElementsGeo.withdrawalStatusTabs.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                targetButton.classList.add('active');
+                currentWithdrawalViewGeo = targetButton.dataset.status;
+                renderWithdrawalsFromCacheGeo();
+            }
+        });
+    }
+    function updateWithdrawalCountsGeo() {
+        if (!adminElementsGeo.pendingWithdrawalsCount || !adminElementsGeo.completedWithdrawalsCount || !adminElementsGeo.rejectedWithdrawalsCount) return;
+        adminElementsGeo.pendingWithdrawalsCount.textContent = withdrawalsCacheGeo.filter(w => w.status === 'pending').length;
+        adminElementsGeo.completedWithdrawalsCount.textContent = withdrawalsCacheGeo.filter(w => w.status === 'completed').length;
+        adminElementsGeo.rejectedWithdrawalsCount.textContent = withdrawalsCacheGeo.filter(w => w.status === 'rejected').length;
+     }
+    function renderWithdrawalsFromCacheGeo() { 
+        const tbody = adminElementsGeo.withdrawalsTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const filteredWithdrawals = withdrawalsCacheGeo.filter(w => w.status === currentWithdrawalViewGeo)
+            .sort((a,b) => (b.requestedAt?.toDate?.() || new Date(0)) - (a.requestedAt?.toDate?.() || new Date(0))); 
+
+        if (filteredWithdrawals.length === 0) {
+            adminElementsGeo.withdrawalsEmptyState.style.display = 'flex';
+            return;
+        }
+        adminElementsGeo.withdrawalsEmptyState.style.display = 'none';
+
+        filteredWithdrawals.forEach(w => {
+            const row = tbody.insertRow();
+            row.innerHTML = `<td>${escapeHTMLGeo(w.userName || 'N/A')}<br><small>${escapeHTMLGeo(w.userEmail)}</small></td> <td>${w.pointsWithdrawn} pts (₹${w.amountRs})</td> <td>${escapeHTMLGeo(w.method ? w.method.toUpperCase() : 'N/A')}</td> <td>ID: ${escapeHTMLGeo(w.paymentIdentifier)} ${w.accountHolderName ? `<br>Name: ${escapeHTMLGeo(w.accountHolderName)}` : ''}</td> <td>${formatDateGeo(w.requestedAt, true)}</td> <td><span class="status-badge status-${w.status.toLowerCase()}">${escapeHTMLGeo(w.status)}</span> ${w.adminNotes ? `<br><small style="color:var(--admin-info-color);font-style:italic;">Note: ${escapeHTMLGeo(w.adminNotes)}</small>` : ''} ${w.processedAt ? `<br><small style="font-style:italic;">Processed: ${formatDateGeo(w.processedAt, true)}</small>`: ''} </td> <td> ${w.status === 'pending' ? `<button class="admin-btn admin-btn-sm admin-btn-primary process-withdrawal-btn" data-wid="${w.id}"><i class="fas fa-cogs"></i> Process</button>` : `<button class="admin-btn admin-btn-sm admin-btn-secondary view-withdrawal-btn" data-wid="${w.id}"><i class="fas fa-eye"></i> View</button>`} </td>`;
+        });
+        $$geo('.process-withdrawal-btn, .view-withdrawal-btn').forEach(btn => btn.addEventListener('click', (e) => openWithdrawalActionModalGeo(e.currentTarget.dataset.wid)));
+    }
+    function openWithdrawalActionModalGeo(withdrawalId) {
+        currentWithdrawalIdForActionGeo = withdrawalId;
+        const w = withdrawalsCacheGeo.find(item => item.id === withdrawalId);
+        if (!w || !adminElementsGeo.withdrawalActionDetails || !adminElementsGeo.approveWithdrawalBtn || !adminElementsGeo.rejectWithdrawalBtn) { 
+            showAdminToastGeo("Withdrawal not found or modal elements missing.", "error"); return; 
+        }
+        adminElementsGeo.withdrawalActionDetails.innerHTML = `<p><strong>User:</strong> ${escapeHTMLGeo(w.userName)} (${escapeHTMLGeo(w.userEmail)})</p> <p><strong>Amount:</strong> ${w.pointsWithdrawn} pts (₹${w.amountRs})</p> <p><strong>Method:</strong> ${escapeHTMLGeo(w.method ? w.method.toUpperCase() : 'N/A')}</p> <p><strong>Payment ID:</strong> ${escapeHTMLGeo(w.paymentIdentifier)}</p> ${w.accountHolderName ? `<p><strong>Account Name:</strong> ${escapeHTMLGeo(w.accountHolderName)}</p>` : ''} <p><strong>Requested:</strong> ${formatDateGeo(w.requestedAt, true)}</p> <p><strong>Status:</strong> <span class="status-badge status-${w.status.toLowerCase()}">${escapeHTMLGeo(w.status)}</span></p>`;
+        const notesInput = $geo('#withdrawalAdminNotes');
+        if(notesInput) notesInput.value = w.adminNotes || '';
+        adminElementsGeo.approveWithdrawalBtn.style.display = w.status === 'pending' ? 'inline-flex' : 'none';
+        adminElementsGeo.rejectWithdrawalBtn.style.display = w.status === 'pending' ? 'inline-flex' : 'none';
+        openAdminModalGeo('withdrawalActionModal');
+    }
+    if(adminElementsGeo.approveWithdrawalBtn) adminElementsGeo.approveWithdrawalBtn.onclick = () => processWithdrawalGeo('completed');
+    if(adminElementsGeo.rejectWithdrawalBtn) adminElementsGeo.rejectWithdrawalBtn.onclick = () => { const notesEl = $geo('#withdrawalAdminNotes'); const notes = notesEl ? notesEl.value.trim() : ""; if(!notes && !confirm("Reject without notes?")) return; processWithdrawalGeo('rejected'); };
+    async function processWithdrawalGeo(newStatus) { 
+        if (!currentWithdrawalIdForActionGeo || !dbGeo || !currentAdminUserGeo) return;
+        const notesEl = $geo('#withdrawalAdminNotes');
+        const notes = notesEl ? notesEl.value.trim() : "";
+        const withdrawalRef = dbGeo.collection('withdrawals').doc(currentWithdrawalIdForActionGeo);
+        const withdrawalData = withdrawalsCacheGeo.find(w => w.id === currentWithdrawalIdForActionGeo);
+        const btn = newStatus === 'completed' ? adminElementsGeo.approveWithdrawalBtn : adminElementsGeo.rejectWithdrawalBtn;
+        if (btn) toggleAdminSpinnerGeo(btn, true);
+        try {
+            const updates = { status: newStatus, adminNotes: notes, processedAt: firebase.firestore.FieldValue.serverTimestamp(), processedBy: currentAdminUserGeo.uid };
+            await withdrawalRef.update(updates);
+            if (newStatus === 'rejected' && withdrawalData) {
+                await dbGeo.collection('ak_users').doc(withdrawalData.userId).update({ points: firebase.firestore.FieldValue.increment(withdrawalData.pointsWithdrawn) });
+                await dbGeo.collection('ak_users').doc(withdrawalData.userId).collection('notifications').add({ title: "Withdrawal Rejected", message: `Your withdrawal for ${withdrawalData.pointsWithdrawn} pts was rejected. Points refunded. Reason: ${escapeHTMLGeo(notes || 'Admin decision')}.`, type: "error", icon: "fas fa-undo-alt", timestamp: firebase.firestore.FieldValue.serverTimestamp(), read: false });
+            } else if (newStatus === 'completed' && withdrawalData) {
+                await dbGeo.collection('ak_users').doc(withdrawalData.userId).collection('notifications').add({ title: "Withdrawal Completed", message: `Your withdrawal for ${withdrawalData.pointsWithdrawn} pts has been processed! Check your ${withdrawalData.method}.`, type: "success", icon: "fas fa-check-circle", timestamp: firebase.firestore.FieldValue.serverTimestamp(), read: false });
+            }
+            showAdminToastGeo(`Withdrawal ${newStatus}.`, "success");
+            closeAdminModalGeo('withdrawalActionModal');
+             // Caches will update via listeners.
+        } catch (error) { showAdminToastGeo("Error processing withdrawal: " + error.message, "error"); }
+        finally { if(btn) toggleAdminSpinnerGeo(btn, false); }
+    }
+
+
+    // --- ANNOUNCEMENT MANAGEMENT (Your existing functions) ---
+    if(adminElementsGeo.sendAnnouncementForm && adminElementsGeo.sendAnnouncementBtn) { 
+        adminElementsGeo.sendAnnouncementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titleEl = $geo('#announcementTitle'), msgEl = $geo('#announcementMessage'), typeEl = $geo('#announcementType'), iconEl = $geo('#announcementIcon'), linkEl = $geo('#announcementActionLink');
+            if(!titleEl || !msgEl || !typeEl || !iconEl || !linkEl) return;
+
+            const title = titleEl.value.trim();
+            const message = msgEl.value.trim();
+            const type = typeEl.value;
+            const icon = iconEl.value.trim() || getDefaultAnnouncementIconGeo(type);
+            const actionLink = linkEl.value.trim();
+            if (!title || !message) { showAdminToastGeo("Title and Message are required.", "warning"); return; }
+            toggleAdminSpinnerGeo(adminElementsGeo.sendAnnouncementBtn, true);
+            try {
+                await dbGeo.collection('broadcast_notifications').add({ title, message, type, icon, actionLink: actionLink || null, sentAt: firebase.firestore.FieldValue.serverTimestamp(), sentBy: currentAdminUserGeo.uid, sentByName: currentAdminDataGeo.name });
+                showAdminToastGeo("Announcement sent!", "success");
+                adminElementsGeo.sendAnnouncementForm.reset();
+                loadRecentAnnouncementsGeo(); 
+            } catch (error) { showAdminToastGeo("Send failed: " + error.message, "error"); }
+            finally { toggleAdminSpinnerGeo(adminElementsGeo.sendAnnouncementBtn, false); }
+        });
+    }
+    function getDefaultAnnouncementIconGeo(type) { 
+         switch(type) { case 'success': return 'fas fa-check-circle'; case 'error': return 'fas fa-exclamation-triangle'; case 'warning': return 'fas fa-exclamation-circle'; case 'announcement': return 'fas fa-bullhorn'; default: return 'fas fa-info-circle'; }
+    }
+    async function loadRecentAnnouncementsGeo() { 
+        if(!adminElementsGeo.recentAnnouncementsList || !adminElementsGeo.announcementsEmptyState) return;
+        adminElementsGeo.recentAnnouncementsList.innerHTML = '<p style="text-align:center;padding:10px;">Loading...</p>';
+        adminElementsGeo.announcementsEmptyState.style.display = 'none';
+        try {
+            const snapshot = await dbGeo.collection('broadcast_notifications').orderBy('sentAt', 'desc').limit(10).get();
+            if (snapshot.empty) { adminElementsGeo.recentAnnouncementsList.innerHTML = ''; adminElementsGeo.announcementsEmptyState.style.display = 'flex'; return; }
+            let html = '<ul>';
+            snapshot.forEach(doc => { const ann = doc.data(); html += `<li class="type-${ann.type || 'info'}"> <div class="announcement-content"> <strong style="color:var(--admin-primary-light);"><i class="${escapeHTMLGeo(ann.icon || getDefaultAnnouncementIconGeo(ann.type))}"></i> ${escapeHTMLGeo(ann.title)}</strong> <p style="font-size:0.85rem; margin-left:25px;">${escapeHTMLGeo(ann.message)}</p> <small style="margin-left:25px;opacity:0.7;">Sent: ${formatDateGeo(ann.sentAt, true)} by ${escapeHTMLGeo(ann.sentByName || 'Admin')}</small> ${ann.actionLink ? `<br><small style="margin-left:25px;">Link: <a href="${escapeHTMLGeo(ann.actionLink)}" target="_blank" rel="noopener noreferrer" style="color:var(--admin-primary-light);">${escapeHTMLGeo(ann.actionLink)}</a></small>`: ''} </div> <button class="admin-btn admin-btn-sm admin-btn-danger delete-announcement-btn" data-id="${doc.id}"><i class="fas fa-trash"></i></button> </li>`; });
+            html += '</ul>';
+            adminElementsGeo.recentAnnouncementsList.innerHTML = html;
+            $$geo('.delete-announcement-btn').forEach(btn => { btn.addEventListener('click', async (e) => { if (confirm("Delete announcement?")) { try { await dbGeo.collection('broadcast_notifications').doc(e.currentTarget.dataset.id).delete(); showAdminToastGeo("Deleted.", "success"); loadRecentAnnouncementsGeo(); } catch (err) { showAdminToastGeo("Error: "+err.message, "error");}} }); });
+        } catch (error) { adminElementsGeo.recentAnnouncementsList.innerHTML = '<p style="color:var(--admin-error-color); text-align:center;padding:10px;">Error loading announcements.</p>'; console.error("Error loading announcements:", error); }
+    }
+
+
+    // --- ADVERTISEMENT MANAGEMENT (Your existing functions) ---
+    function setupAdvertisementFormGeo() {
+        if (!adminElementsGeo.addAdvertisementForm || !adminElementsGeo.saveAdvertisementBtn) return;
+        adminElementsGeo.addAdvertisementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const adData = {
+                title: form.querySelector('#adTitleInput').value.trim(),
+                description: form.querySelector('#adDescriptionInput').value.trim() || null,
+                imageUrl: form.querySelector('#adImageUrlInput').value.trim(),
+                targetUrl: form.querySelector('#adTargetUrlInput').value.trim(),
+                placement: form.querySelector('#adPlacementInput').value,
+                displayDurationSeconds: form.querySelector('#adPlacementInput').value === 'initial_fullscreen' ? parseInt(form.querySelector('#adDisplayDurationInput').value) || 5 : null,
+                isActive: form.querySelector('#adIsActiveInput').checked,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            if (!adData.title || !adData.imageUrl || !adData.targetUrl) {
+                showAdminToastGeo("Title, Image URL, and Target URL are required for ads.", "warning"); return;
+            }
+            toggleAdminSpinnerGeo(adminElementsGeo.saveAdvertisementBtn, true);
+            try {
+                await dbGeo.collection('advertisements').add(adData);
+                showAdminToastGeo("Advertisement added successfully!", "success");
+                adminElementsGeo.addAdvertisementForm.reset();
+                if(form.querySelector('#adIsActiveInput')) form.querySelector('#adIsActiveInput').checked = true;
+                // Cache will update via listener
+            } catch (error) { showAdminToastGeo("Failed to add ad: " + error.message, "error"); } 
+            finally { toggleAdminSpinnerGeo(adminElementsGeo.saveAdvertisementBtn, false); }
+        });
+    }
+    function renderAdvertisementsFromCacheGeo(searchTerm = '') {
+        const tbody = adminElementsGeo.advertisementsTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const filteredAds = adsCacheGeo.filter(ad => {
+            const term = searchTerm.toLowerCase();
+            return (ad.title && ad.title.toLowerCase().includes(term)) || (ad.placement && ad.placement.toLowerCase().includes(term));
+        });
+        if (filteredAds.length === 0) {
+            adminElementsGeo.advertisementsEmptyState.style.display = 'flex'; return;
+        }
+        adminElementsGeo.advertisementsEmptyState.style.display = 'none';
+        filteredAds.forEach(ad => {
+            const row = tbody.insertRow();
+            row.innerHTML = `<td><img src="${escapeHTMLGeo(ad.imageUrl)}" alt="Ad" class="ad-image-small" onerror="this.style.border='1px solid var(--admin-error-color)'; this.alt='Error'; this.src='https://via.placeholder.com/100x50?text=Error';"></td> <td>${escapeHTMLGeo(ad.title)}</td> <td>${escapeHTMLGeo(ad.placement)}</td> <td class="wrap-text"><a href="${escapeHTMLGeo(ad.targetUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--admin-primary-light);">${escapeHTMLGeo(ad.targetUrl)}</a></td> <td><span class="status-badge ${ad.isActive ? 'status-active' : 'status-inactive'}">${ad.isActive ? 'Active' : 'Inactive'}</span></td> <td> <button class="admin-btn admin-btn-sm admin-btn-primary edit-ad-btn" data-adid="${ad.id}"><i class="fas fa-edit"></i> Edit</button> <button class="admin-btn admin-btn-sm admin-btn-${ad.isActive ? 'warning' : 'success'} toggle-ad-status-btn" data-adid="${ad.id}"> <i class="fas ${ad.isActive ? 'fa-toggle-off' : 'fa-toggle-on'}"></i> ${ad.isActive ? 'Deact.' : 'Activ.'} </button> <button class="admin-btn admin-btn-sm admin-btn-danger delete-ad-btn" data-adid="${ad.id}"><i class="fas fa-trash"></i> Delete</button> </td>`;
+        });
+        addAdvertisementActionListenersGeo();
+    }
+    function addAdvertisementActionListenersGeo() {
+        $$geo('.edit-ad-btn').forEach(btn => btn.addEventListener('click', (e) => openEditAdvertisementModalGeo(e.currentTarget.dataset.adid)));
+        $$geo('.delete-ad-btn').forEach(btn => btn.addEventListener('click', (e) => deleteAdvertisementGeo(e.currentTarget.dataset.adid)));
+        $$geo('.toggle-ad-status-btn').forEach(btn => btn.addEventListener('click', (e) => toggleAdvertisementStatusGeo(e.currentTarget.dataset.adid)));
+    }
+    function setupAdvertisementSearchGeo() { if (adminElementsGeo.advertisementSearchInput) adminElementsGeo.advertisementSearchInput.addEventListener('input', (e) => renderAdvertisementsFromCacheGeo(e.target.value)); }
+    function openEditAdvertisementModalGeo(adId) {
+        const ad = adsCacheGeo.find(a => a.id === adId);
+        if (!ad || !adminElementsGeo.editAdvertisementForm) { showAdminToastGeo("Ad not found.", "error"); return; }
+        const form = adminElementsGeo.editAdvertisementForm;
+        form.querySelector('#editAdId').value = ad.id;
+        form.querySelector('#editAdTitleInput').value = ad.title || '';
+        form.querySelector('#editAdDescriptionInput').value = ad.description || '';
+        form.querySelector('#editAdImageUrlInput').value = ad.imageUrl || '';
+        form.querySelector('#editAdTargetUrlInput').value = ad.targetUrl || '';
+        form.querySelector('#editAdPlacementInput').value = ad.placement || 'initial_fullscreen';
+        form.querySelector('#editAdDisplayDurationInput').value = ad.displayDurationSeconds || (ad.placement === 'initial_fullscreen' ? 5 : 1);
+        form.querySelector('#editAdIsActiveInput').checked = ad.isActive || false;
+        openAdminModalGeo('editAdvertisementModal');
+    }
+    if (adminElementsGeo.editAdvertisementForm && adminElementsGeo.saveAdChangesBtn) {
+        adminElementsGeo.editAdvertisementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const adId = form.querySelector('#editAdId').value;
+            const adData = {
+                title: form.querySelector('#editAdTitleInput').value.trim(),
+                description: form.querySelector('#editAdDescriptionInput').value.trim() || null,
+                imageUrl: form.querySelector('#editAdImageUrlInput').value.trim(),
+                targetUrl: form.querySelector('#editAdTargetUrlInput').value.trim(),
+                placement: form.querySelector('#editAdPlacementInput').value,
+                displayDurationSeconds: form.querySelector('#editAdPlacementInput').value === 'initial_fullscreen' ? parseInt(form.querySelector('#editAdDisplayDurationInput').value) || 5 : null,
+                isActive: form.querySelector('#editAdIsActiveInput').checked,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            if (!adData.title || !adData.imageUrl || !adData.targetUrl) { showAdminToastGeo("Title, Image URL, and Target URL required.", "warning"); return; }
+            toggleAdminSpinnerGeo(adminElementsGeo.saveAdChangesBtn, true);
+            try {
+                await dbGeo.collection('advertisements').doc(adId).update(adData);
+                showAdminToastGeo("Ad updated!", "success");
+                closeAdminModalGeo('editAdvertisementModal');
+                // Cache updated via listener
+            } catch (error) { showAdminToastGeo("Update failed: " + error.message, "error"); }
+            finally { toggleAdminSpinnerGeo(adminElementsGeo.saveAdChangesBtn, false); }
+        });
+    }
+    async function deleteAdvertisementGeo(adId) {
+        if (!confirm("Delete this advertisement?")) return;
+        try { await dbGeo.collection('advertisements').doc(adId).delete(); showAdminToastGeo("Ad deleted.", "success"); }
+        catch (error) { showAdminToastGeo("Error deleting ad: " + error.message, "error"); }
+         // Cache updated via listener
+    }
+    async function toggleAdvertisementStatusGeo(adId) {
+        const ad = adsCacheGeo.find(a => a.id === adId);
+        if (!ad) { showAdminToastGeo("Ad not found.", "error"); return; }
+        const newStatus = !ad.isActive;
+        try { await dbGeo.collection('advertisements').doc(adId).update({ isActive: newStatus, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }); showAdminToastGeo(`Ad ${newStatus ? 'activated' : 'deactivated'}.`, "success"); }
+        catch (error) { showAdminToastGeo("Failed: " + error.message, "error"); }
+        // Cache updated via listener
+    }
+
+
+    // --- NEW: COURSE BATCH MANAGEMENT ---
+    function setupCourseBatchManagement() {
+        if (adminElementsGeo.addCourseBatchModalBtn) {
+            adminElementsGeo.addCourseBatchModalBtn.onclick = () => {
+                currentEditingCourseBatchId = null;
+                adminElementsGeo.courseBatchModalTitle.textContent = "Add New Batch";
+                adminElementsGeo.courseBatchForm.reset();
+                 if (adminElementsGeo.courseBatchForm.querySelector('#courseBatchStatus')) {
+                    adminElementsGeo.courseBatchForm.querySelector('#courseBatchStatus').checked = true; // Default to active
+                }
+                openAdminModalGeo('courseBatchModal');
+            };
+        }
+
+        if (adminElementsGeo.courseBatchForm) {
+            adminElementsGeo.courseBatchForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = adminElementsGeo.courseBatchForm;
+                const batchData = {
+                    name: form.querySelector('#courseBatchName').value.trim(),
+                    description: form.querySelector('#courseBatchDescription').value.trim() || null,
+                    imageUrl: form.querySelector('#courseBatchImageUrl').value.trim(),
+                    instructorName: form.querySelector('#courseBatchInstructorName').value.trim() || null,
+                    durationText: form.querySelector('#courseBatchDurationText').value.trim() || null,
+                    priceDisplay: form.querySelector('#courseBatchPriceDisplay').value.trim(),
+                    difficulty: form.querySelector('#courseBatchDifficulty').value.trim() || null,
+                    batchLink: form.querySelector('#courseBatchLink').value.trim() || null,
+                    order: parseInt(form.querySelector('#courseBatchOrder').value) || 0,
+                    status: form.querySelector('#courseBatchStatus').checked ? 'active' : 'inactive',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (!batchData.name || !batchData.imageUrl || !batchData.priceDisplay) {
+                    showAdminToastGeo("Batch Name, Image URL, and Price Display are required.", "warning"); return;
+                }
+
+                toggleAdminSpinnerGeo(adminElementsGeo.saveCourseBatchBtn, true);
+                try {
+                    if (currentEditingCourseBatchId) {
+                        await dbGeo.collection('batches').doc(currentEditingCourseBatchId).update(batchData);
+                        showAdminToastGeo("Batch updated successfully!", "success");
+                    } else {
+                        batchData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await dbGeo.collection('batches').add(batchData);
+                        showAdminToastGeo("Batch added successfully!", "success");
+                    }
+                    closeAdminModalGeo('courseBatchModal');
+                } catch (error) { showAdminToastGeo("Error saving batch: " + error.message, "error"); }
+                finally { toggleAdminSpinnerGeo(adminElementsGeo.saveCourseBatchBtn, false); }
+            });
+        }
+        if (adminElementsGeo.courseBatchSearchInput) {
+             adminElementsGeo.courseBatchSearchInput.addEventListener('input', () => renderCourseBatchesGeo());
+        }
+    }
+
+    function renderCourseBatchesGeo() {
+        const tbody = adminElementsGeo.courseBatchesTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const searchTerm = (adminElementsGeo.courseBatchSearchInput?.value || '').toLowerCase();
+        
+        const filteredBatches = courseBatchesCacheGeo.filter(batch => 
+            batch.name.toLowerCase().includes(searchTerm) || 
+            (batch.instructorName && batch.instructorName.toLowerCase().includes(searchTerm))
+        );
+
+        if (filteredBatches.length === 0) {
+            adminElementsGeo.courseBatchesEmptyState.style.display = 'flex'; return;
+        }
+        adminElementsGeo.courseBatchesEmptyState.style.display = 'none';
+
+        filteredBatches.forEach(batch => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td><img src="${escapeHTMLGeo(batch.imageUrl || 'https://via.placeholder.com/50x50?text=N/A')}" alt="${escapeHTMLGeo(batch.name)}" class="item-cover-small"></td>
+                <td>${escapeHTMLGeo(batch.name)}</td>
+                <td>${escapeHTMLGeo(batch.instructorName || 'N/A')}</td>
+                <td><span class="status-badge status-${batch.status}-batch">${batch.status}</span></td>
+                <td>
+                    <button class="admin-btn admin-btn-sm admin-btn-primary edit-course-batch-btn" data-id="${batch.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="admin-btn admin-btn-sm admin-btn-danger delete-course-batch-btn" data-id="${batch.id}"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+        });
+        addCourseBatchActionListenersGeo();
+    }
+
+    function addCourseBatchActionListenersGeo() {
+        $$geo('.edit-course-batch-btn').forEach(btn => btn.onclick = (e) => openEditCourseBatchModalGeo(e.currentTarget.dataset.id));
+        $$geo('.delete-course-batch-btn').forEach(btn => btn.onclick = (e) => deleteCourseBatchGeo(e.currentTarget.dataset.id));
+    }
+
+    function openEditCourseBatchModalGeo(batchId) {
+        const batch = courseBatchesCacheGeo.find(b => b.id === batchId);
+        if (!batch) { showAdminToastGeo("Batch not found.", "error"); return; }
+
+        currentEditingCourseBatchId = batchId;
+        adminElementsGeo.courseBatchModalTitle.textContent = "Edit Batch";
+        const form = adminElementsGeo.courseBatchForm;
+        form.querySelector('#courseBatchEditId').value = batch.id;
+        form.querySelector('#courseBatchName').value = batch.name || '';
+        form.querySelector('#courseBatchDescription').value = batch.description || '';
+        form.querySelector('#courseBatchImageUrl').value = batch.imageUrl || '';
+        form.querySelector('#courseBatchInstructorName').value = batch.instructorName || '';
+        form.querySelector('#courseBatchDurationText').value = batch.durationText || '';
+        form.querySelector('#courseBatchPriceDisplay').value = batch.priceDisplay || '';
+        form.querySelector('#courseBatchDifficulty').value = batch.difficulty || '';
+        form.querySelector('#courseBatchLink').value = batch.batchLink || '';
+        form.querySelector('#courseBatchOrder').value = batch.order || 0;
+        form.querySelector('#courseBatchStatus').checked = batch.status === 'active';
+        openAdminModalGeo('courseBatchModal');
+    }
+
+    async function deleteCourseBatchGeo(batchId) {
+        if (!confirm("Are you sure you want to delete this batch? This will also delete ALL associated subjects and lectures/notes. This action is IRREVERSIBLE.")) return;
+        
+        showAdminToastGeo("Deleting batch and associated content... This may take a moment.", "info", 10000); // Longer toast
+        const deleteButton = $geo(`.delete-course-batch-btn[data-id="${batchId}"]`);
+        if(deleteButton) toggleAdminSpinnerGeo(deleteButton, true);
+
+        try {
+            const batchCommits = dbGeo.batch();
+            
+            // 1. Delete lectures associated with this batch
+            const lecturesSnapshot = await dbGeo.collection('lectures').where('batchId', '==', batchId).get();
+            lecturesSnapshot.forEach(doc => batchCommits.delete(doc.ref));
+            console.log(`Marked ${lecturesSnapshot.size} lectures for deletion.`);
+
+            // 2. Delete subjects associated with this batch
+            const subjectsSnapshot = await dbGeo.collection('subjects').where('batchId', '==', batchId).get();
+            subjectsSnapshot.forEach(doc => batchCommits.delete(doc.ref));
+            console.log(`Marked ${subjectsSnapshot.size} subjects for deletion.`);
+
+            // 3. Delete the batch itself
+            batchCommits.delete(dbGeo.collection('batches').doc(batchId));
+            console.log(`Marked batch ${batchId} for deletion.`);
+
+            await batchCommits.commit();
+            showAdminToastGeo("Batch and all associated content deleted successfully!", "success");
+            // Cache will be updated by listeners
+        } catch (error) {
+            console.error("Error deleting batch and associated content:", error);
+            showAdminToastGeo("Error deleting batch: " + error.message, "error");
+        } finally {
+             if(deleteButton) toggleAdminSpinnerGeo(deleteButton, false);
+        }
+    }
+
+
+    // --- NEW: COURSE SUBJECT MANAGEMENT ---
+    function setupCourseSubjectManagement() {
+        if (adminElementsGeo.addCourseSubjectModalBtn) {
+            adminElementsGeo.addCourseSubjectModalBtn.onclick = () => {
+                currentEditingCourseSubjectId = null;
+                adminElementsGeo.courseSubjectModalTitle.textContent = "Add New Subject";
+                adminElementsGeo.courseSubjectForm.reset();
+                if(adminElementsGeo.courseSubjectParentBatchSelect.options.length > 1) adminElementsGeo.courseSubjectParentBatchSelect.selectedIndex = 0; // Default to '-- Select Batch --'
+                openAdminModalGeo('courseSubjectModal');
+            };
+        }
+
+        if (adminElementsGeo.courseSubjectForm) {
+            adminElementsGeo.courseSubjectForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = adminElementsGeo.courseSubjectForm;
+                const subjectData = {
+                    batchId: form.querySelector('#courseSubjectParentBatch').value,
+                    name: form.querySelector('#courseSubjectName').value.trim(),
+                    description: form.querySelector('#courseSubjectDescription').value.trim() || null,
+                    coverImageUrl: form.querySelector('#courseSubjectCoverImageUrl').value.trim() || null,
+                    iconClass: form.querySelector('#courseSubjectIconClass').value.trim() || null,
+                    order: parseInt(form.querySelector('#courseSubjectOrder').value) || 0,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (!subjectData.batchId || !subjectData.name) {
+                    showAdminToastGeo("Parent Batch and Subject Name are required.", "warning"); return;
+                }
+                toggleAdminSpinnerGeo(adminElementsGeo.saveCourseSubjectBtn, true);
+                try {
+                    if (currentEditingCourseSubjectId) {
+                        await dbGeo.collection('subjects').doc(currentEditingCourseSubjectId).update(subjectData);
+                        showAdminToastGeo("Subject updated successfully!", "success");
+                    } else {
+                        subjectData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await dbGeo.collection('subjects').add(subjectData);
+                        showAdminToastGeo("Subject added successfully!", "success");
+                    }
+                    closeAdminModalGeo('courseSubjectModal');
+                } catch (error) { showAdminToastGeo("Error saving subject: " + error.message, "error");}
+                finally { toggleAdminSpinnerGeo(adminElementsGeo.saveCourseSubjectBtn, false); }
+            });
+        }
+        if(adminElementsGeo.courseSubjectBatchFilter) adminElementsGeo.courseSubjectBatchFilter.addEventListener('change', renderCourseSubjectsGeo);
+        if(adminElementsGeo.courseSubjectSearchInput) adminElementsGeo.courseSubjectSearchInput.addEventListener('input', renderCourseSubjectsGeo);
+    }
+
+    function renderCourseSubjectsGeo() {
+        const tbody = adminElementsGeo.courseSubjectsTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const selectedBatchId = adminElementsGeo.courseSubjectBatchFilter?.value || '';
+        const searchTerm = (adminElementsGeo.courseSubjectSearchInput?.value || '').toLowerCase();
+
+        let filteredSubjects = courseSubjectsCacheGeo;
+        if (selectedBatchId) {
+            filteredSubjects = filteredSubjects.filter(subject => subject.batchId === selectedBatchId);
+        }
+        if (searchTerm) {
+            filteredSubjects = filteredSubjects.filter(subject => subject.name.toLowerCase().includes(searchTerm));
+        }
+
+        if (filteredSubjects.length === 0) {
+            adminElementsGeo.courseSubjectsEmptyState.style.display = 'flex'; return;
+        }
+        adminElementsGeo.courseSubjectsEmptyState.style.display = 'none';
+
+        filteredSubjects.forEach(subject => {
+            const batch = courseBatchesCacheGeo.find(b => b.id === subject.batchId);
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>
+                  ${subject.coverImageUrl ? `<img src="${escapeHTMLGeo(subject.coverImageUrl)}" alt="${escapeHTMLGeo(subject.name)}" class="item-cover-small">` : (subject.iconClass ? `<i class="${escapeHTMLGeo(subject.iconClass)}" style="font-size:1.5em; width:50px; text-align:center;"></i>` : '<span style="display:inline-block;width:50px; text-align:center;">-</span>')}
+                </td>
+                <td>${escapeHTMLGeo(subject.name)}</td>
+                <td>${escapeHTMLGeo(batch ? batch.name : 'Unknown Batch')}</td>
+                <td>${subject.order}</td>
+                <td>
+                    <button class="admin-btn admin-btn-sm admin-btn-primary edit-course-subject-btn" data-id="${subject.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="admin-btn admin-btn-sm admin-btn-danger delete-course-subject-btn" data-id="${subject.id}"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+        });
+        addCourseSubjectActionListenersGeo();
+    }
+
+    function addCourseSubjectActionListenersGeo() {
+        $$geo('.edit-course-subject-btn').forEach(btn => btn.onclick = (e) => openEditCourseSubjectModalGeo(e.currentTarget.dataset.id));
+        $$geo('.delete-course-subject-btn').forEach(btn => btn.onclick = (e) => deleteCourseSubjectGeo(e.currentTarget.dataset.id));
+    }
+    
+    function openEditCourseSubjectModalGeo(subjectId) {
+        const subject = courseSubjectsCacheGeo.find(s => s.id === subjectId);
+        if (!subject) { showAdminToastGeo("Subject not found.", "error"); return; }
+
+        currentEditingCourseSubjectId = subjectId;
+        adminElementsGeo.courseSubjectModalTitle.textContent = "Edit Subject";
+        const form = adminElementsGeo.courseSubjectForm;
+        form.querySelector('#courseSubjectEditId').value = subject.id;
+        form.querySelector('#courseSubjectParentBatch').value = subject.batchId || '';
+        form.querySelector('#courseSubjectName').value = subject.name || '';
+        form.querySelector('#courseSubjectDescription').value = subject.description || '';
+        form.querySelector('#courseSubjectCoverImageUrl').value = subject.coverImageUrl || '';
+        form.querySelector('#courseSubjectIconClass').value = subject.iconClass || '';
+        form.querySelector('#courseSubjectOrder').value = subject.order || 0;
+        openAdminModalGeo('courseSubjectModal');
+    }
+
+    async function deleteCourseSubjectGeo(subjectId) {
+        if (!confirm("Are you sure you want to delete this subject? This will also delete ALL associated lectures and notes. This action is IRREVERSIBLE.")) return;
+        
+        showAdminToastGeo("Deleting subject and associated content... This may take a moment.", "info", 10000);
+        const deleteButton = $geo(`.delete-course-subject-btn[data-id="${subjectId}"]`);
+        if(deleteButton) toggleAdminSpinnerGeo(deleteButton, true);
+        try {
+            const batchCommits = dbGeo.batch();
+
+            // 1. Delete lectures associated with this subject
+            const lecturesSnapshot = await dbGeo.collection('lectures').where('subjectId', '==', subjectId).get();
+            lecturesSnapshot.forEach(doc => batchCommits.delete(doc.ref));
+             console.log(`Marked ${lecturesSnapshot.size} lectures for deletion for subject ${subjectId}.`);
+
+            // 2. Delete the subject itself
+            batchCommits.delete(dbGeo.collection('subjects').doc(subjectId));
+             console.log(`Marked subject ${subjectId} for deletion.`);
+
+            await batchCommits.commit();
+            showAdminToastGeo("Subject and all associated content deleted successfully!", "success");
+        } catch (error) {
+             console.error("Error deleting subject and associated content:", error);
+            showAdminToastGeo("Error deleting subject: " + error.message, "error");
+        } finally {
+            if(deleteButton) toggleAdminSpinnerGeo(deleteButton, false);
+        }
+    }
+
+
+    // --- NEW: COURSE LECTURE/NOTE MANAGEMENT ---
+    function setupCourseLectureManagement() {
+        if (adminElementsGeo.addCourseLectureModalBtn) {
+            adminElementsGeo.addCourseLectureModalBtn.onclick = () => {
+                currentEditingCourseLectureId = null;
+                adminElementsGeo.courseLectureModalTitle.textContent = "Add New Content";
+                adminElementsGeo.courseLectureForm.reset();
+                if(adminElementsGeo.courseLectureParentBatchModalSelect.options.length > 1) adminElementsGeo.courseLectureParentBatchModalSelect.selectedIndex = 0;
+                if(adminElementsGeo.courseLectureParentSubjectModalSelect.options.length > 1) adminElementsGeo.courseLectureParentSubjectModalSelect.selectedIndex = 0;
+                if(adminElementsGeo.courseLectureTypeSelect) adminElementsGeo.courseLectureTypeSelect.value = "lecture"; // Default
+                toggleLectureFormFields("lecture"); // Ensure correct fields shown for default
+                openAdminModalGeo('courseLectureModal');
+            };
+        }
+
+        if(adminElementsGeo.courseLectureTypeSelect){
+             adminElementsGeo.courseLectureTypeSelect.addEventListener('change', (e) => toggleLectureFormFields(e.target.value));
+        }
+
+        if (adminElementsGeo.courseLectureForm) {
+            adminElementsGeo.courseLectureForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const form = adminElementsGeo.courseLectureForm;
+                const lectureData = {
+                    batchId: form.querySelector('#courseLectureParentBatchModal').value,
+                    subjectId: form.querySelector('#courseLectureParentSubjectModal').value,
+                    title: form.querySelector('#courseLectureTitle').value.trim(),
+                    type: form.querySelector('#courseLectureType').value,
+                    description: form.querySelector('#courseLectureDescription').value.trim() || null,
+                    videoUrl: form.querySelector('#courseLectureVideoUrl').value.trim() || null,
+                    pdfUrl: form.querySelector('#courseLecturePdfUrl').value.trim() || null,
+                    durationMinutes: form.querySelector('#courseLectureType').value === 'lecture' ? (parseInt(form.querySelector('#courseLectureDurationMinutes').value) || null) : null,
+                    order: parseInt(form.querySelector('#courseLectureOrder').value) || 0,
+                    isFreePreview: form.querySelector('#courseLectureIsFreePreview').checked,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (!lectureData.batchId || !lectureData.subjectId || !lectureData.title) {
+                    showAdminToastGeo("Parent Batch, Parent Subject, and Title are required.", "warning"); return;
+                }
+                if (lectureData.type === 'lecture' && !lectureData.videoUrl) {
+                    showAdminToastGeo("Video URL is required for lecture type.", "warning"); return;
+                }
+                if (lectureData.type === 'notes' && !lectureData.pdfUrl) {
+                    showAdminToastGeo("PDF URL is required for notes type.", "warning"); return;
+                }
+                
+                toggleAdminSpinnerGeo(adminElementsGeo.saveCourseLectureBtn, true);
+                try {
+                    if (currentEditingCourseLectureId) {
+                        await dbGeo.collection('lectures').doc(currentEditingCourseLectureId).update(lectureData);
+                        showAdminToastGeo("Content updated successfully!", "success");
+                    } else {
+                        lectureData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await dbGeo.collection('lectures').add(lectureData);
+                        showAdminToastGeo("Content added successfully!", "success");
+                    }
+                    closeAdminModalGeo('courseLectureModal');
+                } catch (error) { showAdminToastGeo("Error saving content: " + error.message, "error");}
+                finally { toggleAdminSpinnerGeo(adminElementsGeo.saveCourseLectureBtn, false); }
+            });
+        }
+         // Listen for changes in the batch filter to update the subject filter accordingly
+        if (adminElementsGeo.courseLectureBatchFilter && adminElementsGeo.courseLectureSubjectFilter) {
+            adminElementsGeo.courseLectureBatchFilter.addEventListener('change', (e) => {
+                populateSubjectSelectsGeo(e.target.value); // Populate subjects for the selected batch
+                renderCourseLecturesGeo(); // Re-render lectures with the new batch (and potentially now filtered subject)
+            });
+             adminElementsGeo.courseLectureParentBatchModalSelect.addEventListener('change', (e) => {
+                populateSubjectSelectsGeo(e.target.value);
+            });
+        }
+        if(adminElementsGeo.courseLectureSubjectFilter) adminElementsGeo.courseLectureSubjectFilter.addEventListener('change', renderCourseLecturesGeo);
+        if(adminElementsGeo.courseLectureSearchInput) adminElementsGeo.courseLectureSearchInput.addEventListener('input', renderCourseLecturesGeo);
+    }
+    
+    function toggleLectureFormFields(type){
+        if(type === 'lecture'){
+            adminElementsGeo.courseLectureVideoUrlGroup.style.display = 'block';
+            adminElementsGeo.courseLecturePdfUrlGroup.style.display = 'none';
+            adminElementsGeo.courseLectureDurationGroup.style.display = 'block';
+            adminElementsGeo.courseLectureForm.querySelector('#courseLectureVideoUrl').required = true;
+            adminElementsGeo.courseLectureForm.querySelector('#courseLecturePdfUrl').required = false;
+        } else { // notes
+            adminElementsGeo.courseLectureVideoUrlGroup.style.display = 'none';
+            adminElementsGeo.courseLecturePdfUrlGroup.style.display = 'block';
+            adminElementsGeo.courseLectureDurationGroup.style.display = 'none';
+            adminElementsGeo.courseLectureForm.querySelector('#courseLectureVideoUrl').required = false;
+            adminElementsGeo.courseLectureForm.querySelector('#courseLecturePdfUrl').required = true;
+        }
+    }
+
+
+    function renderCourseLecturesGeo() {
+        const tbody = adminElementsGeo.courseLecturesTableBody;
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const selectedBatchId = adminElementsGeo.courseLectureBatchFilter?.value || '';
+        const selectedSubjectId = adminElementsGeo.courseLectureSubjectFilter?.value || '';
+        const searchTerm = (adminElementsGeo.courseLectureSearchInput?.value || '').toLowerCase();
+
+        let filteredLectures = courseLecturesCacheGeo;
+        if (selectedBatchId) {
+            filteredLectures = filteredLectures.filter(lec => lec.batchId === selectedBatchId);
+        }
+        if (selectedSubjectId) {
+            filteredLectures = filteredLectures.filter(lec => lec.subjectId === selectedSubjectId);
+        }
+        if (searchTerm) {
+            filteredLectures = filteredLectures.filter(lec => lec.title.toLowerCase().includes(searchTerm));
+        }
+        
+        if (filteredLectures.length === 0) {
+            adminElementsGeo.courseLecturesEmptyState.style.display = 'flex'; return;
+        }
+        adminElementsGeo.courseLecturesEmptyState.style.display = 'none';
+
+        filteredLectures.forEach(lec => {
+            const subject = courseSubjectsCacheGeo.find(s => s.id === lec.subjectId);
+            const batch = courseBatchesCacheGeo.find(b => b.id === lec.batchId);
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${escapeHTMLGeo(lec.title)}</td>
+                <td><span class="status-badge status-${lec.type === 'lecture' ? 'info' : 'secondary'}">${lec.type}</span></td>
+                <td>${escapeHTMLGeo(subject ? subject.name : 'N/A')}<br><small>${escapeHTMLGeo(batch ? batch.name : 'N/A')}</small></td>
+                <td>${lec.order}</td>
+                <td>${lec.isFreePreview ? '<i class="fas fa-check-circle" style="color:var(--admin-success-color);"></i> Yes' : '<i class="fas fa-times-circle" style="color:var(--admin-error-color);"></i> No'}</td>
+                <td>
+                    <button class="admin-btn admin-btn-sm admin-btn-primary edit-course-lecture-btn" data-id="${lec.id}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="admin-btn admin-btn-sm admin-btn-danger delete-course-lecture-btn" data-id="${lec.id}"><i class="fas fa-trash"></i> Delete</button>
+                </td>
+            `;
+        });
+        addCourseLectureActionListenersGeo();
+    }
+
+    function addCourseLectureActionListenersGeo() {
+        $$geo('.edit-course-lecture-btn').forEach(btn => btn.onclick = (e) => openEditCourseLectureModalGeo(e.currentTarget.dataset.id));
+        $$geo('.delete-course-lecture-btn').forEach(btn => btn.onclick = (e) => deleteCourseLectureGeo(e.currentTarget.dataset.id));
+    }
+
+    function openEditCourseLectureModalGeo(lectureId) {
+        const lec = courseLecturesCacheGeo.find(l => l.id === lectureId);
+        if (!lec) { showAdminToastGeo("Content not found.", "error"); return; }
+
+        currentEditingCourseLectureId = lectureId;
+        adminElementsGeo.courseLectureModalTitle.textContent = "Edit Content";
+        const form = adminElementsGeo.courseLectureForm;
+        form.querySelector('#courseLectureEditId').value = lec.id;
+        
+        form.querySelector('#courseLectureParentBatchModal').value = lec.batchId || '';
+        populateSubjectSelectsGeo(lec.batchId); // Repopulate subjects for this batch
+        form.querySelector('#courseLectureParentSubjectModal').value = lec.subjectId || '';
+        
+        form.querySelector('#courseLectureTitle').value = lec.title || '';
+        form.querySelector('#courseLectureType').value = lec.type || 'lecture';
+        form.querySelector('#courseLectureDescription').value = lec.description || '';
+        form.querySelector('#courseLectureVideoUrl').value = lec.videoUrl || '';
+        form.querySelector('#courseLecturePdfUrl').value = lec.pdfUrl || '';
+        form.querySelector('#courseLectureDurationMinutes').value = lec.durationMinutes || '';
+        form.querySelector('#courseLectureOrder').value = lec.order || 0;
+        form.querySelector('#courseLectureIsFreePreview').checked = lec.isFreePreview || false;
+        
+        toggleLectureFormFields(lec.type || 'lecture');
+        openAdminModalGeo('courseLectureModal');
+    }
+
+    async function deleteCourseLectureGeo(lectureId) {
+        if (!confirm("Are you sure you want to delete this content item?")) return;
+        try {
+            await dbGeo.collection('lectures').doc(lectureId).delete();
+            showAdminToastGeo("Content deleted successfully!", "success");
+            // Cache will update via listener
+        } catch (error) { showAdminToastGeo("Error deleting content: " + error.message, "error"); }
+    }
+
+
+    // Make sure initial population for dropdowns happens after batches cache is loaded.
+    // preloadCachesGeo will handle initial call to populateBatchSelectsGeo
+
+    </script>
+</body>
+</html>
