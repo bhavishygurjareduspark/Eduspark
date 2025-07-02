@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSparK - Where Knowledge Sparks</title>
+    <meta name="description" content="Join EduSparK, a collaborative community to share and discover free educational books and courses. Ignite your learning journey today!">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --card-bg: #212121;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --text-gradient: linear-gradient(45deg, var(--primary-light), var(--text-light));
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 70px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .gradient-text {
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        /* --- Loading Overlay --- */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            opacity: 1; visibility: visible;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+
+        /* --- Header --- */
+        .header {
+            background-color: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 51, 51, 0.1);
+            transform: translateY(-100%);
+            animation: slideDown 0.8s 0.5s ease-out forwards;
+        }
+        @keyframes slideDown { to { transform: translateY(0); } }
+
+        .header.scrolled {
+            background-color: rgba(18, 18, 18, 0.95);
+            box-shadow: var(--shadow-md);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i { transition: transform 0.3s ease; }
+        .logo:hover i { transform: rotate(-10deg) scale(1.1); }
+        .nav-links { list-style: none; display: flex; gap: 35px; }
+        .nav-links li { position: relative; }
+        .nav-links a {
+            color: var(--text-dark); text-decoration: none;
+            font-weight: 500; position: relative;
+            padding-bottom: 5px; transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-light); }
+        .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+        
+        .nav-badge {
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            font-size: 0.6rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+        .nav-badge.new {
+            background-color: #2ecc71;
+            color: white;
+            animation: pulse-badge 2s infinite ease-in-out;
+        }
+        .nav-badge.popular {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 5px rgba(46, 204, 113, 0); } }
+
+        .header-actions { display: flex; gap: 15px; }
+        .btn {
+            padding: 10px 22px; border-radius: 50px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease;
+            border: 2px solid transparent; font-size: 0.9rem; cursor: pointer;
+            position: relative; overflow: hidden; z-index: 1;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+        .btn-secondary:hover { background-color: var(--primary-light); color: white; transform: translateY(-2px); }
+        .btn-primary { background: var(--gradient); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1001; }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center; justify-content: center; text-align: center;
+            padding: 0 20px; padding-top: var(--header-height);
+            position: relative; overflow: hidden;
+            background: var(--bg-dark);
+        }
+        .hero-content { z-index: 2; max-width: 800px; }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0.5s both;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0.8s both;
+        }
+        .hero .btn { font-size: 1.1rem; padding: 15px 40px; }
+        #particles { position: absolute; top:0; left:0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        /* --- Sections General --- */
+        .section { padding: 100px 40px; }
+        .section-title { text-align: center; font-size: 2.8rem; margin-bottom: 15px; }
+        .section-subtitle {
+            text-align: center; color: var(--text-muted);
+            font-size: 1.1rem; margin-bottom: 60px;
+            max-width: 700px; margin-left: auto; margin-right: auto;
+        }
+
+        /* --- Features & Why Choose Us Section --- */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 40px; border-radius: var(--border-radius);
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease; position: relative; overflow: hidden;
+        }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: rgba(255, 51, 51, 0.3); }
+        .feature-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,51,51,0.1) 0%, rgba(255,51,51,0) 40%);
+            transform: scale(0); transition: transform 0.8s ease; z-index: 0;
+        }
+        .feature-card:hover::before { transform: scale(1); }
+        .feature-card > * { position: relative; z-index: 1; }
+        .feature-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; display: inline-block; transition: transform 0.3s ease; }
+        .feature-card:hover .feature-icon { transform: scale(1.1) rotate(-5deg); }
+        .feature-card h3 { font-size: 1.5rem; color: var(--text-light); margin-bottom: 15px; }
+        .feature-card p { color: var(--text-muted); margin-bottom: 25px; }
+        .feature-card .btn { font-size: 0.9rem; }
+        #why-us { background-color: var(--bg-light); }
+
+
+        /* --- Showcase/Carousel Section --- */
+        .showcase-section { padding-bottom: 60px; }
+        .carousel-container { max-width: 900px; margin: 0 auto; position: relative; }
+        .carousel-viewport { overflow: hidden; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-slide { flex: 0 0 100%; padding: 10px; background-color: var(--card-bg); }
+        .carousel-slide img { width: 100%; border-radius: 8px; display: block; }
+        .carousel-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 20px; pointer-events: none; }
+        .carousel-button {
+            background: rgba(0,0,0,0.5); color: white; border: none;
+            border-radius: 50%; width: 40px; height: 40px;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;
+            pointer-events: all;
+        }
+        .carousel-button:hover { background-color: var(--primary-color); transform: scale(1.1); }
+        .carousel-pagination { text-align: center; margin-top: 20px; }
+        .pagination-dot {
+            height: 10px; width: 10px; border-radius: 50%;
+            background: var(--secondary-light); display: inline-block;
+            margin: 0 5px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .pagination-dot.active { background: var(--primary-color); transform: scale(1.3); }
+        
+        /* --- How It Works Section --- */
+        .how-it-works { background-color: var(--bg-light); }
+        .steps-container { display: flex; justify-content: space-between; gap: 40px; position: relative; margin-top: 80px; }
+        .step { flex: 1; text-align: center; position: relative; }
+        .step-number {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--bg-dark); border: 2px solid var(--primary-color);
+            color: var(--primary-color); font-size: 1.8rem;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px auto; transition: all 0.3s ease;
+            position: relative; z-index: 2;
+        }
+        .step:hover .step-number { background-color: var(--primary-color); color: white; transform: scale(1.1); }
+        .step h4 { font-size: 1.3rem; color: var(--text-light); margin-bottom: 10px; }
+        .steps-container::before {
+            content: ''; position: absolute; top: 30px; left: 10%;
+            width: 80%; height: 2px;
+            background: rgba(255,51,51,0.3); z-index: 0;
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .how-it-works.aos-animate .steps-container::before { transform: scaleX(1); }
+        .how-it-works.aos-animate .step { animation: fadeInStep 0.5s ease-out forwards; opacity: 0; }
+        .how-it-works.aos-animate .step:nth-child(1) { animation-delay: 0.3s; }
+        .how-it-works.aos-animate .step:nth-child(2) { animation-delay: 0.8s; }
+        .how-it-works.aos-animate .step:nth-child(3) { animation-delay: 1.2s; }
+        @keyframes fadeInStep { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* --- Auth Section --- */
+        #auth-section { background: var(--bg-dark); }
+        .auth-container {
+            max-width: 480px; margin: 0 auto; position: relative;
+            height: 650px; background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .auth-container.shake { animation: shake-horizontal 0.5s cubic-bezier(.455,.03,.515,.955) both; }
+        .form-wrapper {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; padding: 40px;
+            transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1);
+        }
+        .form-wrapper h3 { text-align: center; font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-light); font-family: 'Montserrat', sans-serif;}
+        .form-wrapper.login-form { transform: translateX(0); }
+        .form-wrapper.signup-form { transform: translateX(100%); }
+        .auth-container.show-signup .login-form { transform: translateX(-100%); }
+        .auth-container.show-signup .signup-form { transform: translateX(0); }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input {
+            width: 100%; padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--border-radius);
+            background-color: var(--bg-light); color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 51, 51, 0.3); }
+        .auth-separator { display: flex; align-items: center; text-align: center; color: var(--text-muted); margin: 20px 0; }
+        .auth-separator::before, .auth-separator::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .auth-separator:not(:empty)::before { margin-right: .5em; }
+        .auth-separator:not(:empty)::after { margin-left: .5em; }
+        .google-btn { background-color: #4285F4 !important; color: white !important; }
+        .google-btn:hover { background-color: #357ae8 !important; }
+        .google-btn i { margin-right: 10px; }
+        .auth-switch { text-align: center; margin-top: 25px; font-size: 0.9rem; }
+        .auth-switch a { color: var(--primary-color); font-weight: 500; cursor: pointer; text-decoration: none; }
+        .auth-switch a:hover { text-decoration: underline; }
+
+        /* --- CTA Section --- */
+        .cta-section { background: var(--gradient); padding: 80px 40px; text-align: center; border-radius: 20px; margin: 0 40px; }
+        .cta-section h2 { color: white; font-size: 2.5rem; margin-bottom: 30px; }
+        .cta-section .btn { background-color: white; color: var(--primary-dark); font-size: 1.1rem; padding: 15px 40px; border: none; }
+        .cta-section .btn:hover { background-color: var(--text-light); transform: scale(1.05); }
+        
+        /* --- Footer --- */
+        .footer { background-color: #0c0c0c; padding: 60px 40px; text-align: center; color: var(--text-muted); }
+        .footer-logo { font-size: 2rem; font-weight: 800; color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; margin-bottom: 20px; gap: 10px;}
+        .footer p { margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .social-links a { color: var(--text-muted); font-size: 1.5rem; margin: 0 15px; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-links a:hover { color: var(--primary-light); transform: translateY(-3px); }
+        .footer-contact { margin-top: 20px; font-size: 0.9rem; }
+        .footer-contact a { color: var(--primary-light); text-decoration: none; }
+        .copyright { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
+
+        /* Spinner for Buttons */
+        .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right: 8px;}
+        .btn.loading .spinner { display: inline-block; }
+        .btn.loading > *:not(.spinner) { opacity: 0.7; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast Notifications */
+        #toastContainer { position: fixed; bottom: 25px; left: 25px; z-index: 3000; display:flex; flex-direction:column; gap:10px; }
+        .toast { padding: 15px 25px; border-radius: var(--border-radius); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-md); transform: translateY(calc(100% + 30px)); animation: toast-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; display: flex; align-items: center; max-width:380px; border-left:5px solid var(--primary-color); }
+        @keyframes toast-in { to { transform: translateY(0); } }
+        .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
+        .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
+        .toast.info { background-color: #3498DB; border-left-color: #5DADE2; }
+        .toast i { margin-right: 12px; font-size:1.3rem; }
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 992px) {
+            .header { padding: 0 20px; }
+            .nav-links {
+                position: fixed; top: 0; right: 0;
+                background: #151515; height: 100vh; width: 280px;
+                flex-direction: column; align-items: center; justify-content: center;
+                padding-top: var(--header-height); gap: 25px;
+                transform: translateX(100%);
+                transition: transform 0.4s ease-in-out;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            }
+            .header.mobile-nav-active .nav-links { transform: translateX(0); }
+            .menu-toggle { display: block; z-index: 1002; }
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .section { padding: 80px 20px; }
+            .cta-section { margin: 0 20px; }
+        }
+        @media (max-width: 768px) {
+            .steps-container { flex-direction: column; align-items: center; }
+            .steps-container::before {
+                top: 5%; left: 50%;
+                width: 2px; height: 90%;
+                background: linear-gradient(to bottom, transparent, var(--primary-dark), transparent);
+                transform: translateX(-50%) scaleY(0);
+                transform-origin: top;
+            }
+            .how-it-works.aos-animate .steps-container::before { transform: translateX(-50%) scaleY(1); }
+            .step { max-width: 350px; }
+            .cta-section h2 { font-size: 2rem; }
+        }
+        @media (max-width: 576px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            .header-actions { gap: 10px; }
+            .header-actions .btn { padding: 8px 16px; font-size: 0.8rem; }
+            .section-title { font-size: 2.2rem; }
+            .auth-container { height: auto; padding-bottom: 30px; }
+            .form-wrapper { padding: 30px 20px; }
+        }
+        
+        @keyframes text-focus-in { 0% { filter: blur(12px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
+        @keyframes shake-horizontal {0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-8px)}20%,40%,60%,80%{transform:translateX(8px)}}
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-large"></div>
+    </div>
+
+    <header class="header" id="header">
+        <a href="index.html" class="logo">
+            <i class="fas fa-brain"></i>
+            <span>EduSparK</span>
+        </a>
+        <nav>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" class="active">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#why-us">Why Us</a></li>
+                <li><a href="#" id="booksNavBtn">Books<span class="nav-badge popular">Popular</span></a></li>
+                <li><a href="#" id="batchesNavBtn">Batches<span class="nav-badge new">New</span></a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <a href="#auth-section" class="btn btn-secondary" id="loginHeaderBtn">Login</a>
+            <a href="#auth-section" class="btn btn-primary" id="signupHeaderBtn">Sign Up</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <main>
+        <section class="hero" id="hero">
+            <canvas id="particles"></canvas>
+            <div class="hero-content">
+                <h1 class="gradient-text">Where Knowledge Sparks & Learning Begins</h1>
+                <p data-aos="fade-up" data-aos-delay="200">A collaborative community for sharing and discovering free educational books and courses. Ignite your learning journey with us today.</p>
+                <a href="#features" class="btn btn-primary" data-aos="fade-up" data-aos-delay="400">Discover More</a>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <h2 class="section-title gradient-text" data-aos="fade-up">What We Offer</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                EduSparK is more than just a platform; it's a community dedicated to making education accessible for everyone.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-book-open feature-icon"></i>
+                    <h3>Vast Library of Books</h3>
+                    <p>Access a rich collection of books, notes, and resources shared by a community of dedicated learners. Find materials for every subject and exam.</p>
+                    <a href="#" id="exploreBooksBtn" class="btn btn-secondary">Explore Books</a>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-chalkboard-teacher feature-icon"></i>
+                    <h3>Interactive Batches</h3>
+                    <p>Enroll in free and premium batches or structured courses led by experienced instructors to master new skills and ace your exams.</p>
+                    <a href="#" id="exploreBatchesBtn" class="btn btn-secondary">Find a Batch</a>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-share-alt feature-icon"></i>
+                    <h3>Share & Contribute</h3>
+                    <p>Become a vital part of our community. Upload your own valuable notes and books to help others on their learning path.</p>
+                    <a href="#" id="startSharingBtn" class="btn btn-secondary">Start Sharing</a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section showcase-section" id="showcase">
+            <h2 class="section-title gradient-text" data-aos="fade-up">EduSparK in Action</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                See how our clean, intuitive interface makes learning and sharing effortless.
+            </p>
+            <div class="carousel-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="carousel-viewport">
+                    <div class="carousel-track">
+                        <div class="carousel-slide"><img src="https://i.imgur.com/uGZ5B4y.png" alt="Screenshot of the main books page"></div>
+                        <div class="carousel-slide"><img src="https://i.imgur.com/8Hk3j7a.png" alt="Screenshot of book details view"></div>
+                        <div class="carousel-slide"><img src="https://i.imgur.com/LQqY1Vd.png" alt="Screenshot of a user's profile dashboard"></div>
+                        <div class="carousel-slide"><img src="https://i.imgur.com/wP0c5kX.png" alt="Screenshot of the My Downloads section"></div>
+                        <div class="carousel-slide"><img src="https://i.imgur.com/sN7mJ2T.png" alt="Screenshot of the course batches page"></div>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="carousel-button prev-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-button next-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-pagination"></div>
+            </div>
+        </section>
+
+        <section class="section how-it-works" data-aos="fade-in">
+            <h2 class="section-title gradient-text" data-aos="fade-up">How It Works</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Getting started is simple. Follow these three easy steps.
+            </p>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Sign Up For Free</h4>
+                    <p>Create your free account in seconds to unlock all features and join our growing community.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Explore & Learn</h4>
+                    <p>Browse our extensive library of books and discover new courses to enhance your knowledge.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Contribute & Grow</h4>
+                    <p>Share your resources with others, give feedback, and help the EduSparK community thrive.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section" id="why-us">
+            <h2 class="section-title gradient-text" data-aos="fade-up">Why Choose Us?</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                We believe in providing a secure, free, and community-focused learning environment unlike any other.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-gift feature-icon"></i>
+                    <h3>Absolutely Free</h3>
+                    <p>Our core platform is and always will be free. Access a world of knowledge without any cost, supported by a community that believes in open education.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-user-shield feature-icon"></i>
+                    <h3>Secure & Verified</h3>
+                    <p>Your safety is paramount. We strictly prohibit phishing links and harmful shorteners. Our platform is built on secure Google services you can trust.</p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-users feature-icon"></i>
+                    <h3>Community Driven</h3>
+                    <p>EduSparK is powered by its users. Every book shared and every piece of feedback given helps us build the ultimate free learning resource, together.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="auth-section">
+            <h2 class="section-title gradient-text" data-aos="fade-up">Join Us Today</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Create an account or log in to continue your learning adventure.</p>
+            <div class="auth-container" data-aos="zoom-in-up" data-aos-delay="200">
+                <!-- Login Form -->
+                <div class="form-wrapper login-form">
+                    <h3>Welcome Back!</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" id="loginEmail" class="form-input" required autocomplete="email" placeholder="your.email@example.com">
+                             </div>
+                        <div class="form-group">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" id="loginPassword" class="form-input" required autocomplete="current-password" placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-primary login-btn" style="width:100%;"><span class="spinner"></span><span>Login</span></button>
+                    </form>
+                    <div class="auth-separator"><span>OR</span></div>
+                    <button class="btn google-btn google-login" style="width:100%;"><span class="spinner"></span><span><i class="fab fa-google"></i> Continue with Google</span></button>
+                    <div class="auth-switch">Don't have an account? <a href="#" id="switchToSignupLink">Sign up here</a></div>
+                </div>
+                <!-- Signup Form -->
+                <div class="form-wrapper signup-form">
+                    <h3>Create Your Account</h3>
+                    <form id="signupForm">
+                         <div class="form-group">
+                            <label for="signupName" class="form-label">Full Name</label>
+                            <input type="text" id="signupName" class="form-input" required autocomplete="name" placeholder="Ada Lovelace">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail" class="form-label">Email</label>
+                            <input type="email" id="signupEmail" class="form-input" required autocomplete="email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" id="signupPassword" class="form-input" required autocomplete="new-password" placeholder="Choose a strong password">
+                        </div>
+                        <button type="submit" class="btn btn-primary signup-btn" style="width:100%;"><span class="spinner"></span><span>Create Account</span></button>
+                    </form>
+                    <div class="auth-separator"><span>OR</span></div>
+                    <button class="btn google-btn google-signup" style="width:100%;"><span class="spinner"></span><span><i class="fab fa-google"></i> Sign up with Google</span></button>
+                    <div class="auth-switch">Already have an account? <a href="#" id="switchToLoginLink">Login here</a></div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="footer">
+        <a href="#" class="footer-logo">
+            <i class="fas fa-brain"></i>
+            <span>EduSparK</span>
+        </a>
+        <p>A community-driven platform for accessible education. Share, learn, and grow together.</p>
+        <div class="social-links" data-aos="fade-up">
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+        <div class="footer-contact" data-aos="fade-up">
+            <p>Have questions? Contact us at <a href="mailto:edusparkkofficial@gmail.com">edusparkkofficial@gmail.com</a></p>
+        </div>
+        <div class="copyright">
+            © 2024 EduSparK. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div id="toastContainer"></div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 50,
+            });
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
+                authDomain: "eduspark-new.firebaseapp.com",
+                projectId: "eduspark-new",
+                storageBucket: "eduspark-new.appspot.com",
+                messagingSenderId: "564501033350",
+                appId: "1:564501033350:web:70c0f9873f96e9bd74fc07"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            const header = $('#header');
+            const menuToggle = $('#menuToggle');
+            const authContainer = $('.auth-container');
+            const loadingOverlay = $('#loadingOverlay');
+            
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    console.log("User already logged in. Redirecting to home.html...");
+                    window.location.replace('home.html');
+                } else {
+                    console.log("No user session. Displaying landing page.");
+                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            });
+            
+            menuToggle.addEventListener('click', () => {
+                header.classList.toggle('mobile-nav-active');
+            });
+            
+            $$('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetElement = $(this.getAttribute('href'));
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        if (header.classList.contains('mobile-nav-active')) {
+                            header.classList.remove('mobile-nav-active');
+                        }
+                    }
+                });
+            });
+
+            $('#switchToSignupLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); });
+            $('#switchToLoginLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); });
+            $('#loginHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            $('#signupHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            $('#ctaSignupBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            
+            function handleProtectedLink(e, url) {
+                e.preventDefault();
+                if (auth.currentUser) {
+                    window.location.href = url;
+                } else {
+                    showToast("Please login or sign up to access this section.", "info");
+                    const authSection = $('#auth-section');
+                    authSection.scrollIntoView({ behavior: 'smooth' });
+                    authContainer.classList.add('shake');
+                    setTimeout(() => authContainer.classList.remove('shake'), 500);
+                }
+            }
+            $('#booksNavBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
+            $('#batchesNavBtn').addEventListener('click', (e) => handleProtectedLink(e, 'batches.html'));
+            $('#exploreBooksBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
+            $('#exploreBatchesBtn').addEventListener('click', (e) => handleProtectedLink(e, 'batches.html'));
+            $('#startSharingBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
+
+            function showToast(message, type = "info", duration = 4000) {
+                const container = $('#toastContainer');
+                if(!container) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                let iconClass = 'fas fa-info-circle';
+                if (type === 'success') iconClass = 'fas fa-check-circle';
+                if (type === 'error') iconClass = 'fas fa-times-circle';
+                toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, duration);
+            }
+            function toggleSpinner(btn, show) {
+                if (!btn) return;
+                btn.disabled = show;
+                const spinner = btn.querySelector('.spinner');
+                if (spinner) spinner.style.display = show ? 'inline-block' : 'none';
+                if (show) btn.classList.add('loading'); else btn.classList.remove('loading');
+            }
+
+            async function createUserDocument(user, name) {
+                if (!user) return;
+                const userRef = db.collection('users').doc(user.uid);
+                const snapshot = await userRef.get();
+                if (!snapshot.exists) {
+                    const { email, uid, photoURL } = user;
+                    const username = `user_${uid.substring(0,8)}`;
+                    try {
+                        await userRef.set({
+                            name: name || user.displayName || "EduSparK User", username, email, uid,
+                            profilePictureURL: photoURL || null,
+                            bio: 'New EduSparK learner!', createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            credits: 50, booksSharedCount: 0, booksDownloadedCount: 0,
+                            totalFeedbackGiven: 0, totalBookDownloads: 0, enrolledBatches: [],
+                        }, { merge: true });
+                    } catch (error) { console.error("Error creating user document:", error); showToast("Error setting up your profile.", "error"); }
+                }
+            }
+
+            $('#loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('.login-btn');
+                const email = $('#loginEmail').value;
+                const password = $('#loginPassword').value;
+                toggleSpinner(btn, true);
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (error) { showToast("Invalid credentials. Please try again.", "error"); toggleSpinner(btn, false); }
+            });
+
+            $('#signupForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('.signup-btn');
+                const name = $('#signupName').value;
+                const email = $('#signupEmail').value;
+                const password = $('#signupPassword').value;
+                if (password.length < 6) { showToast("Password must be at least 6 characters.", "error"); return; }
+                toggleSpinner(btn, true);
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    await createUserDocument(userCredential.user, name);
+                } catch (error) { showToast(error.message, "error"); toggleSpinner(btn, false); }
+            });
+
+            async function handleGoogleSignIn(btn) {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                toggleSpinner(btn, true);
+                try {
+                    const result = await auth.signInWithPopup(provider);
+                    await createUserDocument(result.user, result.user.displayName);
+                } catch (error) { showToast(error.message, "error"); toggleSpinner(btn, false); }
+            }
+            $('.google-login').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
+            $('.google-signup').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
+
+            // --- CAROUSEL LOGIC ---
+            const track = $('.carousel-track');
+            if (track) {
+                const slides = Array.from(track.children);
+                const nextButton = $('.next-btn');
+                const prevButton = $('.prev-btn');
+                const dotsNav = $('.carousel-pagination');
+                let autoScrollInterval;
+                
+                if (slides.length > 0) {
+                    let slideWidth = slides[0].getBoundingClientRect().width;
+                    let currentIndex = 0;
+
+                    const createDots = () => {
+                        slides.forEach((_, i) => {
+                            const dot = document.createElement('button');
+                            dot.classList.add('pagination-dot');
+                            if (i === 0) dot.classList.add('active');
+                            dot.addEventListener('click', () => {
+                                moveToSlide(i);
+                                resetAutoScroll();
+                            });
+                            dotsNav.appendChild(dot);
+                        });
+                    };
+
+                    const updateDots = (targetIndex) => {
+                        const dots = Array.from(dotsNav.children);
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        dots[targetIndex].classList.add('active');
+                    }
+
+                    const moveToSlide = (targetIndex) => {
+                        track.style.transform = `translateX(-${targetIndex * slideWidth}px)`;
+                        currentIndex = targetIndex;
+                        updateDots(currentIndex);
+                    }
+                    
+                    const nextSlide = () => {
+                         const newIndex = (currentIndex + 1) % slides.length;
+                         moveToSlide(newIndex);
+                    }
+                    
+                    const resetAutoScroll = () => {
+                        clearInterval(autoScrollInterval);
+                        autoScrollInterval = setInterval(nextSlide, 5000);
+                    }
+
+                    const updateSlideWidth = () => {
+                        slideWidth = slides[0].getBoundingClientRect().width;
+                        track.style.transition = 'none';
+                        track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                        setTimeout(() => { track.style.transition = 'transform 0.5s ease-in-out'; }, 50);
+                    };
+
+                    nextButton.addEventListener('click', () => { nextSlide(); resetAutoScroll(); });
+                    prevButton.addEventListener('click', () => {
+                        const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                        moveToSlide(newIndex);
+                        resetAutoScroll();
+                    });
+
+                    createDots();
+                    resetAutoScroll(); // Start auto-scroll initially
+                    window.addEventListener('resize', updateSlideWidth);
+                }
+            }
+
+            // --- PARTICLE ANIMATION ---
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            let particlesArray;
+            function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            setCanvasSize();
+
+            class Particle {
+                constructor(x, y, dX, dY, size, color) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=size; this.color=color; }
+                draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); }
+                update() {
+                    if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;}
+                    if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;}
+                    this.x+=this.directionX; this.y+=this.directionY; this.draw();
+                }
+            }
+            function initParticles() {
+                particlesArray = [];
+                let num = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < num; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2;
+                    let color = 'rgba(255, 255, 255, 0.5)';
+                    particlesArray.push(new Particle(x, y, dX, dY, size, color));
+                }
+            }
+            function animateParticles() {
+                requestAnimationFrame(animateParticles);
+                ctx.clearRect(0,0,innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
+            }
+            initParticles();
+            animateParticles();
+            window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
+        });
+    </script>
+</body>
+</html>
