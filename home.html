@@ -105,6 +105,7 @@
         .dropdown-item i { width: 18px; text-align: center; color: var(--primary-light); }
         .dropdown-item:hover { background-color: var(--secondary-light); color: var(--text-light); }
         #logoutBtn { color: var(--primary-light); }
+        .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; }
 
         /* --- Hero Section --- */
         .hero {
@@ -165,6 +166,8 @@
         .activity-details { flex-grow: 1; }
         .activity-title { font-size: 1.1rem; font-weight: 600; color: var(--text-light); }
         .activity-meta { font-size: 0.85rem; color: var(--text-muted); }
+        .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 15px; display: block; opacity: 0.5; }
 
         /* --- Footer --- */
         .footer { background-color: #0c0c0c; padding: 60px 40px; border-top: 1px solid rgba(255,255,255,0.05); }
@@ -185,11 +188,24 @@
         .close-modal { background: none; border: none; font-size: 1.8rem; color: var(--text-muted); cursor: pointer; transition: color 0.3s, transform 0.3s; }
         .close-modal:hover { color: var(--primary-color); transform: rotate(90deg); }
         .modal-body p { margin-bottom: 15px; }
+        .modal-body a { color: var(--primary-light); font-weight: 600; text-decoration: none; }
+        .modal-body a:hover { text-decoration: underline; }
 
         /* --- Responsive --- */
         @media (max-width: 1024px) {
             .main-nav { display: none; }
+            .mobile-menu-toggle { display: block; }
             .header { padding: 0 20px; }
+            .main-nav.mobile-active {
+                display: flex; flex-direction: column;
+                position: fixed; top: var(--header-height); right: 0;
+                width: 280px; height: calc(100vh - var(--header-height));
+                background-color: #1a1a1a;
+                padding: 40px; gap: 20px;
+                transform: translateX(100%);
+                transition: transform 0.4s ease-in-out;
+            }
+            .main-nav.mobile-active.open { transform: translateX(0); }
         }
         @media (max-width: 768px) {
             .welcome-title { font-size: 2.8rem; }
@@ -247,12 +263,17 @@
                         <i class="fas fa-book"></i>
                         <span>Book Library</span>
                     </a>
+                    <a href="batches.html" class="dropdown-item">
+                        <i class="fas fa-chalkboard"></i>
+                        <span>Batches Dashboard</span>
+                    </a>
                     <a href="#" class="dropdown-item" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
                 </div>
             </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
         </div>
     </header>
 
@@ -265,6 +286,7 @@
         </section>
 
         <section id="quick-actions" class="container">
+            <h2 class="section-title" data-aos="fade-up">Quick Actions</h2>
             <div class="actions-grid">
                 <a href="books.html" class="action-card" data-aos="fade-up">
                     <div class="action-card-glow"></div>
@@ -320,14 +342,6 @@
                     <div class="value coming-soon">N/A</div>
                     <div class="label">Course Completion</div>
                 </div>
-                 <div class="overview-card time-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="value coming-soon">N/A</div>
-                    <div class="label">Active Learning Time</div>
-                </div>
-                 <div class="overview-card backlog-card" data-aos="fade-up" data-aos-delay="450">
-                    <div class="value coming-soon">N/A</div>
-                    <div class="label">Backlog Tracking</div>
-                </div>
             </div>
         </div>
 
@@ -371,7 +385,7 @@
             </div>
         </div>
         <div class="copyright">
-            © <span id="copyright-year">2024</span> EduSparK. All Rights Reserved.
+            © <span id="copyright-year"></span> EduSparK. All Rights Reserved.
         </div>
     </footer>
 
@@ -384,8 +398,7 @@
             </div>
             <div class="modal-body">
                 <p>Have questions or feedback? We'd love to hear from you!</p>
-                <p>Please reach out to our team at:</p>
-                <a href="mailto:edusparkkofficial@gmail.com" style="font-weight: 600; color: var(--primary-light);">edusparkkofficial@gmail.com</a>
+                <p>Please reach out to our team at:<br><a href="mailto:edusparkkofficial@gmail.com">edusparkkofficial@gmail.com</a></p>
             </div>
         </div>
     </div>
@@ -412,7 +425,6 @@
             <div class="modal-body">
                 <p>Your support helps us maintain the platform, improve features, and keep education free for everyone. Every contribution, big or small, makes a difference.</p>
                 <p>Thank you for considering a donation to our cause!</p>
-                <!-- Add donation links or QR codes here -->
             </div>
         </div>
     </div>
@@ -448,6 +460,8 @@
                 userMenuDropdown: $('#userMenuDropdown'),
                 logoutBtn: $('#logoutBtn'),
                 welcomeTitle: $('#welcomeTitle'),
+                mainNav: $('#mainNav'),
+                mobileMenuToggle: $('#mobileMenuToggle'),
                 contactNavBtn: $('#contactNavBtn'),
                 aboutNavBtn: $('#aboutNavBtn'),
                 donationBtn: $('#donationBtn'),
@@ -466,12 +480,12 @@
                 emptyStateRecentActivity: $('#emptyStateRecentActivity'),
                 headerCreditsAmount: $('#headerCreditsAmount'),
                 dropdownUserName: $('#dropdownUserName'),
-                dropdownUserEmail: $('#dropdownUserEmail')
+                dropdownUserEmail: $('#dropdownUserEmail'),
+                copyrightYear: $('#copyright-year')
             };
 
             let userListener = null;
 
-            // --- Authentication Guard ---
             auth.onAuthStateChanged(user => {
                 if (!user) {
                     window.location.replace('index.html');
@@ -487,7 +501,7 @@
                         const userData = { id: doc.id, ...doc.data() };
                         updateUI(userData);
                     } else {
-                        console.error("Authenticated user has no Firestore document.");
+                        console.error("Authenticated user has no Firestore document. Logging out.");
                         auth.signOut();
                     }
                     elements.loadingOverlay.classList.add('hidden');
@@ -587,7 +601,7 @@
                             Last visited: ${activity.lastVisited ? new Date(activity.lastVisited.seconds * 1000).toLocaleString() : 'N/A'}
                         </div>
                     </div>
-                    <i class="fas fa-arrow-right"></i>
+                    <a href="${link}"><i class="fas fa-arrow-right"></i></a>
                 `;
                 return item;
             }
@@ -611,25 +625,31 @@
                 if (!elements.userMenu.contains(e.target)) {
                     elements.userMenuDropdown.classList.remove('active');
                 }
+                 if (!elements.mainNav.contains(e.target) && e.target !== elements.mobileMenuToggle) {
+                    elements.mainNav.classList.remove('open');
+                }
+            });
+            
+            elements.mobileMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.mainNav.classList.toggle('open');
             });
 
-            const setupModal = (btnId, modalId) => {
-                const btn = $(`#${btnId}`);
+            const setupModal = (btn, modalId) => {
                 const modal = $(`#${modalId}`);
                 if (btn && modal) {
                     btn.addEventListener('click', (e) => { e.preventDefault(); modal.classList.add('active'); });
                     modal.querySelector('.close-modal').addEventListener('click', () => modal.classList.remove('active'));
-                    modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('active'); });
+                    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
                 }
             };
-
-            setupModal('contactNavBtn', 'contactModal');
-            setupModal('aboutNavBtn', 'aboutModal');
-            setupModal('donationBtn', 'donationModal');
-            setupModal('footerContactBtn', 'contactModal');
-            setupModal('footerAboutBtn', 'aboutModal');
+            setupModal(elements.contactNavBtn, 'contactModal');
+            setupModal(elements.aboutNavBtn, 'aboutModal');
+            setupModal(elements.donationBtn, 'donationModal');
+            setupModal(elements.footerContactBtn, 'contactModal');
+            setupModal(elements.footerAboutBtn, 'aboutModal');
             
-            $('#copyright-year').textContent = new Date().getFullYear();
+            elements.copyrightYear.textContent = new Date().getFullYear();
 
             elements.actionCards.forEach(card => {
                 const glow = card.querySelector('.action-card-glow');
@@ -641,15 +661,14 @@
                     const rotateY = (x - rect.width / 2) / (rect.width / 2) * 8;
                     
                     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
-                    if(glow) {
+                    if (glow) {
                        glow.style.opacity = '1';
                        glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 51, 51, 0.15), transparent 70%)`;
                     }
                 });
-
                 card.addEventListener('mouseleave', () => {
                     card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                    if(glow) glow.style.opacity = '0';
+                    if (glow) glow.style.opacity = '0';
                 });
             });
         });
