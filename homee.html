@@ -73,6 +73,7 @@
         }
         .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-message { margin-top: 20px; color: var(--text-muted); font-size: 1.1rem; }
 
         /* --- Header --- */
         .header {
@@ -150,7 +151,7 @@
         }
         @keyframes pulse-badge { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 5px rgba(46, 204, 113, 0); } }
 
-        .header-actions { display: flex; gap: 15px; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
         .btn {
             padding: 10px 22px; border-radius: 50px; text-decoration: none;
             font-weight: 600; transition: all 0.3s ease;
@@ -285,7 +286,9 @@
         #auth-section { background: var(--bg-dark); }
         .auth-container {
             max-width: 480px; margin: 0 auto; position: relative;
-            height: 650px; background: var(--card-bg);
+            height: auto; /* Changed from fixed height */
+            padding-bottom: 40px; /* Add padding for content */
+            background: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden;
             border: 1px solid rgba(255,255,255,0.1);
@@ -294,13 +297,32 @@
         .form-wrapper {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; padding: 40px;
-            transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1);
+            transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1), opacity 0.4s ease;
         }
         .form-wrapper h3 { text-align: center; font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-light); font-family: 'Montserrat', sans-serif;}
-        .form-wrapper.login-form { transform: translateX(0); }
-        .form-wrapper.signup-form { transform: translateX(100%); }
-        .auth-container.show-signup .login-form { transform: translateX(-100%); }
-        .auth-container.show-signup .signup-form { transform: translateX(0); }
+        
+        /* Form transition logic */
+        .auth-container .form-wrapper {
+            transform: translateX(100%);
+            opacity: 0;
+            position: absolute;
+        }
+        .auth-container .form-wrapper.login-form {
+             transform: translateX(0);
+             opacity: 1;
+             position: relative; /* The initial form should be relative */
+        }
+        .auth-container.show-signup .login-form {
+            transform: translateX(-100%);
+            opacity: 0;
+            position: absolute;
+        }
+        .auth-container.show-signup .signup-form {
+            transform: translateX(0);
+            opacity: 1;
+            position: relative; /* The visible form should be relative */
+        }
+
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
         .form-input {
@@ -340,13 +362,13 @@
         /* Spinner for Buttons */
         .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right: 8px;}
         .btn.loading .spinner { display: inline-block; }
-        .btn.loading > *:not(.spinner) { opacity: 0.7; }
+        .btn.loading > span:not(.spinner) { opacity: 0.7; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Toast Notifications */
-        #toastContainer { position: fixed; bottom: 25px; left: 25px; z-index: 3000; display:flex; flex-direction:column; gap:10px; }
-        .toast { padding: 15px 25px; border-radius: var(--border-radius); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-md); transform: translateY(calc(100% + 30px)); animation: toast-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; display: flex; align-items: center; max-width:380px; border-left:5px solid var(--primary-color); }
-        @keyframes toast-in { to { transform: translateY(0); } }
+        #toastContainer { position: fixed; top: 25px; right: 25px; z-index: 3000; display:flex; flex-direction:column; gap:10px; }
+        .toast { padding: 15px 25px; border-radius: var(--border-radius); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-md); transform: translateX(calc(100% + 30px)); animation: toast-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; display: flex; align-items: center; max-width:380px; border-left:5px solid var(--primary-color); }
+        @keyframes toast-in { to { transform: translateX(0); } }
         .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
         .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
         .toast.info { background-color: #3498DB; border-left-color: #5DADE2; }
@@ -401,6 +423,7 @@
 <body>
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner-large"></div>
+        <p class="loading-message" id="loadingMessage"></p>
     </div>
 
     <header class="header" id="header">
@@ -413,11 +436,12 @@
                 <li><a href="#hero" class="active">Home</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#why-us">Why Us</a></li>
-                <li><a href="#" id="booksNavBtn">Books<span class="nav-badge popular">Popular</span></a></li>
-                <li><a href="#" id="batchesNavBtn">Batches<span class="nav-badge new">New</span></a></li>
+                <li><a href="books.html" id="booksNavBtn">Books<span class="nav-badge popular">Popular</span></a></li>
+                <li><a href="batches.html" id="batchesNavBtn">Batches<span class="nav-badge new">New</span></a></li>
             </ul>
         </nav>
         <div class="header-actions">
+            <!-- These are for logged-out users and will be hidden by JS if logged in -->
             <a href="#auth-section" class="btn btn-secondary" id="loginHeaderBtn">Login</a>
             <a href="#auth-section" class="btn btn-primary" id="signupHeaderBtn">Sign Up</a>
         </div>
@@ -444,19 +468,19 @@
                     <i class="fas fa-book-open feature-icon"></i>
                     <h3>Vast Library of Books</h3>
                     <p>Access a rich collection of books, notes, and resources shared by a community of dedicated learners. Find materials for every subject and exam.</p>
-                    <a href="#" id="exploreBooksBtn" class="btn btn-secondary">Explore Books</a>
+                    <a href="books.html" id="exploreBooksBtn" class="btn btn-secondary">Explore Books</a>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                     <i class="fas fa-chalkboard-teacher feature-icon"></i>
                     <h3>Interactive Batches</h3>
                     <p>Enroll in free and premium batches or structured courses led by experienced instructors to master new skills and ace your exams.</p>
-                    <a href="#" id="exploreBatchesBtn" class="btn btn-secondary">Find a Batch</a>
+                    <a href="batches.html" id="exploreBatchesBtn" class="btn btn-secondary">Find a Batch</a>
                 </div>
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                     <i class="fas fa-share-alt feature-icon"></i>
                     <h3>Share & Contribute</h3>
                     <p>Become a vital part of our community. Upload your own valuable notes and books to help others on their learning path.</p>
-                    <a href="#" id="startSharingBtn" class="btn btn-secondary">Start Sharing</a>
+                    <a href="books.html" id="startSharingBtn" class="btn btn-secondary">Start Sharing</a>
                 </div>
             </div>
         </section>
@@ -543,7 +567,7 @@
                         <div class="form-group">
                             <label for="loginEmail" class="form-label">Email</label>
                             <input type="email" id="loginEmail" class="form-input" required autocomplete="email" placeholder="your.email@example.com">
-                             </div>
+                        </div>
                         <div class="form-group">
                             <label for="loginPassword" class="form-label">Password</label>
                             <input type="password" id="loginPassword" class="form-input" required autocomplete="current-password" placeholder="••••••••">
@@ -613,6 +637,7 @@
             });
 
             const firebaseConfig = {
+                // IMPORTANT: Replace with your actual Firebase project configuration.
                 apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
                 authDomain: "eduspark-new.firebaseapp.com",
                 projectId: "eduspark-new",
@@ -627,21 +652,32 @@
             const $ = (s) => document.querySelector(s);
             const $$ = (s) => document.querySelectorAll(s);
 
+            // --- Element Selectors ---
             const header = $('#header');
             const menuToggle = $('#menuToggle');
             const authContainer = $('.auth-container');
             const loadingOverlay = $('#loadingOverlay');
+            const loadingMessage = $('#loadingMessage');
             
+            // --- Authentication State Change ---
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    console.log("User already logged in. Redirecting to home.html...");
-                    window.location.replace('home.html');
+                    // User is signed in. Redirect them to the main application.
+                    loadingMessage.textContent = 'Welcome back! Redirecting...';
+                    
+                    // The redirect gives the user feedback and moves them to the app.
+                    // The dynamic header (with profile pic) belongs on app pages like home.html or books.html.
+                    setTimeout(() => {
+                        window.location.replace('home.html'); // Or 'books.html' if that is your main app page
+                    }, 1500);
                 } else {
-                    console.log("No user session. Displaying landing page.");
-                    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+                    // No user is signed in. This is the correct state for the landing page.
+                    loadingMessage.textContent = '';
+                    loadingOverlay.classList.add('hidden');
                 }
             });
 
+            // --- General UI Listeners ---
             window.addEventListener('scroll', () => {
                 header.classList.toggle('scrolled', window.scrollY > 50);
             });
@@ -650,6 +686,7 @@
                 header.classList.toggle('mobile-nav-active');
             });
             
+            // Smooth scrolling for anchor links
             $$('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -663,30 +700,39 @@
                 });
             });
 
-            $('#switchToSignupLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); });
-            $('#switchToLoginLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); });
-            $('#loginHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
-            $('#signupHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
-            $('#ctaSignupBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            // --- Authentication Form UI Logic ---
+            const setupAuthFormListeners = () => {
+                $('#switchToSignupLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); });
+                $('#switchToLoginLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); });
+                $('#loginHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+                $('#signupHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            };
+            setupAuthFormListeners();
             
-            function handleProtectedLink(e, url) {
+            // --- Protected Links Logic ---
+            function handleProtectedLink(e) {
                 e.preventDefault();
-                if (auth.currentUser) {
-                    window.location.href = url;
-                } else {
+                // This function is for logged-out users on the landing page.
+                // If a user is logged in, onAuthStateChanged will have already redirected them.
+                if (!auth.currentUser) {
                     showToast("Please login or sign up to access this section.", "info");
                     const authSection = $('#auth-section');
                     authSection.scrollIntoView({ behavior: 'smooth' });
+                    // Add a shake animation for emphasis
                     authContainer.classList.add('shake');
                     setTimeout(() => authContainer.classList.remove('shake'), 500);
+                } else {
+                    // This case is unlikely to be hit due to the redirect, but is good practice.
+                    window.location.href = e.currentTarget.href;
                 }
             }
-            $('#booksNavBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
-            $('#batchesNavBtn').addEventListener('click', (e) => handleProtectedLink(e, 'batches.html'));
-            $('#exploreBooksBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
-            $('#exploreBatchesBtn').addEventListener('click', (e) => handleProtectedLink(e, 'batches.html'));
-            $('#startSharingBtn').addEventListener('click', (e) => handleProtectedLink(e, 'books.html'));
+            $('#booksNavBtn').addEventListener('click', handleProtectedLink);
+            $('#batchesNavBtn').addEventListener('click', handleProtectedLink);
+            $('#exploreBooksBtn').addEventListener('click', handleProtectedLink);
+            $('#exploreBatchesBtn').addEventListener('click', handleProtectedLink);
+            $('#startSharingBtn').addEventListener('click', handleProtectedLink);
 
+            // --- Helper Functions ---
             function showToast(message, type = "info", duration = 4000) {
                 const container = $('#toastContainer');
                 if(!container) return;
@@ -699,14 +745,18 @@
                 container.appendChild(toast);
                 setTimeout(() => { toast.remove(); }, duration);
             }
+
             function toggleSpinner(btn, show) {
                 if (!btn) return;
                 btn.disabled = show;
                 const spinner = btn.querySelector('.spinner');
+                const text = btn.querySelector('span:not(.spinner)');
                 if (spinner) spinner.style.display = show ? 'inline-block' : 'none';
+                if (text) text.style.opacity = show ? 0.7 : 1;
                 if (show) btn.classList.add('loading'); else btn.classList.remove('loading');
             }
 
+            // This function creates the user's profile in Firestore after they sign up.
             async function createUserDocument(user, name) {
                 if (!user) return;
                 const userRef = db.collection('users').doc(user.uid);
@@ -722,10 +772,15 @@
                             credits: 50, booksSharedCount: 0, booksDownloadedCount: 0,
                             totalFeedbackGiven: 0, totalBookDownloads: 0, enrolledBatches: [],
                         }, { merge: true });
-                    } catch (error) { console.error("Error creating user document:", error); showToast("Error setting up your profile.", "error"); }
+                        console.log("User document created for:", uid);
+                    } catch (error) { 
+                        console.error("Error creating user document:", error); 
+                        showToast("Error setting up your profile.", "error"); 
+                    }
                 }
             }
 
+            // --- Authentication Actions ---
             $('#loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = e.target.querySelector('.login-btn');
@@ -733,8 +788,12 @@
                 const password = $('#loginPassword').value;
                 toggleSpinner(btn, true);
                 try {
+                    // onAuthStateChanged will handle the redirect on success
                     await auth.signInWithEmailAndPassword(email, password);
-                } catch (error) { showToast("Invalid credentials. Please try again.", "error"); toggleSpinner(btn, false); }
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
             });
 
             $('#signupForm').addEventListener('submit', async (e) => {
@@ -743,21 +802,33 @@
                 const name = $('#signupName').value;
                 const email = $('#signupEmail').value;
                 const password = $('#signupPassword').value;
-                if (password.length < 6) { showToast("Password must be at least 6 characters.", "error"); return; }
+                if (password.length < 6) { 
+                    showToast("Password must be at least 6 characters.", "error"); 
+                    return; 
+                }
                 toggleSpinner(btn, true);
                 try {
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     await createUserDocument(userCredential.user, name);
-                } catch (error) { showToast(error.message, "error"); toggleSpinner(btn, false); }
+                    // onAuthStateChanged will handle the redirect on success
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
             });
-
+            
             async function handleGoogleSignIn(btn) {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 toggleSpinner(btn, true);
                 try {
                     const result = await auth.signInWithPopup(provider);
+                    // On first sign in, create their document.
                     await createUserDocument(result.user, result.user.displayName);
-                } catch (error) { showToast(error.message, "error"); toggleSpinner(btn, false); }
+                    // onAuthStateChanged will handle the redirect on success
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
             }
             $('.google-login').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
             $('.google-signup').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
@@ -795,6 +866,7 @@
                     }
 
                     const moveToSlide = (targetIndex) => {
+                        if(!track) return;
                         track.style.transform = `translateX(-${targetIndex * slideWidth}px)`;
                         currentIndex = targetIndex;
                         updateDots(currentIndex);
@@ -811,6 +883,7 @@
                     }
 
                     const updateSlideWidth = () => {
+                        if(slides.length === 0 || !track) return;
                         slideWidth = slides[0].getBoundingClientRect().width;
                         track.style.transition = 'none';
                         track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
@@ -832,40 +905,43 @@
 
             // --- PARTICLE ANIMATION ---
             const canvas = document.getElementById('particles');
-            const ctx = canvas.getContext('2d');
-            let particlesArray;
-            function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            setCanvasSize();
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particlesArray;
+                function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+                setCanvasSize();
 
-            class Particle {
-                constructor(x, y, dX, dY, size, color) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=size; this.color=color; }
-                draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); }
-                update() {
-                    if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;}
-                    if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;}
-                    this.x+=this.directionX; this.y+=this.directionY; this.draw();
+                class Particle {
+                    constructor(x, y, dX, dY, size, color) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=size; this.color=color; }
+                    draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); }
+                    update() {
+                        if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;}
+                        if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;}
+                        this.x+=this.directionX; this.y+=this.directionY; this.draw();
+                    }
                 }
-            }
-            function initParticles() {
-                particlesArray = [];
-                let num = (canvas.height * canvas.width) / 9000;
-                for (let i = 0; i < num; i++) {
-                    let size = (Math.random() * 2) + 1;
-                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                    let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2;
-                    let color = 'rgba(255, 255, 255, 0.5)';
-                    particlesArray.push(new Particle(x, y, dX, dY, size, color));
+                function initParticles() {
+                    particlesArray = [];
+                    let num = (canvas.height * canvas.width) / 9000;
+                    for (let i = 0; i < num; i++) {
+                        let size = (Math.random() * 2) + 1;
+                        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                        let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2;
+                        let color = 'rgba(255, 255, 255, 0.5)';
+                        particlesArray.push(new Particle(x, y, dX, dY, size, color));
+                    }
                 }
+                function animateParticles() {
+                    if(!particlesArray) return;
+                    requestAnimationFrame(animateParticles);
+                    ctx.clearRect(0,0,innerWidth, innerHeight);
+                    for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
+                }
+                initParticles();
+                animateParticles();
+                window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
             }
-            function animateParticles() {
-                requestAnimationFrame(animateParticles);
-                ctx.clearRect(0,0,innerWidth, innerHeight);
-                for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
-            }
-            initParticles();
-            animateParticles();
-            window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
         });
     </script>
 </body>
