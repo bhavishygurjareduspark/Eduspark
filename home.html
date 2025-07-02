@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSparK - Home</title>
-    <meta name="description" content="Your personal dashboard for EduSparK. Explore books, batches, and track your progress.">
+    <title>EduSparK - Dashboard</title>
+    <meta name="description" content="Your personal EduSparK dashboard. Track your progress, explore content, and continue your learning journey.">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,9 +48,11 @@
             color: var(--text-dark);
             line-height: 1.7;
             overflow-x: hidden;
+            opacity: 0; /* Initially hide body */
+            animation: fadeInBody 0.5s 0.5s ease-out forwards;
         }
+        @keyframes fadeInBody { to { opacity: 1; } }
 
-        /* --- Loading Overlay --- */
         .loading-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-dark);
@@ -65,20 +67,24 @@
 
         /* --- Header --- */
         .header {
-            background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background-color: rgba(18, 18, 18, 0.85); backdrop-filter: blur(15px);
             height: var(--header-height); display: flex; justify-content: space-between; align-items: center;
             padding: 0 25px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            transition: all 0.3s ease; border-bottom: 1px solid rgba(255, 51, 51, 0.1);
+            transition: var(--transition); border-bottom: 1px solid rgba(255, 51, 51, 0.1);
         }
         .header.scrolled { background-color: rgba(18, 18, 18, 0.95); box-shadow: var(--shadow-md); }
         .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .logo i { transition: transform 0.3s ease; }
         .logo:hover i { transform: rotate(-10deg) scale(1.1); }
+        .main-nav { display: flex; gap: 30px; }
+        .main-nav a { color: var(--text-muted); text-decoration: none; font-weight: 500; position: relative; padding: 5px 0; transition: color 0.3s ease; }
+        .main-nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--primary-color); transform: scaleX(0); transition: transform 0.4s ease; }
+        .main-nav a:hover { color: var(--text-light); }
+        .main-nav a:hover::after { transform: scaleX(1); }
         
         .header-actions { display: flex; align-items: center; gap: 15px; }
         .header-credits { display: flex; align-items: center; gap: 8px; font-weight: 600; padding: 6px 12px; border-radius: 25px; background-color: rgba(255, 255, 255, 0.07); transition: var(--transition); border: 1px solid rgba(255, 255, 255, 0.1); }
         .header-credits i { font-size: 1.1rem; color: var(--credit-color); }
-
         .user-menu { position: relative; }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; transition: transform 0.3s ease; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; }
@@ -92,8 +98,8 @@
         #user-menu-dropdown.active { display: block; }
         @keyframes dropdown-fade-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); }}
         .dropdown-header { padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 5px; }
-        .dropdown-header h4 { font-size: 1rem; color: var(--text-light); margin: 0; }
-        .dropdown-header p { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
+        .dropdown-header h4 { font-size: 1rem; color: var(--text-light); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dropdown-header p { font-size: 0.8rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .dropdown-item { display: flex; align-items: center; gap: 12px; padding: 10px 15px; color: var(--text-dark); text-decoration: none; transition: background-color 0.2s ease; }
         .dropdown-item i { width: 18px; text-align: center; color: var(--primary-light); }
         .dropdown-item:hover { background-color: var(--secondary-light); color: var(--text-light); }
@@ -101,86 +107,73 @@
 
         /* --- Hero Section --- */
         .hero {
-            padding-top: calc(var(--header-height) + 50px); min-height: 80vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; position: relative;
-            background: linear-gradient(160deg, #1a1a1a 0%, #121212 100%);
+            padding-top: calc(var(--header-height) + 60px); padding-bottom: 60px;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; background: linear-gradient(160deg, #1a1a1a 0%, #121212 100%);
         }
-        .hero::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff3333' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            animation: move-bg 20s linear infinite;
-        }
-        @keyframes move-bg { from { background-position: 0 0; } to { background-position: 120px 60px; } }
-        .hero-content { position: relative; z-index: 1; }
         .welcome-title {
-            font-size: 3.5rem; color: var(--text-light); font-weight: 800; line-height: 1.2;
-            margin-bottom: 15px;
+            font-family: 'Montserrat', sans-serif; font-size: 3.5rem; color: var(--text-light); font-weight: 800; margin-bottom: 15px;
         }
-        .welcome-title span { display: inline-block; opacity: 0; transform: translateY(20px) scale(0.9); animation: slide-in 0.5s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .welcome-title .char { display: inline-block; opacity: 0; transform: translateY(25px) rotate(10deg); animation: slide-in-char 0.6s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes slide-in-char { to { opacity: 1; transform: translateY(0) rotate(0); } }
         #welcome-user-name { color: var(--primary-light); }
-        @keyframes slide-in { to { opacity: 1; transform: translateY(0) scale(1); } }
         .hero p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px; max-width: 600px; }
-        .hero .btn-primary { font-size: 1.1rem; padding: 15px 40px; }
+        .quick-actions-container { display: flex; gap: 20px; }
+        .quick-actions-container .btn { font-size: 1.1rem; padding: 14px 35px; border-radius: 50px; }
+        .btn-primary { background: var(--gradient); color: white; border:none; transition: var(--transition);}
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255,51,51,0.4); }
+        .btn-secondary { background-color: transparent; color: var(--primary-light); border: 2px solid var(--primary-light); transition: var(--transition);}
+        .btn-secondary:hover { background-color: var(--primary-light); color: white; transform: translateY(-3px); }
 
-        /* --- General Section Styling --- */
-        .container { padding: 80px 25px; max-width: 1200px; margin: 0 auto; }
-        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; font-weight: 700; color: var(--text-light); }
-        .gradient-text { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent;}
-        
-        /* --- Quick Actions (Tilt Cards) --- */
-        .actions-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;
-        }
-        .action-card {
-            background: var(--card-bg); border-radius: var(--border-radius);
-            padding: 30px; text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            position: relative; overflow: hidden;
-            transform-style: preserve-3d;
-        }
-        .action-card-content { transform: translateZ(20px); }
-        .action-card-icon { font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; }
-        .action-card h3 { font-size: 1.5rem; color: var(--text-light); margin-bottom: 10px; }
-        .action-card p { color: var(--text-muted); font-size: 0.95rem; }
-        .action-card-glow {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 51, 51, 0.15), transparent 60%);
-            opacity: 0; transition: opacity 0.4s ease;
-        }
+        /* --- Main Content --- */
+        .container { padding: 80px 25px; max-width: 1300px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; font-weight: 700; color: var(--text-light); position: relative; padding-bottom: 15px;}
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: var(--gradient); border-radius: 2px;}
 
-        /* --- Featured Books & Stats --- */
-        #featured { background-color: var(--bg-light); }
-        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .book-card { background-color: var(--card-bg); border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow-md); transition: var(--transition); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; }
-        .book-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
-        .book-img-container { height: 280px; overflow: hidden; position: relative; background-color: var(--secondary-light); }
-        .book-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .book-card:hover .book-img { transform: scale(1.08); }
-        .book-info { padding: 15px; }
-        .book-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .book-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); }
-        .book-meta span { display: flex; align-items: center; gap: 5px; }
-        .book-meta i { color: var(--primary-color); }
+        /* --- At a Glance Section --- */
+        #overview { background-color: var(--bg-light); }
+        .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .overview-card { background: var(--card-bg); padding: 25px; border-radius: var(--border-radius); border-left: 4px solid var(--primary-color); transition: var(--transition); position: relative; overflow: hidden; }
+        .overview-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: var(--shadow-md); border-left-color: var(--primary-light); }
+        .overview-card::before { content: ''; position: absolute; top:0; right: 0; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 4rem; color: rgba(255,255,255,0.03); transform: translateY(10px) rotate(-15deg); }
+        .overview-card.points-card::before { content: '\f005'; } /* star */
+        .overview-card.credits-card::before { content: '\f51e'; } /* coins */
+        .overview-card.books-shared-card::before { content: '\f093'; } /* upload */
+        .overview-card.books-dl-card::before { content: '\f019'; } /* download */
+        .overview-card.batches-card::before { content: '\f51c'; } /* graduation-cap */
+        .overview-card.progress-card::before { content: '\f201'; } /* chart-pie */
+        .overview-card.time-card::before { content: '\f2f2'; } /* hourglass-half */
+        .overview-card.backlog-card::before { content: '\f071'; } /* exclamation-triangle */
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-top: 50px; }
-        .stat-card { background-color: var(--card-bg); border-left: 4px solid var(--primary-color); padding: 25px; border-radius: var(--border-radius); transition: var(--transition); }
-        .stat-card:hover { transform: scale(1.05); box-shadow: var(--shadow-md); }
-        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary-light); line-height: 1.1; margin-bottom: 5px; }
-        .stat-label { font-size: 0.9rem; color: var(--text-muted); }
+        .overview-card .value { font-size: 2.8rem; font-weight: 700; color: var(--text-light); line-height: 1.1; margin-bottom: 5px; }
+        .overview-card .label { font-size: 1rem; color: var(--text-muted); }
+        .overview-card .value.coming-soon { font-size: 1.5rem; color: var(--text-muted); }
+        .overview-card .label.coming-soon-label { color: var(--primary-light); font-weight: 500; }
+
+        /* --- Recent Activity Section --- */
+        .recent-activity-list { list-style: none; padding: 0; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .activity-item { background: var(--card-bg); padding: 15px 20px; border-radius: var(--border-radius); display: flex; align-items: center; gap: 20px; transition: var(--transition); border: 1px solid transparent; }
+        .activity-item:hover { background-color: var(--secondary-light); border-color: var(--primary-color); transform: translateX(10px); }
+        .activity-icon { font-size: 1.8rem; color: var(--primary-color); width: 40px; text-align: center; }
+        .activity-details { flex-grow: 1; }
+        .activity-title { font-size: 1.1rem; font-weight: 600; color: var(--text-light); text-decoration: none; }
+        .activity-meta { font-size: 0.85rem; color: var(--text-muted); }
         
         /* --- Footer --- */
-        .footer { background-color: #0c0c0c; padding: 60px 25px; text-align: center; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); }
-        .copyright { margin-top: 20px; font-size: 0.8rem; }
-        
+        .footer { background-color: #0c0c0c; padding: 40px 25px; text-align: center; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); }
+
         /* --- Responsive --- */
+        @media (max-width: 992px) {
+            .main-nav { display: none; } /* Hide for simpler header on mobile */
+        }
         @media (max-width: 768px) {
             .welcome-title { font-size: 2.5rem; }
             .hero p { font-size: 1rem; }
+            .quick-actions-container { flex-direction: column; }
             .header { padding: 0 15px; }
-            .books-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-            .book-img-container { height: 220px; }
+            .container { padding: 60px 15px; }
+            .section-title { font-size: 2rem; }
+            .overview-card .value { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -188,7 +181,7 @@
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner-large"></div>
-        <p class="loading-message" id="loadingMessage">Authenticating...</p>
+        <p class="loading-message">Authenticating...</p>
     </div>
 
     <header class="header" id="header">
@@ -196,7 +189,10 @@
             <i class="fas fa-brain"></i>
             <span>EduSparK</span>
         </a>
-        
+        <nav class="main-nav">
+            <a href="books.html">Books</a>
+            <a href="batches.html">Batches</a>
+        </nav>
         <div class="header-actions">
             <div class="header-credits" id="headerCreditsContainer">
                 <i class="fas fa-coins"></i>
@@ -211,13 +207,13 @@
                         <h4 id="dropdownUserName">Loading...</h4>
                         <p id="dropdownUserEmail">...</p>
                     </div>
-                    <a href="books.html#profile" class="dropdown-item">
-                        <i class="fas fa-user-circle"></i>
-                        <span>My Profile</span>
+                    <a href="books.html" class="dropdown-item">
+                        <i class="fas fa-book"></i>
+                        <span>Books & Profile</span>
                     </a>
-                    <a href="books.html#notifications" class="dropdown-item">
-                        <i class="fas fa-bell"></i>
-                        <span>Notifications</span>
+                    <a href="batches.html" class="dropdown-item">
+                        <i class="fas fa-chalkboard"></i>
+                        <span>Batches Dashboard</span>
                     </a>
                     <a href="#" class="dropdown-item" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i>
@@ -234,77 +230,63 @@
                 <h1 class="welcome-title" id="welcomeTitle">
                     <!-- Animated text will be injected by JS -->
                 </h1>
-                <p data-aos="fade-up" data-aos-delay="500">Your journey to knowledge continues here. What will you discover today?</p>
-                <a href="#quick-actions" class="btn btn-primary" data-aos="fade-up" data-aos-delay="700">Get Started</a>
+                <p data-aos="fade-up" data-aos-delay="0.6">Your learning dashboard is ready. Let's make today productive.</p>
+                <div class="quick-actions-container" data-aos="fade-up" data-aos-delay="0.8">
+                    <a href="books.html" class="btn btn-primary">Explore Books</a>
+                    <a href="batches.html" class="btn btn-secondary">Find a Batch</a>
+                </div>
             </div>
         </section>
 
-        <div class="container" id="quick-actions">
-            <div class="actions-grid">
-                <a href="books.html" class="action-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="action-card-glow"></div>
-                    <div class="action-card-content">
-                        <div class="action-card-icon"><i class="fas fa-book-open"></i></div>
-                        <h3>Explore Books</h3>
-                        <p>Dive into our vast library of community-shared books and notes.</p>
-                    </div>
-                </a>
-                <a href="batches.html" class="action-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="action-card-glow"></div>
-                    <div class="action-card-content">
-                        <div class="action-card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                        <h3>Find Batches</h3>
-                        <p>Enroll in structured courses to master new skills and subjects.</p>
-                    </div>
-                </a>
-                <a href="books.html#profile" class="action-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="action-card-glow"></div>
-                    <div class="action-card-content">
-                        <div class="action-card-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        <h3>My Dashboard</h3>
-                        <p>Track your progress, points, and submitted books all in one place.</p>
-                    </div>
-                </a>
-                <a href="books.html#add-book" class="action-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="action-card-glow"></div>
-                    <div class="action-card-content">
-                        <div class="action-card-icon"><i class="fas fa-share-alt"></i></div>
-                        <h3>Share & Earn</h3>
-                        <p>Contribute your resources to the community and earn points.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <section id="featured" class="container">
-            <h2 class="section-title gradient-text" data-aos="fade-up">What's New</h2>
-            <div class="books-grid" id="featuredBooksContainer" data-aos="fade-up" data-aos-delay="200">
-                <!-- Featured books will be loaded here by JS -->
-            </div>
-        </section>
-
-        <div class="container">
-            <h2 class="section-title" data-aos="fade-up">Your Stats</h2>
-            <div class="stats-grid" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-card">
-                    <div class="stat-value" id="statPoints">0</div>
-                    <div class="stat-label">Total Points Earned</div>
+        <div class="container" id="overview">
+            <h2 class="section-title" data-aos="fade-up">At a Glance</h2>
+            <div class="overview-grid">
+                <div class="overview-card points-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="value" id="statPoints">0</div>
+                    <div class="label">Total Points</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statBooksShared">0</div>
-                    <div class="stat-label">Books Submitted</div>
+                <div class="overview-card credits-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="value" id="statCredits">0</div>
+                    <div class="label">Available Credits</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statSharedDownloads">0</div>
-                    <div class="stat-label">Shared Book Downloads</div>
+                <div class="overview-card books-shared-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="value" id="statBooksShared">0</div>
+                    <div class="label">Books Shared</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statFeedbackGiven">0</div>
-                    <div class="stat-label">Feedback Given</div>
+                <div class="overview-card books-dl-card" data-aos="fade-up" data-aos-delay="250">
+                    <div class="value" id="statBooksDownloaded">0</div>
+                    <div class="label">Books Downloaded</div>
+                </div>
+                <div class="overview-card batches-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="value" id="statBatchesEnrolled">0</div>
+                    <div class="label">Batches Enrolled</div>
+                </div>
+                <div class="overview-card progress-card" data-aos="fade-up" data-aos-delay="350">
+                    <div class="value coming-soon">N/A</div>
+                    <div class="label label.coming-soon-label">Course Completion</div>
+                </div>
+                 <div class="overview-card time-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="value coming-soon">N/A</div>
+                    <div class="label label.coming-soon-label">Active Learning Time</div>
+                </div>
+                 <div class="overview-card backlog-card" data-aos="fade-up" data-aos-delay="450">
+                    <div class="value coming-soon">N/A</div>
+                    <div class="label label.coming-soon-label">Backlog Tracking</div>
                 </div>
             </div>
         </div>
 
+        <section id="recent-activity" class="container">
+            <h2 class="section-title" data-aos="fade-up">Recent Activity</h2>
+            <ul class="recent-activity-list" id="recentActivityContainer" data-aos="fade-up" data-aos-delay="200">
+                <!-- Recent activity items will be loaded here -->
+                <li class="empty-state" id="emptyStateRecentActivity" style="display: flex;">
+                    <i class="fas fa-history"></i>
+                    <h3>No Recent Activity</h3>
+                    <p>Your recently visited books and batches will appear here.</p>
+                </li>
+            </ul>
+        </section>
     </main>
 
     <footer class="footer">
@@ -322,7 +304,6 @@
             });
 
             const firebaseConfig = {
-                // IMPORTANT: Replace with your actual Firebase project configuration.
                 apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
                 authDomain: "eduspark-new.firebaseapp.com",
                 projectId: "eduspark-new",
@@ -336,7 +317,6 @@
 
             const $ = (s) => document.querySelector(s);
             
-            // --- Element Selectors ---
             const elements = {
                 loadingOverlay: $('#loadingOverlay'),
                 header: $('#header'),
@@ -347,152 +327,138 @@
                 dropdownUserEmail: $('#dropdownUserEmail'),
                 logoutBtn: $('#logoutBtn'),
                 welcomeTitle: $('#welcomeTitle'),
-                featuredBooksContainer: $('#featuredBooksContainer'),
+                recentActivityContainer: $('#recentActivityContainer'),
+                emptyStateRecentActivity: $('#emptyStateRecentActivity'),
                 statPoints: $('#statPoints'),
+                statCredits: $('#statCredits'),
                 statBooksShared: $('#statBooksShared'),
-                statSharedDownloads: $('#statSharedDownloads'),
-                statFeedbackGiven: $('#statFeedbackGiven'),
-                actionCards: document.querySelectorAll('.action-card')
+                statBooksDownloaded: $('#statBooksDownloaded'),
+                statBatchesEnrolled: $('#statBatchesEnrolled'),
             };
 
-            let currentUserData = null;
             let userListener = null;
 
             // --- Authentication Guard ---
             auth.onAuthStateChanged(user => {
                 if (user) {
-                    // User is logged in, proceed to load page content.
                     initializePage(user);
                 } else {
-                    // No user is logged in, redirect to the landing/login page.
                     window.location.replace('index.html');
                 }
             });
 
             function initializePage(user) {
-                // Fetch user data and listen for real-time updates
-                if (userListener) userListener(); // Detach previous listener
+                if (userListener) userListener(); 
                 userListener = db.collection('users').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
-                        currentUserData = { id: doc.id, ...doc.data() };
-                        updateUI(currentUserData);
+                        const userData = { id: doc.id, ...doc.data() };
+                        updateUI(userData);
+                        fetchRecentActivity(user.uid);
                     } else {
-                        // This case might happen if a user is authenticated but their doc was deleted.
-                        // It's an edge case, but we should handle it.
-                        console.error("User is authenticated, but no user document found in Firestore.");
-                        auth.signOut(); // Log them out to fix the state.
+                        console.error("Authenticated user has no Firestore document.");
+                        auth.signOut();
                     }
+                    elements.loadingOverlay.classList.add('hidden');
                 }, err => {
                     console.error("Error fetching user data:", err);
-                    // Maybe show a non-intrusive error message
+                    elements.loadingOverlay.classList.add('hidden');
                 });
-
-                fetchFeaturedBooks();
-                elements.loadingOverlay.classList.add('hidden');
             }
 
             function updateUI(userData) {
                 updateHeader(userData);
-                updateWelcomeMessage(userData.name);
+                animateWelcomeMessage(userData.name);
                 updateStats(userData);
             }
 
             function updateHeader(userData) {
-                // Update avatar
                 if (userData.profilePictureURL) {
                     elements.userAvatar.innerHTML = `<img src="${userData.profilePictureURL}" alt="User Avatar">`;
                 } else {
                     const initials = (userData.name || 'U').charAt(0).toUpperCase();
                     elements.userAvatar.innerHTML = `<span>${initials}</span>`;
                 }
-
-                // Update credits
                 elements.headerCreditsAmount.textContent = userData.credits || 0;
-                
-                // Update dropdown
                 elements.dropdownUserName.textContent = userData.name || 'User';
                 elements.dropdownUserEmail.textContent = userData.email || '';
             }
             
-            function updateWelcomeMessage(name) {
+            function animateWelcomeMessage(name) {
                 const welcomeText = `Welcome back, <span id="welcome-user-name">${name || 'Explorer'}</span>!`;
-                elements.welcomeTitle.innerHTML = ''; // Clear previous
+                elements.welcomeTitle.innerHTML = '';
                 
-                let delay = 0;
-                welcomeText.split('').forEach(char => {
-                    if (char === '<') { // Handle the span tag without animating its characters
-                        let tag = char;
-                        let i = elements.welcomeTitle.innerHTML.length + 1;
-                        while(char !== '>') {
-                            char = welcomeText[i++];
-                            tag += char;
-                        }
-                        elements.welcomeTitle.innerHTML += tag;
-                        return;
-                    }
-                    if (char === '>') {
-                         elements.welcomeTitle.innerHTML += char;
-                         return;
-                    }
-
+                let fullString = `Welcome back, ${name || 'Explorer'}!`;
+                let charIndex = 0;
+                for(const char of fullString){
                     const span = document.createElement('span');
+                    span.className = 'char';
                     span.textContent = char === ' ' ? '\u00A0' : char;
-                    span.style.animationDelay = `${delay}s`;
+                    span.style.animationDelay = `${charIndex * 0.04}s`;
+                    if (charIndex >= 13 && charIndex < 13 + (name || 'Explorer').length) {
+                        span.id = 'welcome-user-name';
+                    }
                     elements.welcomeTitle.appendChild(span);
-                    delay += 0.04;
-                });
+                    charIndex++;
+                }
             }
 
             function updateStats(userData) {
                 elements.statPoints.textContent = userData.points || 0;
+                elements.statCredits.textContent = userData.credits || 0;
                 elements.statBooksShared.textContent = userData.booksSharedCount || 0;
-                elements.statSharedDownloads.textContent = userData.totalBookDownloads || 0;
-                elements.statFeedbackGiven.textContent = userData.totalFeedbackGiven || 0;
+                elements.statBooksDownloaded.textContent = userData.booksDownloadedCount || 0;
+                elements.statBatchesEnrolled.textContent = userData.enrolledBatches ? userData.enrolledBatches.length : 0;
             }
 
-            async function fetchFeaturedBooks() {
+            async function fetchRecentActivity(userId) {
                 try {
-                    const snapshot = await db.collection('books')
-                        .where('status', '==', 'approved')
-                        .orderBy('approvedAt', 'desc')
-                        .limit(3)
+                    // This assumes you have a subcollection for recent activity on the user document.
+                    // This would need to be populated by `books.html` and `batches.html` when an item is viewed.
+                    // Example: db.collection('users').doc(uid).collection('recentActivity').doc(bookId).set({ ... });
+                    const snapshot = await db.collection('users').doc(userId).collection('recentActivity')
+                        .orderBy('lastVisited', 'desc')
+                        .limit(5)
                         .get();
                     
                     if (snapshot.empty) {
-                        elements.featuredBooksContainer.innerHTML = '<p>No new books at the moment. Check back soon!</p>';
+                        elements.emptyStateRecentActivity.style.display = 'flex';
+                        elements.recentActivityContainer.innerHTML = ''; // Clear any old items
+                        elements.recentActivityContainer.appendChild(elements.emptyStateRecentActivity);
                         return;
                     }
 
-                    let booksHTML = '';
+                    elements.emptyStateRecentActivity.style.display = 'none';
+                    elements.recentActivityContainer.innerHTML = ''; // Clear before adding new items
                     snapshot.forEach(doc => {
-                        const book = { id: doc.id, ...doc.data() };
-                        booksHTML += createBookCardHTML(book);
+                        elements.recentActivityContainer.appendChild(createActivityItemHTML(doc.data()));
                     });
-                    elements.featuredBooksContainer.innerHTML = booksHTML;
-                    AOS.refresh(); // Re-trigger animations for newly added content
+                    AOS.refresh();
                 } catch (error) {
-                    console.error("Error fetching featured books:", error);
-                    elements.featuredBooksContainer.innerHTML = '<p>Could not load new books. Please try again later.</p>';
+                    console.error("Error fetching recent activity:", error);
+                    elements.emptyStateRecentActivity.innerHTML = '<p>Could not load recent activity.</p>';
+                    elements.emptyStateRecentActivity.style.display = 'flex';
                 }
             }
             
-            function createBookCardHTML(book) {
-                const defaultImage = 'https://via.placeholder.com/200x280/333/888?text=No+Cover';
-                const imageUrl = book.imageUrl || defaultImage;
+            function createActivityItemHTML(activity) {
+                const item = document.createElement('li');
+                item.className = 'activity-item';
+                item.setAttribute('data-aos', 'fade-up');
                 
-                return `
-                   <a href="books.html#book/${book.id}" class="book-card">
-                       <div class="book-img-container">
-                           <img src="${imageUrl}" alt="${book.bookName}" class="book-img" loading="lazy" onerror="this.onerror=null;this.src='${defaultImage}';">
-                       </div>
-                       <div class="book-info">
-                           <h4 class="book-title" title="${book.bookName}">${book.bookName}</h4>
-                           <div class="book-meta">
-                               <span><i class="fas fa-user"></i> ${book.submittedByName || 'Anon'}</span>
-                               <span><i class="fas fa-download"></i> ${book.downloads || 0}</span>
-                           </div>
-                       </div>
-                   </a>`;
+                const isBook = activity.type === 'book';
+                const iconClass = isBook ? 'fa-book' : 'fa-chalkboard-teacher';
+                const link = isBook ? `books.html#book/${activity.id}` : `batches.html#batch/${activity.id}`;
+                
+                item.innerHTML = `
+                    <div class="activity-icon"><i class="fas ${iconClass}"></i></div>
+                    <div class="activity-details">
+                        <a href="${link}" class="activity-title">${activity.title || 'Untitled'}</a>
+                        <div class="activity-meta">
+                            Last visited: ${activity.lastVisited ? new Date(activity.lastVisited.seconds * 1000).toLocaleString() : 'N/A'}
+                        </div>
+                    </div>
+                `;
+                return item;
             }
 
             // --- Event Listeners ---
@@ -517,32 +483,6 @@
             });
             
             $('#copyright-year').textContent = new Date().getFullYear();
-
-            // --- Tilt Card Effect ---
-            elements.actionCards.forEach(card => {
-                const glow = card.querySelector('.action-card-glow');
-
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const width = rect.width;
-                    const height = rect.height;
-
-                    const rotateX = -1 * ((y - height / 2) / (height / 2) * 10);
-                    const rotateY = (x - width / 2) / (width / 2) * 10;
-                    
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-                    
-                    glow.style.opacity = '1';
-                    glow.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 51, 51, 0.15), transparent 60%)`;
-                });
-
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                    glow.style.opacity = '0';
-                });
-            });
         });
     </script>
 </body>
