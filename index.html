@@ -3,1584 +3,949 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-adsense-account" content="ca-pub-9398260074977355">
-    <title>EduSpark - Your Learning Partner 📚</title>
+    <title>EduSparK - Where Knowledge Sparks</title>
+    <meta name="description" content="Join EduSparK, a collaborative community to share and discover free educational books and courses. Ignite your learning journey today!">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Add Lemon Milk Font -->
-    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
-    <!-- Add INTEGRALCF Font -->
-    <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
-    <!-- Add Oswald Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Add Google Fonts for new typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <style>
         :root {
-            --primary-blue: #00008b;
-            --accent-red: #ff0000;
-            --dark-bg: #0a0a0a;
-            --pure-white: #ffffff;
-            --box-bg: rgba(255, 255, 255, 0.97);
-            --tag-hot: #ff4757;
-            --tag-new: #2ed573;
-            --rating-star: #ffd700;
-            --price-green: #2ed573;
-            --glow-blue: rgba(0, 82, 255, 0.4);
-            --glow-red: rgba(255, 0, 0, 0.4);
-            --header-height: 80px;
-            --nav-width: 320px;
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --secondary-color: #000000;
+            --secondary-light: #2a2a2a;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --card-bg: #212121;
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --text-gradient: linear-gradient(45deg, var(--primary-light), var(--text-light));
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 70px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Poppins', system-ui, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
-            background-size: 400% 400%;
-            animation: gradientFlow 12s ease infinite;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            line-height: 1.7;
             overflow-x: hidden;
-            touch-action: manipulation;
-            position: relative;
-            color: var(--pure-white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .gradient-text {
+            background: var(--text-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
         }
 
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        /* --- Loading Overlay --- */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            opacity: 1; visibility: visible;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
+        .loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-message { margin-top: 20px; color: var(--text-muted); font-size: 1.1rem; }
 
-        /* Optimized Loading Screen */
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--dark-bg);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        .preloader.hide {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .logo-animation {
-            font-size: 5rem;
-            color: var(--accent-red);
-            position: relative;
-            margin-bottom: 2rem;
-            animation: pulse 2s ease infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .loading-bar {
-            width: 200px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 2rem;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loading-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent-red), var(--primary-blue));
-            animation: loading 2.5s ease-in-out infinite;
-        }
-
-        @keyframes loading {
-            0% { width: 0%; left: 0; }
-            50% { width: 100%; left: 0; }
-            100% { width: 0%; left: 100%; }
-        }
-
-        .loading-text {
-            color: var(--pure-white);
-            margin-top: 1.5rem;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        /* Optimized Header */
-        header {
-            padding: 0 2rem;
-            background: rgba(0, 0, 0, 0.9);
+        /* --- Header --- */
+        .header {
+            background-color: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            height: var(--header-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 40px;
             position: fixed;
-            width: 100%;
-            top: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            height: var(--header-height);
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 51, 51, 0.1);
+            transform: translateY(-100%);
+            animation: slideDown 0.8s 0.5s ease-out forwards;
         }
+        @keyframes slideDown { to { transform: translateY(0); } }
 
-        header.scrolled {
-            height: 70px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        .header.scrolled {
+            background-color: rgba(18, 18, 18, 0.95);
+            box-shadow: var(--shadow-md);
         }
-
         .logo {
-            display: flex;
-            align-items: center;
-            color: var(--pure-white);
-            gap: 0.8rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
             text-decoration: none;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.03);
-        }
-
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
-            transition: transform 0.6s ease;
-        }
-
-        .logo:hover .logo-icon {
-            transform: rotate(15deg);
-        }
-
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--pure-white);
-            font-family: 'Lemon Milk', sans-serif;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .logo:hover .brand-name {
-            color: var(--accent-red);
-        }
-
-        /* Optimized Menu Button */
-        .menu-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 15px;
-            z-index: 1001;
-            position: relative;
-        }
-
-        .menu-btn span {
-            display: block;
-            width: 30px;
-            height: 2px;
-            background: var(--pure-white);
-            margin: 6px 0;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .menu-btn:hover span {
-            background: var(--accent-red);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: translateY(8px) rotate(45deg);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-btn.active span:last-child {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Optimized Navigation Menu */
-        .nav-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: var(--nav-width);
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.98);
-            padding: 7rem 2rem 2rem;
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            z-index: 999;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.6);
-            overflow-y: auto;
-        }
-
-        .nav-menu.active {
-            transform: translateX(-100%);
-        }
-
-        .nav-btn {
-            background: rgba(0, 0, 139, 0.3);
-            color: var(--pure-white);
-            padding: 1.3rem 1.8rem;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            font-size: 1.1rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-            transition: 0.7s;
-        }
-
-        .nav-btn:hover::before {
-            left: 100%;
-        }
-
-        .nav-btn i {
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            font-size: 1.3rem;
-            min-width: 26px;
-            text-align: center;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255, 0, 0, 0.3);
-            transform: translateX(15px);
-            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(20deg) scale(1.2);
-            color: var(--accent-red);
-        }
-
-        /* Optimized Hero Section */
-        .hero-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-            color: var(--pure-white);
-            position: relative;
-            overflow: hidden;
-            margin-top: var(--header-height);
-        }
-
-        .hero-content {
-            max-width: 900px;
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 1s ease-out both;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero-image-container {
-            position: relative;
-            width: 100%;
-            max-width: 750px;
-            margin: 0 auto 4rem;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .hero-image {
-            width: 100%;
-            height: auto;
-            border-radius: 25px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 3px solid rgba(255, 255, 255, 0.15);
-            filter: brightness(1.05) contrast(1.05) saturate(1.1);
-            object-fit: cover;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-image-container:hover .hero-image {
-            transform: scale(1.05);
-        }
-
-        .hero-image-container::before {
-            content: '';
-            position: absolute;
-            bottom: -30px;
-            left: 30px;
-            right: 30px;
-            height: 60px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 50%;
-            filter: blur(40px);
-            z-index: 0;
-            opacity: 0.8;
-        }
-
-        .hero-title {
-            font-family: 'Lemon Milk', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 4.5rem);
-            margin-bottom: 2rem;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            font-weight: bold;
-            background: linear-gradient(to right, var(--pure-white), #ddd);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: clamp(1.1rem, 2vw, 1.6rem);
-            margin-bottom: 3rem;
-            opacity: 0.9;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 400;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeIn 1.5s ease-out both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 0.9; }
-        }
-
-        .cta-button {
-            font-family: 'IntegralCF', sans-serif;
-            padding: 1.3rem 3.5rem;
-            background: linear-gradient(135deg, var(--primary-blue), #0000aa);
-            color: var(--pure-white);
-            border: none;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            text-align: center;
-            margin-top: 30px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0, 0, 139, 0.4);
-            z-index: 1;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            animation: pulseButton 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseButton {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: 0.7s;
-            z-index: -1;
-        }
-
-        .cta-button:hover {
-            background: linear-gradient(135deg, var(--accent-red), #cc0000);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.5);
-            animation: none;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .cta-button i {
-            margin-left: 10px;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .cta-button:hover i {
-            transform: translateX(10px) rotate(15deg);
-        }
-
-        /* Optimized Moving Logos */
-        .moving-logo {
-            position: absolute;
-            font-size: 3rem;
-            color: var(--accent-red);
-            animation: moveLogo 20s linear infinite;
-            z-index: 1;
-            text-shadow: 0 3px 15px rgba(255, 0, 0, 0.7);
-            opacity: 0.8;
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
-        }
-
-        @keyframes moveLogo {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            25% {
-                transform: translate(calc(100vw - 150px), 0) rotate(90deg);
-            }
-            50% {
-                transform: translate(calc(100vw - 150px), calc(100vh - 150px)) rotate(180deg);
-            }
-            75% {
-                transform: translate(0, calc(100vh - 150px)) rotate(270deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(360deg);
-            }
-        }
-
-        /* About Section */
-        .about-section {
-            padding: 8rem 2rem;
-            background: var(--box-bg);
-            color: var(--dark-bg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .about-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://i.postimg.cc/Jhk9CHvw/Picsart-25-02-28-22-52-30-635.jpg') center/cover;
-            opacity: 0.03;
-            z-index: 0;
-        }
-
-        .section-title {
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
-            text-align: center;
-            margin-bottom: 4rem;
-            color: var(--primary-blue);
-            position: relative;
-            z-index: 1;
-            font-family: 'Lemon Milk', sans-serif;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 5px;
-            background: linear-gradient(to right, var(--primary-blue), var(--accent-red));
-            border-radius: 3px;
-        }
-
-        .about-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
-            line-height: 1.9;
-            text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Optimized Batch Section */
-        .batch-section {
-            padding: 10rem 2rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 6rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section-subtitle {
-            font-size: clamp(1rem, 2vw, 1.3rem);
-            color: #555;
-            margin-top: 1.5rem;
-            font-family: 'Montserrat', sans-serif;
-            opacity: 0.8;
-        }
-        
-        .batch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
-            gap: 3rem;
-            max-width: 1300px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Optimized Batch Cards */
-        .batch-card {
-            background: var(--box-bg);
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-out both;
-        }
-
-        .batch-card:nth-child(1) {
-            animation-delay: 0.3s;
-        }
-
-        .batch-card:nth-child(2) {
-            animation-delay: 0.6s;
-        }
-
-        .batch-card:nth-child(3) {
-            animation-delay: 0.9s;
-        }
-
-        .batch-card:hover {
-            transform: translateY(-20px);
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
-        }
-
-        .batch-card-header {
-            position: relative;
-            height: 280px;
-            overflow: hidden;
-        }
-
-        .rectangular-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .batch-card:hover .rectangular-img {
-            transform: scale(1.05);
-        }
-
-        .batch-tag {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            padding: 10px 22px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: white;
-            z-index: 2;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            font-family: 'Montserrat', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .new-tag {
-            background: var(--tag-new);
-        }
-
-        .popular-tag {
-            background: var(--primary-blue);
-        }
-
-        .hot-tag {
-            background: var(--tag-hot);
-        }
-
-        .batch-card-body {
-            padding: 3rem 2.5rem;
-            flex-grow: 1;
-        }
-        
-        .batch-card h3 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2rem;
-            color: var(--primary-blue);
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .batch-card h3::after {
-            content: "";
-            position: absolute;
-            bottom: -12px;
-            left: 0;
-            width: 60px;
-            height: 5px;
-            background: var(--accent-red);
-            border-radius: 3px;
-        }
-
-        .batch-features {
-            margin-bottom: 2.5rem;
-        }
-        
-        .feature {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            color: #555;
-            font-size: 1.1rem;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .feature i {
-            margin-right: 18px;
-            color: var(--primary-blue);
-            width: 26px;
-            text-align: center;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .batch-card-footer {
-            padding: 0 2.5rem 3rem;
-        }
-        
-        .enroll-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary-blue), #0000aa);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-size: 1.2rem;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            box-shadow: 0 15px 30px rgba(0, 0, 139, 0.3);
-            font-family: 'Montserrat', sans-serif;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .enroll-btn::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: 0.7s;
-            z-index: -1;
-        }
-
-        .enroll-btn:hover {
-            background: linear-gradient(135deg, var(--accent-red), #cc0000);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.4);
-        }
-
-        .enroll-btn:hover::before {
-            left: 100%;
-        }
-
-        .enroll-btn i {
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        .enroll-btn:hover i {
-            transform: translateX(10px) rotate(15deg);
-        }
-
-        .view-all-container {
-            text-align: center;
-            margin-top: 6rem;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .view-all-btn {
-            padding: 18px 45px;
-            background: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-            border-radius: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 1.2rem;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            font-family: 'Montserrat', sans-serif;
-            box-shadow: 0 10px 25px rgba(0, 0, 139, 0.2);
-        }
-
-        .view-all-btn::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 100%;
-            background: var(--primary-blue);
-            transition: 0.7s;
-            z-index: -1;
-        }
-
-        .view-all-btn:hover {
-            color: white;
-            border-color: var(--primary-blue);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 139, 0.3);
-        }
-
-        .view-all-btn:hover::before {
-            width: 100%;
-        }
-
-        .view-all-btn i {
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        .view-all-btn:hover i {
-            transform: translateX(10px) rotate(15deg);
-        }
-
-        /* Optimized Footer */
-        footer {
-            padding: 8rem 2rem 4rem;
-            background: var(--dark-bg);
-            color: var(--pure-white);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .footer-logo {
-            font-size: 2.5rem;
-            color: var(--accent-red);
-            margin-bottom: 2rem;
-            display: inline-block;
-            transition: all 0.5s ease;
-        }
-
-        .footer-logo:hover {
-            transform: rotate(15deg) scale(1.1);
-            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.7));
-        }
-
-        .footer-text {
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            line-height: 1.8;
-            font-family: 'Montserrat', sans-serif;
-            opacity: 0.9;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .social-link {
-            color: white;
-            font-size: 1.8rem;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-link:hover {
-            transform: translateY(-8px) scale(1.1);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .social-link:nth-child(1):hover {
-            background: #4267B2; /* Facebook */
-        }
-        .social-link:nth-child(2):hover {
-            background: #1DA1F2; /* Twitter */
-        }
-        .social-link:nth-child(3):hover {
-            background: #E1306C; /* Instagram */
-        }
-        .social-link:nth-child(4):hover {
-            background: #0077B5; /* LinkedIn */
-        }
-        .social-link:nth-child(5):hover {
-            background: #FF0000; /* YouTube */
-        }
-
-        .newsletter {
-            max-width: 500px;
-            margin: 0 auto 3rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .newsletter-title {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .newsletter-form {
-            display: flex;
             gap: 10px;
         }
-
-        .newsletter-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
+        .logo i { transition: transform 0.3s ease; }
+        .logo:hover i { transform: rotate(-10deg) scale(1.1); }
+        .nav-links { list-style: none; display: flex; gap: 35px; }
+        .nav-links li { position: relative; }
+        .nav-links a {
+            color: var(--text-dark); text-decoration: none;
+            font-weight: 500; position: relative;
+            padding-bottom: 5px; transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary-light); }
+        .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+        
+        .nav-badge {
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            font-size: 0.6rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+        .nav-badge.new {
+            background-color: #2ecc71;
             color: white;
-            font-family: 'Montserrat', sans-serif;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+            animation: pulse-badge 2s infinite ease-in-out;
         }
-
-        .newsletter-input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--accent-red);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-
-        .newsletter-button {
-            padding: 15px 25px;
-            background: linear-gradient(135deg, var(--accent-red), #cc0000);
+        .nav-badge.popular {
+            background-color: var(--primary-dark);
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 5px rgba(46, 204, 113, 0); } }
 
-        .newsletter-button:hover {
-            background: linear-gradient(135deg, #cc0000, #990000);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .btn {
+            padding: 10px 22px; border-radius: 50px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease;
+            border: 2px solid transparent; font-size: 0.9rem; cursor: pointer;
+            position: relative; overflow: hidden; z-index: 1;
         }
-
-        .copyright {
-            position: relative;
-            z-index: 1;
-            font-size: 1rem;
-            opacity: 0.6;
-            font-family: 'Montserrat', sans-serif;
-            margin-top: 3rem;
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-light);
+            border-color: var(--primary-light);
         }
+        .btn-secondary:hover { background-color: var(--primary-light); color: white; transform: translateY(-2px); }
+        .btn-primary { background: var(--gradient); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1001; }
 
-        /* Optimized Floating Telegram Button */
-        .floating-telegram-btn {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            background: linear-gradient(135deg, #0088cc, #006699);
-            color: var(--pure-white);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 0 20px 40px rgba(0, 136, 204, 0.4);
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 1000;
-            animation: float 4s ease-in-out infinite;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            align-items: center; justify-content: center; text-align: center;
+            padding: 0 20px; padding-top: var(--header-height);
+            position: relative; overflow: hidden;
+            background: var(--bg-dark);
         }
-
-        .floating-telegram-btn:hover {
-            background: linear-gradient(135deg, #0077b3, #005580);
-            transform: scale(1.15) translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 136, 204, 0.6);
-            animation: none;
+        .hero-content { z-index: 2; max-width: 800px; }
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0.5s both;
         }
-
-        .floating-telegram-btn i {
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .floating-telegram-btn:hover i {
-            transform: rotate(15deg) scale(1.2);
-        }
-
-        /* Optimized Cookie Consent */
-        .cookie-consent-box {
-            position: fixed;
-            bottom: 40px;
-            left: 40px;
-            right: 40px;
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
             max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.97);
-            padding: 35px;
-            border-radius: 25px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            z-index: 9999;
-            transform: translateY(120%);
-            animation: cookieSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            border: 1px solid rgba(0, 0, 139, 0.2);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            margin-left: auto;
+            margin-right: auto;
+            animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) 0.8s both;
+        }
+        .hero .btn { font-size: 1.1rem; padding: 15px 40px; }
+        #particles { position: absolute; top:0; left:0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+
+        /* --- Sections General --- */
+        .section { padding: 100px 40px; }
+        .section-title { text-align: center; font-size: 2.8rem; margin-bottom: 15px; }
+        .section-subtitle {
+            text-align: center; color: var(--text-muted);
+            font-size: 1.1rem; margin-bottom: 60px;
+            max-width: 700px; margin-left: auto; margin-right: auto;
         }
 
-        @keyframes cookieSlideUp {
-            from { transform: translateY(120%); }
-            to { transform: translateY(0); }
+        /* --- Features & Why Choose Us Section --- */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 40px; border-radius: var(--border-radius);
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease; position: relative; overflow: hidden;
+        }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: rgba(255, 51, 51, 0.3); }
+        .feature-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,51,51,0.1) 0%, rgba(255,51,51,0) 40%);
+            transform: scale(0); transition: transform 0.8s ease; z-index: 0;
+        }
+        .feature-card:hover::before { transform: scale(1); }
+        .feature-card > * { position: relative; z-index: 1; }
+        .feature-icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 20px; display: inline-block; transition: transform 0.3s ease; }
+        .feature-card:hover .feature-icon { transform: scale(1.1) rotate(-5deg); }
+        .feature-card h3 { font-size: 1.5rem; color: var(--text-light); margin-bottom: 15px; }
+        .feature-card p { color: var(--text-muted); margin-bottom: 25px; }
+        .feature-card .btn { font-size: 0.9rem; }
+        #why-us { background-color: var(--bg-light); }
+
+
+        /* --- Showcase/Carousel Section --- */
+        .showcase-section { padding-bottom: 60px; }
+        .carousel-container { max-width: 900px; margin: 0 auto; position: relative; }
+        .carousel-viewport { overflow: hidden; border-radius: var(--border-radius); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-slide { flex: 0 0 100%; padding: 10px; background-color: var(--card-bg); }
+        .carousel-slide img { width: 100%; border-radius: 8px; display: block; }
+        .carousel-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 20px; pointer-events: none; }
+        .carousel-button {
+            background: rgba(0,0,0,0.5); color: white; border: none;
+            border-radius: 50%; width: 40px; height: 40px;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease;
+            pointer-events: all;
+        }
+        .carousel-button:hover { background-color: var(--primary-color); transform: scale(1.1); }
+        .carousel-pagination { text-align: center; margin-top: 20px; }
+        .pagination-dot {
+            height: 10px; width: 10px; border-radius: 50%;
+            background: var(--secondary-light); display: inline-block;
+            margin: 0 5px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .pagination-dot.active { background: var(--primary-color); transform: scale(1.3); }
+        
+        /* --- How It Works Section --- */
+        .how-it-works { background-color: var(--bg-light); }
+        .steps-container { display: flex; justify-content: space-between; gap: 40px; position: relative; margin-top: 80px; }
+        .step { flex: 1; text-align: center; position: relative; }
+        .step-number {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--bg-dark); border: 2px solid var(--primary-color);
+            color: var(--primary-color); font-size: 1.8rem;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px auto; transition: all 0.3s ease;
+            position: relative; z-index: 2;
+        }
+        .step:hover .step-number { background-color: var(--primary-color); color: white; transform: scale(1.1); }
+        .step h4 { font-size: 1.3rem; color: var(--text-light); margin-bottom: 10px; }
+        .steps-container::before {
+            content: ''; position: absolute; top: 30px; left: 10%;
+            width: 80%; height: 2px;
+            background: rgba(255,51,51,0.3); z-index: 0;
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        .how-it-works.aos-animate .steps-container::before { transform: scaleX(1); }
+        .how-it-works.aos-animate .step { animation: fadeInStep 0.5s ease-out forwards; opacity: 0; }
+        .how-it-works.aos-animate .step:nth-child(1) { animation-delay: 0.3s; }
+        .how-it-works.aos-animate .step:nth-child(2) { animation-delay: 0.8s; }
+        .how-it-works.aos-animate .step:nth-child(3) { animation-delay: 1.2s; }
+        @keyframes fadeInStep { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* --- Auth Section --- */
+        #auth-section { background: var(--bg-dark); }
+        .auth-container {
+            max-width: 480px; margin: 0 auto; position: relative;
+            height: auto; /* Changed from fixed height */
+            padding-bottom: 40px; /* Add padding for content */
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .auth-container.shake { animation: shake-horizontal 0.5s cubic-bezier(.455,.03,.515,.955) both; }
+        .form-wrapper {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; padding: 40px;
+            transition: transform 0.6s cubic-bezier(0.87, 0, 0.13, 1), opacity 0.4s ease;
+        }
+        .form-wrapper h3 { text-align: center; font-size: 1.8rem; margin-bottom: 25px; color: var(--primary-light); font-family: 'Montserrat', sans-serif;}
+        
+        /* Form transition logic */
+        .auth-container .form-wrapper {
+            transform: translateX(100%);
+            opacity: 0;
+            position: absolute;
+        }
+        .auth-container .form-wrapper.login-form {
+             transform: translateX(0);
+             opacity: 1;
+             position: relative; /* The initial form should be relative */
+        }
+        .auth-container.show-signup .login-form {
+            transform: translateX(-100%);
+            opacity: 0;
+            position: absolute;
+        }
+        .auth-container.show-signup .signup-form {
+            transform: translateX(0);
+            opacity: 1;
+            position: relative; /* The visible form should be relative */
         }
 
-        .cookie-icon {
-            font-size: 45px;
-            color: var(--primary-blue);
-            margin-bottom: 25px;
-            animation: pulse 2s infinite alternate;
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input {
+            width: 100%; padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--border-radius);
+            background-color: var(--bg-light); color: var(--text-dark);
+            transition: all 0.3s ease;
         }
+        .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(255, 51, 51, 0.3); }
+        .auth-separator { display: flex; align-items: center; text-align: center; color: var(--text-muted); margin: 20px 0; }
+        .auth-separator::before, .auth-separator::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .auth-separator:not(:empty)::before { margin-right: .5em; }
+        .auth-separator:not(:empty)::after { margin-left: .5em; }
+        .google-btn { background-color: #4285F4 !important; color: white !important; }
+        .google-btn:hover { background-color: #357ae8 !important; }
+        .google-btn i { margin-right: 10px; }
+        .auth-switch { text-align: center; margin-top: 25px; font-size: 0.9rem; }
+        .auth-switch a { color: var(--primary-color); font-weight: 500; cursor: pointer; text-decoration: none; }
+        .auth-switch a:hover { text-decoration: underline; }
 
-        .cookie-message {
-            color: #555;
-            margin-bottom: 30px;
-            line-height: 1.8;
-            font-size: 17px;
-            font-family: 'Montserrat', sans-serif;
-        }
+        /* --- CTA Section --- */
+        .cta-section { background: var(--gradient); padding: 80px 40px; text-align: center; border-radius: 20px; margin: 0 40px; }
+        .cta-section h2 { color: white; font-size: 2.5rem; margin-bottom: 30px; }
+        .cta-section .btn { background-color: white; color: var(--primary-dark); font-size: 1.1rem; padding: 15px 40px; border: none; }
+        .cta-section .btn:hover { background-color: var(--text-light); transform: scale(1.05); }
+        
+        /* --- Footer --- */
+        .footer { background-color: #0c0c0c; padding: 60px 40px; text-align: center; color: var(--text-muted); }
+        .footer-logo { font-size: 2rem; font-weight: 800; color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; margin-bottom: 20px; gap: 10px;}
+        .footer p { margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .social-links a { color: var(--text-muted); font-size: 1.5rem; margin: 0 15px; transition: color 0.3s ease, transform 0.3s ease; }
+        .social-links a:hover { color: var(--primary-light); transform: translateY(-3px); }
+        .footer-contact { margin-top: 20px; font-size: 0.9rem; }
+        .footer-contact a { color: var(--primary-light); text-decoration: none; }
+        .copyright { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
 
-        .cookie-btn {
-            padding: 16px 38px;
-            background: linear-gradient(135deg, var(--primary-blue), #0000aa);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 139, 0.3);
-            font-family: 'Montserrat', sans-serif;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
+        /* Spinner for Buttons */
+        .spinner { display: none; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right: 8px;}
+        .btn.loading .spinner { display: inline-block; }
+        .btn.loading > span:not(.spinner) { opacity: 0.7; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .cookie-btn:hover {
-            background: linear-gradient(135deg, var(--accent-red), #cc0000);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 45px rgba(255, 0, 0, 0.4);
-        }
+        /* Toast Notifications */
+        #toastContainer { position: fixed; top: 25px; right: 25px; z-index: 3000; display:flex; flex-direction:column; gap:10px; }
+        .toast { padding: 15px 25px; border-radius: var(--border-radius); background-color: var(--secondary-light); color: white; box-shadow: var(--shadow-md); transform: translateX(calc(100% + 30px)); animation: toast-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; display: flex; align-items: center; max-width:380px; border-left:5px solid var(--primary-color); }
+        @keyframes toast-in { to { transform: translateX(0); } }
+        .toast.success { background-color: #27ae60; border-left-color: #2ecc71; }
+        .toast.error { background-color: #e74c3c; border-left-color: #ff4757; }
+        .toast.info { background-color: #3498DB; border-left-color: #5DADE2; }
+        .toast i { margin-right: 12px; font-size:1.3rem; }
 
-        .cookie-btn i {
-            font-size: 20px;
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .cookie-btn:hover i {
-            transform: rotate(90deg) translateX(8px);
-        }
-
-        /* Float Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 1200px) {
-            .batch-card-header {
-                height: 250px;
-            }
-        }
-
+        /* --- Responsive Styles --- */
         @media (max-width: 992px) {
-            :root {
-                --header-height: 75px;
-                --nav-width: 300px;
+            .header { padding: 0 20px; }
+            .nav-links {
+                position: fixed; top: 0; right: 0;
+                background: #151515; height: 100vh; width: 280px;
+                flex-direction: column; align-items: center; justify-content: center;
+                padding-top: var(--header-height); gap: 25px;
+                transform: translateX(100%);
+                transition: transform 0.4s ease-in-out;
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
             }
-            
-            header {
-                padding: 0 1.8rem;
-            }
-            
-            .nav-menu {
-                padding: 6rem 1.8rem 2rem;
-            }
-
-            .batch-card {
-                margin-bottom: 2.5rem;
-            }
-
-            .batch-card-header {
-                height: 230px;
-            }
-            
-            .floating-telegram-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 28px;
-                bottom: 30px;
-                right: 30px;
-            }
+            .header.mobile-nav-active .nav-links { transform: translateX(0); }
+            .menu-toggle { display: block; z-index: 1002; }
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .section { padding: 80px 20px; }
+            .cta-section { margin: 0 20px; }
         }
-        
         @media (max-width: 768px) {
-            :root {
-                --header-height: 70px;
-                --nav-width: 280px;
+            .steps-container { flex-direction: column; align-items: center; }
+            .steps-container::before {
+                top: 5%; left: 50%;
+                width: 2px; height: 90%;
+                background: linear-gradient(to bottom, transparent, var(--primary-dark), transparent);
+                transform: translateX(-50%) scaleY(0);
+                transform-origin: top;
             }
-            
-            .batch-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .floating-telegram-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-                bottom: 25px;
-                right: 25px;
-            }
-
-            .footer-links-container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .footer-links-column {
-                align-items: center;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-
-            .cookie-consent-box {
-                bottom: 30px;
-                left: 20px;
-                right: 20px;
-                padding: 25px;
-            }
+            .how-it-works.aos-animate .steps-container::before { transform: translateX(-50%) scaleY(1); }
+            .step { max-width: 350px; }
+            .cta-section h2 { font-size: 2rem; }
+        }
+        @media (max-width: 576px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+            .header-actions { gap: 10px; }
+            .header-actions .btn { padding: 8px 16px; font-size: 0.8rem; }
+            .section-title { font-size: 2.2rem; }
+            .auth-container { height: auto; padding-bottom: 30px; }
+            .form-wrapper { padding: 30px 20px; }
         }
         
-        @media (max-width: 576px) {
-            .moving-logo {
-                font-size: 2rem;
-            }
-            
-            .floating-telegram-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 22px;
-                bottom: 20px;
-                right: 20px;
-            }
+        @keyframes text-focus-in { 0% { filter: blur(12px); opacity: 0; } 100% { filter: blur(0px); opacity: 1; } }
+        @keyframes shake-horizontal {0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-8px)}20%,40%,60%,80%{transform:translateX(8px)}}
 
-            .cookie-consent-box {
-                bottom: 20px;
-                left: 15px;
-                right: 15px;
-                padding: 20px;
-            }
-        }
+        * { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body>
-    <!-- Optimized Loading Screen -->
-    <div class="preloader">
-        <div class="logo-animation">
-            <i class="fas fa-book-open"></i>
-        </div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-        <div class="loading-text">Loading EduSpark</div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-large"></div>
+        <p class="loading-message" id="loadingMessage"></p>
     </div>
 
-    <!-- Optimized Header -->
-    <header id="mainHeader">
-        <a href="/" class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
+    <header class="header" id="header">
+        <a href="index.html" class="logo">
+            <i class="fas fa-brain"></i>
+            <span>EduSparK</span>
         </a>
-        <button class="menu-btn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-menu">
-            <button class="nav-btn" onclick="location.href='/'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='/courses'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='/enrolled'">
-                <i class="fas fa-user-graduate"></i>
-                My Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='/books/mybooks'">
-                <i class="fas fa-book"></i>
-                My Books
-            </button>
-            <button class="nav-btn" onclick="location.href='/about'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='/contact'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
+        <nav>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" class="active">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#why-us">Why Us</a></li>
+                <li><a href="books.html" id="booksNavBtn">Books<span class="nav-badge popular">Popular</span></a></li>
+                <li><a href="batches.html" id="batchesNavBtn">Batches<span class="nav-badge new">New</span></a></li>
+            </ul>
         </nav>
+        <div class="header-actions">
+            <!-- These are for logged-out users and will be hidden by JS if logged in -->
+            <a href="#auth-section" class="btn btn-secondary" id="loginHeaderBtn">Login</a>
+            <a href="#auth-section" class="btn btn-primary" id="signupHeaderBtn">Sign Up</a>
+        </div>
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <!-- Further reduced moving logos to 3 -->
-        <div class="moving-logo" style="top: 20%; left: 10%; animation-delay: 0s;">
-            <i class="fas fa-atom"></i>
-        </div>
-        <div class="moving-logo" style="top: 60%; left: 80%; animation-delay: 4s;">
-            <i class="fas fa-microscope"></i>
-        </div>
-        <div class="moving-logo" style="top: 80%; left: 20%; animation-delay: 8s;">
-            <i class="fas fa-chart-line"></i>
-        </div>
-
-        <div class="hero-content">
-            <div class="hero-image-container">
-                <img src="https://i.postimg.cc/Jhk9CHvw/Picsart-25-02-28-22-52-30-635.jpg" alt="EduSpark Banner" class="hero-image">
+    <main>
+        <section class="hero" id="hero">
+            <canvas id="particles"></canvas>
+            <div class="hero-content">
+                <h1 class="gradient-text">Where Knowledge Sparks & Learning Begins</h1>
+                <p data-aos="fade-up" data-aos-delay="200">A collaborative community for sharing and discovering free educational books and courses. Ignite your learning journey with us today.</p>
+                <a href="#features" class="btn btn-primary" data-aos="fade-up" data-aos-delay="400">Discover More</a>
             </div>
-            <h1 class="hero-title">Welcome to EduSpark</h1>
-            <p class="hero-subtitle">Your gateway to modern, interactive, and effective learning. Transform your education with our cutting-edge platform.</p>
-            <button class="cta-button" onclick="location.href='courses.html'">
-                <i class="fas fa-rocket"></i> Get Started
-            </button>
-        </div>
-    </section>
+        </section>
 
-    <!-- About Section -->
-    <section id="about" class="about-section">
-        <h2 class="section-title">Why Choose EduSpark?</h2>
-        <div class="about-content">
-            <p>
-                EduSpark is a next-generation learning platform designed to help students achieve academic excellence. 
-                With our innovative teaching methods, experienced educators, and comprehensive study materials, we aim 
-                to make learning engaging and effective. Our "Next Topper" batches are specially curated to help students 
-                excel in competitive exams and school curriculum.
+        <section class="section" id="features">
+            <h2 class="section-title gradient-text" data-aos="fade-up">What We Offer</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                EduSparK is more than just a platform; it's a community dedicated to making education accessible for everyone.
             </p>
-            <p>
-                We offer a wide range of courses, including Mathematics, Science, History, and more. All our courses 
-                are free and accessible to everyone. Join EduSpark today and take the first step towards becoming a topper!
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-book-open feature-icon"></i>
+                    <h3>Vast Library of Books</h3>
+                    <p>Access a rich collection of books, notes, and resources shared by a community of dedicated learners. Find materials for every subject and exam.</p>
+                    <a href="books.html" id="exploreBooksBtn" class="btn btn-secondary">Explore Books</a>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-chalkboard-teacher feature-icon"></i>
+                    <h3>Interactive Batches</h3>
+                    <p>Enroll in free and premium batches or structured courses led by experienced instructors to master new skills and ace your exams.</p>
+                    <a href="batches.html" id="exploreBatchesBtn" class="btn btn-secondary">Find a Batch</a>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-share-alt feature-icon"></i>
+                    <h3>Share & Contribute</h3>
+                    <p>Become a vital part of our community. Upload your own valuable notes and books to help others on their learning path.</p>
+                    <a href="books.html" id="startSharingBtn" class="btn btn-secondary">Start Sharing</a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section showcase-section" id="showcase">
+            <h2 class="section-title gradient-text" data-aos="fade-up">EduSparK in Action</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                See how our clean, intuitive interface makes learning and sharing effortless.
             </p>
-        </div>
-    </section>
+            
+            <div class="carousel-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="carousel-viewport">
+                    <div class="carousel-track">
+                        <div class="carousel-slide"><img src="https://i.postimg.cc/d3TkkC8T/Screenshot-14.jpg" alt="Screenshot of the main books page"></div>
+                        <div class="carousel-slide"><img src="https://i.postimg.cc/rFNyhgFw/Screenshot-19.png" alt="Screenshot of book details view"></div>
+                        <div class="carousel-slide"><img src="https://i.postimg.cc/qqrQjpjq/Screenshot-20-1.png" alt="Screenshot of a user's profile dashboard"></div>
+                        <div class="carousel-slide"><img src="https://i.postimg.cc/YSYtWxV7/Screenshot-11.png" alt="Screenshot of the My Downloads section"></div>
+                        <div class="carousel-slide"><img src="https://i.postimg.cc/s2KYP5bB/Screenshot-22.png" alt="Screenshot of the course batches page"></div>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="carousel-button prev-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-button next-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-pagination"></div>
+            </div>
+        </section>
 
-    <!-- Batch Section -->
-    <section class="batch-section">
-        <div class="section-header">
-            <h2 class="section-title">Our Premium Batches</h2>
-            <p class="section-subtitle">Choose the perfect learning path for your academic success</p>
-        </div>
+        <section class="section how-it-works" data-aos="fade-in">
+            <h2 class="section-title gradient-text" data-aos="fade-up">How It Works</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Getting started is simple. Follow these three easy steps.
+            </p>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Sign Up For Free</h4>
+                    <p>Create your free account in seconds to unlock all features and join our growing community.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Explore & Learn</h4>
+                    <p>Browse our extensive library of books and discover new courses to enhance your knowledge.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Contribute & Grow</h4>
+                    <p>Share your resources with others, give feedback, and help the EduSparK community thrive.</p>
+                </div>
+            </div>
+        </section>
         
-        <div class="batch-grid">
-            <!-- Batch Card 1 -->
-            <div class="batch-card">
-                <div class="batch-card-header">
-                    <div class="batch-tag new-tag">NEW</div>
-                    <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/538903229246_aarambh%20banner%20app.jpg" alt="Aarambh Batch" class="rectangular-img">
+        <section class="section" id="why-us">
+            <h2 class="section-title gradient-text" data-aos="fade-up">Why Choose Us?</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                We believe in providing a secure, free, and community-focused learning environment unlike any other.
+            </p>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <i class="fas fa-gift feature-icon"></i>
+                    <h3>Absolutely Free</h3>
+                    <p>Our core platform is and always will be free. Access a world of knowledge without any cost, supported by a community that believes in open education.</p>
                 </div>
-                <div class="batch-card-body">
-                    <h3>AARAMBH BATCH 10TH</h3>
-                    <div class="batch-features">
-                        <div class="feature">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Starts: April 12, 2025</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: 12 Months</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Expert Instructors</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-certificate"></i>
-                            <span>Completion Certificate</span>
-                        </div>
-                    </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <i class="fas fa-user-shield feature-icon"></i>
+                    <h3>Secure & Verified</h3>
+                    <p>Your safety is paramount. We strictly prohibit phishing links and harmful shorteners. Our platform is built on secure Google services you can trust.</p>
                 </div>
-                <div class="batch-card-footer">
-                    <button class="enroll-btn" onclick="window.location.href='/nt/10th'">
-                        Enroll Now <i class="fas fa-arrow-right"></i>
-                    </button>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <i class="fas fa-users feature-icon"></i>
+                    <h3>Community Driven</h3>
+                    <p>EduSparK is powered by its users. Every book shared and every piece of feedback given helps us build the ultimate free learning resource, together.</p>
                 </div>
             </div>
-            
-            <!-- Batch Card 2 -->
-            <div class="batch-card">
-                <div class="batch-card-header">
-                    <div class="batch-tag popular-tag">POPULAR</div>
-                    <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/499760128609_11th%20prarambh%20sci%20app%20final%203499.jpg" alt="Prarambh Batch" class="rectangular-img">
-                </div>
-                <div class="batch-card-body">
-                    <h3>PRARAMBH CLASS 12TH</h3>
-                    <div class="batch-features">
-                        <div class="feature">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Starts: April 12, 2025</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: 12 Months</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Expert Instructors</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-certificate"></i>
-                            <span>Completion Certificate</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="batch-card-footer">
-                    <button class="enroll-btn" onclick="window.location.href='/courses'">
-                        Enroll Now <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Batch Card 3 -->
-            <div class="batch-card">
-                <div class="batch-card-header">
-                    <div class="batch-tag hot-tag">HOT</div>
-                    <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/401500133113_aarambh%20class%209th%20banner%20app.png" alt="Aarambh 9th Batch" class="rectangular-img">
-                </div>
-                <div class="batch-card-body">
-                    <h3>AARAMBH CLASS 9TH</h3>
-                    <div class="batch-features">
-                        <div class="feature">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Starts: April 15, 2025</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <span>Duration: 12 Months</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Expert Instructors</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-certificate"></i>
-                            <span>Completion Certificate</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="batch-card-footer">
-                    <button class="enroll-btn" onclick="window.location.href='/nt/9th'">
-                        Enroll Now <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="view-all-container">
-            <button class="view-all-btn" onclick="window.location.href='/courses'">
-                View All Batches <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-logo">
-                <i class="fas fa-book-open"></i>
+        <section class="section" id="auth-section">
+            <h2 class="section-title gradient-text" data-aos="fade-up">Join Us Today</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Create an account or log in to continue your learning adventure.</p>
+            <div class="auth-container" data-aos="zoom-in-up" data-aos-delay="200">
+                <!-- Login Form -->
+                <div class="form-wrapper login-form">
+                    <h3>Welcome Back!</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" id="loginEmail" class="form-input" required autocomplete="email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" id="loginPassword" class="form-input" required autocomplete="current-password" placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-primary login-btn" style="width:100%;"><span class="spinner"></span><span>Login</span></button>
+                    </form>
+                    <div class="auth-separator"><span>OR</span></div>
+                    <button class="btn google-btn google-login" style="width:100%;"><span class="spinner"></span><span><i class="fab fa-google"></i> Continue with Google</span></button>
+                    <div class="auth-switch">Don't have an account? <a href="#" id="switchToSignupLink">Sign up here</a></div>
+                </div>
+                <!-- Signup Form -->
+                <div class="form-wrapper signup-form">
+                    <h3>Create Your Account</h3>
+                    <form id="signupForm">
+                         <div class="form-group">
+                            <label for="signupName" class="form-label">Full Name</label>
+                            <input type="text" id="signupName" class="form-input" required autocomplete="name" placeholder="Ada Lovelace">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail" class="form-label">Email</label>
+                            <input type="email" id="signupEmail" class="form-input" required autocomplete="email" placeholder="your.email@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword" class="form-label">Password</label>
+                            <input type="password" id="signupPassword" class="form-input" required autocomplete="new-password" placeholder="Choose a strong password">
+                        </div>
+                        <button type="submit" class="btn btn-primary signup-btn" style="width:100%;"><span class="spinner"></span><span>Create Account</span></button>
+                    </form>
+                    <div class="auth-separator"><span>OR</span></div>
+                    <button class="btn google-btn google-signup" style="width:100%;"><span class="spinner"></span><span><i class="fab fa-google"></i> Sign up with Google</span></button>
+                    <div class="auth-switch">Already have an account? <a href="#" id="switchToLoginLink">Login here</a></div>
+                </div>
             </div>
-            <p class="footer-text">Join thousands of students who have transformed their learning experience with EduSpark's innovative platform and premium courses.</p>
-            
-            <div class="social-links">
-                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-            </div>
-            
-            <div class="newsletter">
-                <h4 class="newsletter-title">Subscribe to our Newsletter</h4>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Your email address" class="newsletter-input" required>
-                    <button type="submit" class="newsletter-button">Subscribe</button>
-                </form>
-            </div>
-            
-            <div class="copyright">&copy; 2023 EduSpark. All rights reserved.</div>
+        </section>
+        
+    </main>
+
+    <footer class="footer">
+        <a href="#" class="footer-logo">
+            <i class="fas fa-brain"></i>
+            <span>EduSparK</span>
+        </a>
+        <p>A community-driven platform for accessible education. Share, learn, and grow together.</p>
+        <div class="social-links" data-aos="fade-up">
+            <a href="https://www.youtube.com/@Edusparkk-org" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/edusparkk.official" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/+ghg1XDzFYwgyNDU1" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+        </div>
+        <div class="footer-contact" data-aos="fade-up">
+            <p>Have questions? Contact us at <a href="mailto:edusparkkofficial@gmail.com">edusparkkofficial@gmail.com</a></p>
+        </div>
+        <div class="copyright">
+            © 2023 EduSparK. All Rights Reserved.
         </div>
     </footer>
 
-    <!-- Floating Telegram Button -->
-    <a href="https://t.me/+7Qy_gJV8Tfs1NGFl" class="floating-telegram-btn" id="telegramBtn" target="_blank">
-        <i class="fab fa-telegram-plane"></i>
-    </a>
+    <div id="toastContainer"></div>
 
-    <!-- Cookie Consent Box -->
-    <div class="cookie-consent-box" id="cookieConsent">
-        <div class="cookie-icon">
-            <i class="fas fa-cookie-bite"></i>
-        </div>
-        <p class="cookie-message">
-            We use cookies to enhance your experience on EduSpark. By continuing to browse, 
-            you agree to our use of cookies. Learn more in our <a href="/cookies" style="color: var(--primary-blue); text-decoration: underline;">Cookie Policy</a>.
-        </p>
-        <button class="cookie-btn" id="acceptCookies">
-            <i class="fas fa-check"></i> Accept
-        </button>
-    </div>
-
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Request Animation Frame for smoother animations
-        const scrollHandler = () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        };
-
-        // Throttle scroll events
-        let isScrolling;
-        window.addEventListener('scroll', () => {
-            window.cancelAnimationFrame(isScrolling);
-            isScrolling = window.requestAnimationFrame(scrollHandler);
-        }, false);
-
-        window.addEventListener('load', () => {
-            const preloader = document.querySelector('.preloader');
-            const loadingText = document.querySelector('.loading-text');
-            const texts = ["Initializing", "Loading Resources", "Preparing Content", "Almost Ready"];
-            let currentText = 0;
-            
-            // Animate loading text
-            const textInterval = setInterval(() => {
-                loadingText.textContent = texts[currentText];
-                currentText = (currentText + 1) % texts.length;
-            }, 1500);
-            
-            // Hide preloader after 3 seconds
-            setTimeout(() => {
-                clearInterval(textInterval);
-                preloader.classList.add('hide');
-                
-                setTimeout(() => {
-                    preloader.remove();
-                }, 1000);
-            }, 3000);
-        });
-
-        // Optimized Menu Toggle
-        const header = document.getElementById('mainHeader');
-        const menuBtn = document.querySelector('.menu-btn');
-        const navMenu = document.querySelector('.nav-menu');
-
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
-            
-            if (navMenu.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
-                menuBtn.classList.remove('active');
-                navMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Cookie Consent
-        document.addEventListener('DOMContentLoaded', function() {
-            const cookieConsent = document.getElementById('cookieConsent');
-            const acceptBtn = document.getElementById('acceptCookies');
-            
-            function getCookie(name) {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop().split(';').shift();
-            }
-            
-            function setCookie(name, value, days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`;
-            }
-            
-            if (!getCookie('cookieConsent')) {
-                setTimeout(() => {
-                    cookieConsent.style.display = 'flex';
-                    setTimeout(() => {
-                        cookieConsent.style.animation = 'cookieSlideUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards';
-                    }, 50);
-                }, 3000);
-            }
-            
-            acceptBtn.addEventListener('click', function() {
-                setCookie('cookieConsent', 'accepted', 365);
-                cookieConsent.style.animation = 'cookieSlideUp 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53) reverse forwards';
-                setTimeout(() => {
-                    cookieConsent.style.display = 'none';
-                }, 600);
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 50,
             });
-        });
 
-        // Animate elements when they come into view
-        const animateOnScroll = () => {
-            const elements = document.querySelectorAll('.batch-card, .section-title, .hero-content, .about-content, .footer-content');
-            const windowHeight = window.innerHeight;
-            const triggerBottom = windowHeight * 0.85;
+            const firebaseConfig = {
+                // IMPORTANT: Replace with your actual Firebase project configuration.
+                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
+                authDomain: "edusparkk.xyz",
+                projectId: "eduspark-new",
+                storageBucket: "eduspark-new.appspot.com",
+                messagingSenderId: "564501033350",
+                appId: "1:564501033350:web:70c0f9873f96e9bd74fc07"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => document.querySelectorAll(s);
+
+            // --- Element Selectors ---
+            const header = $('#header');
+            const menuToggle = $('#menuToggle');
+            const authContainer = $('.auth-container');
+            const loadingOverlay = $('#loadingOverlay');
+            const loadingMessage = $('#loadingMessage');
             
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                
-                if (elementTop < triggerBottom) {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
+            // --- Authentication State Change ---
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in. Redirect them to the main application.
+                    loadingMessage.textContent = 'Welcome back! Redirecting...';
+                    
+                    // The redirect gives the user feedback and moves them to the app.
+                    // The dynamic header (with profile pic) belongs on app pages like home.html or books.html.
+                    setTimeout(() => {
+                        window.location.replace('home.html'); // Or 'books.html' if that is your main app page
+                    }, 1500);
+                } else {
+                    // No user is signed in. This is the correct state for the landing page.
+                    loadingMessage.textContent = '';
+                    loadingOverlay.classList.add('hidden');
                 }
             });
-        };
 
-        // Set initial state for animated elements
-        document.querySelectorAll('.batch-card, .section-title, .about-content, .footer-content').forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(50px)';
-            element.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+            // --- General UI Listeners ---
+            window.addEventListener('scroll', () => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+            });
+            
+            menuToggle.addEventListener('click', () => {
+                header.classList.toggle('mobile-nav-active');
+            });
+            
+            // Smooth scrolling for anchor links
+            $$('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetElement = $(this.getAttribute('href'));
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        if (header.classList.contains('mobile-nav-active')) {
+                            header.classList.remove('mobile-nav-active');
+                        }
+                    }
+                });
+            });
+
+            // --- Authentication Form UI Logic ---
+            const setupAuthFormListeners = () => {
+                $('#switchToSignupLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); });
+                $('#switchToLoginLink').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); });
+                $('#loginHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.remove('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+                $('#signupHeaderBtn').addEventListener('click', (e) => { e.preventDefault(); authContainer.classList.add('show-signup'); $('#auth-section').scrollIntoView({ behavior: 'smooth' }); });
+            };
+            setupAuthFormListeners();
+            
+            // --- Protected Links Logic ---
+            function handleProtectedLink(e) {
+                e.preventDefault();
+                // This function is for logged-out users on the landing page.
+                // If a user is logged in, onAuthStateChanged will have already redirected them.
+                if (!auth.currentUser) {
+                    showToast("Please login or sign up to access this section.", "info");
+                    const authSection = $('#auth-section');
+                    authSection.scrollIntoView({ behavior: 'smooth' });
+                    // Add a shake animation for emphasis
+                    authContainer.classList.add('shake');
+                    setTimeout(() => authContainer.classList.remove('shake'), 500);
+                } else {
+                    // This case is unlikely to be hit due to the redirect, but is good practice.
+                    window.location.href = e.currentTarget.href;
+                }
+            }
+            $('#booksNavBtn').addEventListener('click', handleProtectedLink);
+            $('#batchesNavBtn').addEventListener('click', handleProtectedLink);
+            $('#exploreBooksBtn').addEventListener('click', handleProtectedLink);
+            $('#exploreBatchesBtn').addEventListener('click', handleProtectedLink);
+            $('#startSharingBtn').addEventListener('click', handleProtectedLink);
+
+            // --- Helper Functions ---
+            function showToast(message, type = "info", duration = 4000) {
+                const container = $('#toastContainer');
+                if(!container) return;
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                let iconClass = 'fas fa-info-circle';
+                if (type === 'success') iconClass = 'fas fa-check-circle';
+                if (type === 'error') iconClass = 'fas fa-times-circle';
+                toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, duration);
+            }
+
+            function toggleSpinner(btn, show) {
+                if (!btn) return;
+                btn.disabled = show;
+                const spinner = btn.querySelector('.spinner');
+                const text = btn.querySelector('span:not(.spinner)');
+                if (spinner) spinner.style.display = show ? 'inline-block' : 'none';
+                if (text) text.style.opacity = show ? 0.7 : 1;
+                if (show) btn.classList.add('loading'); else btn.classList.remove('loading');
+            }
+
+            // This function creates the user's profile in Firestore after they sign up.
+            async function createUserDocument(user, name) {
+                if (!user) return;
+                const userRef = db.collection('users').doc(user.uid);
+                const snapshot = await userRef.get();
+                if (!snapshot.exists) {
+                    const { email, uid, photoURL } = user;
+                    const username = `user_${uid.substring(0,8)}`;
+                    try {
+                        await userRef.set({
+                            name: name || user.displayName || "EduSparK User", username, email, uid,
+                            profilePictureURL: photoURL || null,
+                            bio: 'New EduSparK learner!', createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            credits: 50, booksSharedCount: 0, booksDownloadedCount: 0,
+                            totalFeedbackGiven: 0, totalBookDownloads: 0, enrolledBatches: [],
+                        }, { merge: true });
+                        console.log("User document created for:", uid);
+                    } catch (error) { 
+                        console.error("Error creating user document:", error); 
+                        showToast("Error setting up your profile.", "error"); 
+                    }
+                }
+            }
+
+            // --- Authentication Actions ---
+            $('#loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('.login-btn');
+                const email = $('#loginEmail').value;
+                const password = $('#loginPassword').value;
+                toggleSpinner(btn, true);
+                try {
+                    // onAuthStateChanged will handle the redirect on success
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
+            });
+
+            $('#signupForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('.signup-btn');
+                const name = $('#signupName').value;
+                const email = $('#signupEmail').value;
+                const password = $('#signupPassword').value;
+                if (password.length < 6) { 
+                    showToast("Password must be at least 6 characters.", "error"); 
+                    return; 
+                }
+                toggleSpinner(btn, true);
+                try {
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    await createUserDocument(userCredential.user, name);
+                    // onAuthStateChanged will handle the redirect on success
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
+            });
+            
+            async function handleGoogleSignIn(btn) {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                toggleSpinner(btn, true);
+                try {
+                    const result = await auth.signInWithPopup(provider);
+                    // On first sign in, create their document.
+                    await createUserDocument(result.user, result.user.displayName);
+                    // onAuthStateChanged will handle the redirect on success
+                } catch (error) { 
+                    showToast(error.message, "error"); 
+                    toggleSpinner(btn, false); 
+                }
+            }
+            $('.google-login').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
+            $('.google-signup').addEventListener('click', (e) => handleGoogleSignIn(e.currentTarget));
+
+            // --- CAROUSEL LOGIC ---
+            const track = $('.carousel-track');
+            if (track) {
+                const slides = Array.from(track.children);
+                const nextButton = $('.next-btn');
+                const prevButton = $('.prev-btn');
+                const dotsNav = $('.carousel-pagination');
+                let autoScrollInterval;
+                
+                if (slides.length > 0) {
+                    let slideWidth = slides[0].getBoundingClientRect().width;
+                    let currentIndex = 0;
+
+                    const createDots = () => {
+                        slides.forEach((_, i) => {
+                            const dot = document.createElement('button');
+                            dot.classList.add('pagination-dot');
+                            if (i === 0) dot.classList.add('active');
+                            dot.addEventListener('click', () => {
+                                moveToSlide(i);
+                                resetAutoScroll();
+                            });
+                            dotsNav.appendChild(dot);
+                        });
+                    };
+
+                    const updateDots = (targetIndex) => {
+                        const dots = Array.from(dotsNav.children);
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        dots[targetIndex].classList.add('active');
+                    }
+
+                    const moveToSlide = (targetIndex) => {
+                        if(!track) return;
+                        track.style.transform = `translateX(-${targetIndex * slideWidth}px)`;
+                        currentIndex = targetIndex;
+                        updateDots(currentIndex);
+                    }
+                    
+                    const nextSlide = () => {
+                         const newIndex = (currentIndex + 1) % slides.length;
+                         moveToSlide(newIndex);
+                    }
+                    
+                    const resetAutoScroll = () => {
+                        clearInterval(autoScrollInterval);
+                        autoScrollInterval = setInterval(nextSlide, 5000);
+                    }
+
+                    const updateSlideWidth = () => {
+                        if(slides.length === 0 || !track) return;
+                        slideWidth = slides[0].getBoundingClientRect().width;
+                        track.style.transition = 'none';
+                        track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+                        setTimeout(() => { track.style.transition = 'transform 0.5s ease-in-out'; }, 50);
+                    };
+
+                    nextButton.addEventListener('click', () => { nextSlide(); resetAutoScroll(); });
+                    prevButton.addEventListener('click', () => {
+                        const newIndex = (currentIndex - 1 + slides.length) % slides.length;
+                        moveToSlide(newIndex);
+                        resetAutoScroll();
+                    });
+
+                    createDots();
+                    resetAutoScroll(); // Start auto-scroll initially
+                    window.addEventListener('resize', updateSlideWidth);
+                }
+            }
+
+            // --- PARTICLE ANIMATION ---
+            const canvas = document.getElementById('particles');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particlesArray;
+                function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+                setCanvasSize();
+
+                class Particle {
+                    constructor(x, y, dX, dY, size, color) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=size; this.color=color; }
+                    draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle=this.color; ctx.fill(); }
+                    update() {
+                        if(this.x>canvas.width||this.x<0){this.directionX=-this.directionX;}
+                        if(this.y>canvas.height||this.y<0){this.directionY=-this.directionY;}
+                        this.x+=this.directionX; this.y+=this.directionY; this.draw();
+                    }
+                }
+                function initParticles() {
+                    particlesArray = [];
+                    let num = (canvas.height * canvas.width) / 9000;
+                    for (let i = 0; i < num; i++) {
+                        let size = (Math.random() * 2) + 1;
+                        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                        let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2;
+                        let color = 'rgba(255, 255, 255, 0.5)';
+                        particlesArray.push(new Particle(x, y, dX, dY, size, color));
+                    }
+                }
+                function animateParticles() {
+                    if(!particlesArray) return;
+                    requestAnimationFrame(animateParticles);
+                    ctx.clearRect(0,0,innerWidth, innerHeight);
+                    for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
+                }
+                initParticles();
+                animateParticles();
+                window.addEventListener('resize', () => { setCanvasSize(); initParticles(); });
+            }
         });
-
-        // Add scroll event listener with RAF
-        let isAnimating;
-        window.addEventListener('scroll', () => {
-            window.cancelAnimationFrame(isAnimating);
-            isAnimating = window.requestAnimationFrame(animateOnScroll);
-        }, { passive: true });
-
-        // Trigger once on load
-        animateOnScroll();
-        
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-document.addEventListener('selectstart', (e) => e.preventDefault());
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) {
-        e.preventDefault();
-        alert("⚠️ Content is protected!");
-    }
-});
     </script>
 </body>
 </html>
