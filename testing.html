@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSparK - Dashboard</title>
+    <meta name="description" content="Your personal EduSparK dashboard. Track your progress, explore content, and continue your learning journey.">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --primary-dark: #cc0000;
+            --text-light: #f1f2f6;
+            --text-dark: #dfe4ea;
+            --text-muted: #a4b0be;
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --card-bg: #212121;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius: 12px;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            display: flex;
+            opacity: 0;
+            animation: fadeInBody 0.5s 0.5s ease-out forwards;
+        }
+        @keyframes fadeInBody { to { opacity: 1; } }
+
+        /* --- Loading Overlay --- */
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- Dashboard Layout --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--card-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.4s ease-in-out;
+        }
+        .sidebar-header { padding: 0 25px 20px 25px; display: flex; align-items: center; gap: 10px; }
+        .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
+        .sidebar-header .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--text-light); }
+
+        .sidebar-nav { flex-grow: 1; overflow-y: auto; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 25px;
+            color: var(--text-muted); text-decoration: none;
+            font-weight: 500; font-size: 0.95rem;
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar-nav a i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .sidebar-nav a:hover { background-color: var(--bg-light); color: var(--text-light); }
+        .sidebar-nav a.active {
+            background-color: rgba(255, 51, 51, 0.1);
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+        .sidebar-nav a.active::before {
+            content: ''; position: absolute; left: 0; top: 0;
+            height: 100%; width: 4px;
+            background-color: var(--primary-color);
+        }
+        .sidebar-footer { padding: 20px 25px 0 25px; border-top: 1px solid var(--border-color); }
+
+        .main-container {
+            width: 100%;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            height: 70px;
+            background-color: rgba(33, 33, 33, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 30px;
+            position: sticky; top: 0;
+            z-index: 900;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #header-title { font-size: 1.5rem; font-weight: 600; color: var(--text-light); }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .user-menu { position: relative; }
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; }
+        .user-menu-dropdown { display: none; /* ... same as previous version ... */ }
+        .user-menu-dropdown.active { display: block; }
+        
+        .main-content { padding: 30px; flex-grow: 1; }
+        .page-content { display: none; animation: pageFadeIn 0.6s ease-out; }
+        .page-content.active { display: block; }
+        @keyframes pageFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Section-Specific Styles --- */
+        .card { background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .section-header { margin-bottom: 25px; }
+        .section-header h2 { font-size: 1.8rem; color: var(--text-light); }
+        .section-header p { color: var(--text-muted); }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--gradient); color: white; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255,51,51,0.4); }
+        .btn-secondary { background-color: var(--secondary-light); color: var(--text-light); }
+        .btn-secondary:hover { background-color: var(--primary-color); }
+        .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+        
+        /* Time Table */
+        .timetable-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 5px; }
+        .timetable-header, .timetable-slot { padding: 10px; text-align: center; font-weight: 600; background-color: var(--bg-light); border-radius: 6px;}
+        .timetable-time { font-size: 0.8rem; }
+        .timetable-class { background-color: rgba(255, 51, 51, 0.2); border: 1px solid var(--primary-color); padding: 15px; border-radius: 6px; font-size: 0.9rem; text-align: left; transition: all 0.3s ease; }
+        .timetable-class:hover { transform: scale(1.05); background-color: rgba(255, 51, 51, 0.3); }
+        .timetable-class .subject { font-weight: 600; display: block; }
+        .timetable-class .teacher { font-size: 0.8rem; opacity: 0.8; }
+        
+        /* Tests Page */
+        .test-card { background: var(--secondary-light); padding: 20px; border-radius: var(--border-radius); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-light); color: var(--text-dark); font-size: 1rem; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(255,51,51,0.2); }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); z-index: 1000; }
+            .sidebar.open { transform: translateX(0); }
+            .main-container { margin-left: 0; }
+            .header { z-index: 999; }
+            .mobile-menu-toggle { display: block; z-index: 1001; }
+        }
+        @media (max-width: 768px) {
+            .header { padding: 0 20px; }
+            #header-title { font-size: 1.2rem; }
+            .grid-container { grid-template-columns: 1fr; }
+            .timetable-grid { display: block; }
+            .timetable-header, .timetable-time { display: none; }
+            .timetable-class { margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-large"></div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-brain logo-icon"></i>
+            <span class="logo-text">EduSparK</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" data-page="home" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+            <a href="#" data-page="timetable"><i class="fas fa-calendar-alt"></i><span>Time Table</span></a>
+            <a href="#" data-page="tests"><i class="fas fa-vial"></i><span>Tests</span></a>
+            <a href="#" data-page="doubt"><i class="fas fa-question-circle"></i><span>Ask a Doubt</span></a>
+            <a href="#" data-page="profile"><i class="fas fa-user"></i><span>My Profile</span></a>
+            <a href="#" data-page="performance"><i class="fas fa-chart-line"></i><span>Test Performance</span></a>
+            <a href="#" data-page="bookmarks"><i class="fas fa-bookmark"></i><span>Bookmarks</span></a>
+            <a href="#" data-page="request"><i class="fas fa-concierge-bell"></i><span>Service Request</span></a>
+            <a href="#" data-page="support"><i class="fas fa-headset"></i><span>Support & Feedback</span></a>
+            <a href="#" data-page="about"><i class="fas fa-info-circle"></i><span>About Us</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" id="logoutBtnSidebar" class="btn btn-secondary" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-container">
+        <header class="header">
+            <h1 id="header-title">Dashboard</h1>
+            <div class="header-actions">
+                <a href="#" id="donationBtn" class="btn btn-primary" style="background: var(--credit-color); color: var(--bg-dark);"><i class="fas fa-heart"></i> Donate</a>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-menu-dropdown" id="userMenuDropdown">
+                        <div class="dropdown-header">
+                            <h4 id="dropdownUserName"></h4>
+                            <p id="dropdownUserEmail"></p>
+                        </div>
+                        <a href="#" data-page="profile" class="dropdown-item"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
+                        <a href="books.html" class="dropdown-item"><i class="fas fa-book"></i><span>Book Library</span></a>
+                        <a href="batches.html" class="dropdown-item"><i class="fas fa-chalkboard"></i><span>Batches</span></a>
+                        <a href="#" id="logoutBtnDropdown" class="dropdown-item"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Home/Dashboard Page -->
+            <div id="page-home" class="page-content active">
+                <div class="section-header">
+                    <h2 data-aos="fade-right">Welcome Back, <span id="welcomeUserName" style="color:var(--primary-light);"></span>!</h2>
+                    <p data-aos="fade-right" data-aos-delay="100">Here's a summary of your journey so far.</p>
+                </div>
+                <div class="grid-container">
+                    <div class="card" data-aos="fade-up"><h3><i class="fas fa-star" style="color: var(--credit-color);"></i> Points</h3><p style="font-size:2rem; font-weight:700;" id="statPoints">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="100"><h3><i class="fas fa-coins" style="color: var(--credit-color);"></i> Credits</h3><p style="font-size:2rem; font-weight:700;" id="statCredits">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-book"></i> Books Shared</h3><p style="font-size:2rem; font-weight:700;" id="statBooksShared">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="300"><h3><i class="fas fa-graduation-cap"></i> Batches Enrolled</h3><p style="font-size:2rem; font-weight:700;" id="statBatchesEnrolled">0</p></div>
+                </div>
+                <div class="section-header" style="margin-top: 50px;">
+                    <h2 data-aos="fade-up">Continue Learning</h2>
+                    <p data-aos="fade-up" data-aos-delay="100">Pick up where you left off.</p>
+                </div>
+                <div class="card" data-aos="fade-up">
+                    <div id="recentActivityContainer" class="empty-state"><i class="fas fa-history"></i>No recent activity.</div>
+                </div>
+            </div>
+
+            <!-- Time Table Page -->
+            <div id="page-timetable" class="page-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Time Table & Attendance</h2>
+                    <p>Your weekly schedule and class attendance summary.</p>
+                </div>
+                <div class="grid-container" style="grid-template-columns: 3fr 1fr; align-items: flex-start;">
+                    <div class="card" data-aos="fade-up">
+                        <h3>This Week's Schedule</h3>
+                        <div class="timetable-grid">
+                            <div class="timetable-header">Time</div>
+                            <div class="timetable-header">Mon</div>
+                            <div class="timetable-header">Tue</div>
+                            <div class="timetable-header">Wed</div>
+                            <div class="timetable-header">Thu</div>
+                            <div class="timetable-header">Fri</div>
+                            <!-- Sample Row -->
+                            <div class="timetable-slot timetable-time">09:00 AM</div>
+                            <div class="timetable-slot"><div class="timetable-class"><span class="subject">Physics</span><span class="teacher">Dr. Verma</span></div></div>
+                            <div class="timetable-slot"></div>
+                            <div class="timetable-slot"><div class="timetable-class"><span class="subject">Physics</span><span class="teacher">Dr. Verma</span></div></div>
+                            <div class="timetable-slot"></div>
+                            <div class="timetable-slot"><div class="timetable-class"><span class="subject">Physics</span><span class="teacher">Dr. Verma</span></div></div>
+                            <!-- End Sample -->
+                            <div class="timetable-slot timetable-time">11:00 AM</div>
+                            <div class="timetable-slot"></div>
+                            <div class="timetable-slot"><div class="timetable-class" style="background-color:rgba(46, 204, 113, 0.2); border-color:#2ecc71;"><span class="subject">Chemistry</span><span class="teacher">Ms. Gupta</span></div></div>
+                            <div class="timetable-slot"></div>
+                            <div class="timetable-slot"><div class="timetable-class" style="background-color:rgba(46, 204, 113, 0.2); border-color:#2ecc71;"><span class="subject">Chemistry</span><span class="teacher">Ms. Gupta</span></div></div>
+                            <div class="timetable-slot"></div>
+                        </div>
+                    </div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <h3>Attendance</h3>
+                        <div class="empty-state" style="padding:10px 0;"><i class="fas fa-user-check"></i><p>Feature coming soon.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tests Page -->
+            <div id="page-tests" class="page-content">
+                 <div class="section-header">
+                    <h2><i class="fas fa-vial"></i> Tests</h2>
+                    <p>Assess your knowledge with our mock tests and quizzes.</p>
+                </div>
+                <div class="card" data-aos="fade-up">
+                    <h3>Upcoming Tests</h3>
+                    <div class="test-card" style="margin-top:15px;">
+                        <div>
+                            <h4>Full Syllabus Mock Test - JEE Advanced</h4>
+                            <p style="color:var(--text-muted); font-size:0.9rem;">Physics, Chemistry, Maths | 180 Questions | 180 Mins</p>
+                        </div>
+                        <a href="#" class="btn btn-primary">Start Test</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other pages as placeholders -->
+            <div id="page-doubt" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-question-circle"></i> Ask a Doubt</h2><p>Stuck on a problem? Get help from our experts and community.</p></div>
+                <div class="card"><div class="form-group"><label class="form-label" for="doubt-subject">Select Subject/Batch</label><select id="doubt-subject" class="form-select"><option>General Query</option><option>Physics - Mechanics</option><option>JEE Batch 2025</option></select></div><div class="form-group"><label class="form-label" for="doubt-text">Describe your doubt in detail</label><textarea id="doubt-text" class="form-textarea" rows="8"></textarea></div><a href="#" class="btn btn-primary">Submit Doubt</a></div>
+            </div>
+            <div id="page-profile" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-user"></i> My Profile</h2><p>View and manage your account details.</p></div>
+                <div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><p>This is a placeholder. A full profile editor is available in the Books/Batches sections.</p></div></div>
+            </div>
+            <div id="page-performance" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-chart-line"></i> Test Performance</h2><p>Analyze your test results to identify strengths and weaknesses.</p></div>
+                 <div class="card"><div class="empty-state"><i class="fas fa-chart-pie"></i><p>Analytics dashboards are coming soon!</p></div></div>
+            </div>
+            <div id="page-bookmarks" class="page-content">
+                 <div class="section-header"><h2><i class="fas fa-bookmark"></i> Bookmarks</h2><p>All your saved books and learning materials in one place.</p></div>
+                 <div class="card"><div class="empty-state"><i class="far fa-bookmark"></i><p>You haven't bookmarked anything yet.</p></div></div>
+            </div>
+            <div id="page-request" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-concierge-bell"></i> Service Request</h2><p>Need a specific book, feature, or something else? Let us know.</p></div>
+                <div class="card"><div class="form-group"><label class="form-label" for="request-type">Request Type</label><select id="request-type" class="form-select"><option>Request a Book</option><option>Request a Feature</option><option>Report an Issue</option><option>Other</option></select></div><div class="form-group"><label class="form-label" for="request-details">Details</label><textarea id="request-details" class="form-textarea" rows="6"></textarea></div><a href="#" class="btn btn-primary">Submit Request</a></div>
+            </div>
+            <div id="page-support" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-headset"></i> Support & Feedback</h2><p>We are here to help. Send us your feedback or get support.</p></div>
+                <div class="card"><div class="empty-state"><i class="fas fa-headset"></i><p>Our dedicated support page is coming soon. For now, please use the contact form.</p></div></div>
+            </div>
+            <div id="page-about" class="page-content">
+                 <div class="section-header"><h2><i class="fas fa-info-circle"></i> About Us</h2><p>Learn more about our mission and the team behind EduSparK.</p></div>
+                 <div class="card" style="text-align:center;"><p><strong>Our Mission:</strong> To create a collaborative, global community where knowledge is free and accessible to everyone, everywhere.</p></div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 50 });
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
+                authDomain: "eduspark-new.firebaseapp.com",
+                projectId: "eduspark-new",
+                storageBucket: "eduspark-new.appspot.com",
+                messagingSenderId: "564501033350",
+                appId: "1:564501033350:web:70c0f9873f96e9bd74fc07"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
+            const $ = (s) => document.querySelector(s);
+            
+            const elements = {
+                loadingOverlay: $('#loadingOverlay'),
+                sidebar: $('#sidebar'),
+                mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item'),
+                pageContents: document.querySelectorAll('.page-content'),
+                headerTitle: $('#header-title'),
+                userMenu: $('.user-menu'),
+                userAvatar: $('#userAvatar'),
+                userMenuDropdown: $('#userMenuDropdown'),
+                logoutBtnSidebar: $('#logoutBtnSidebar'),
+                logoutBtnDropdown: $('#logoutBtnDropdown'),
+                mobileMenuToggle: $('#mobileMenuToggle'),
+                welcomeUserName: $('#welcomeUserName'),
+                statPoints: $('#statPoints'),
+                statCredits: $('#statCredits'),
+                statBooksShared: $('#statBooksShared'),
+                statBatchesEnrolled: $('#statBatchesEnrolled'),
+                dropdownUserName: $('#dropdownUserName'),
+                dropdownUserEmail: $('#dropdownUserEmail'),
+                copyrightYear: $('#copyright-year')
+            };
+
+            let userListener = null;
+
+            auth.onAuthStateChanged(user => {
+                if (!user) {
+                    window.location.replace('index.html');
+                } else {
+                    initializePage(user);
+                }
+            });
+
+            function initializePage(user) {
+                if (userListener) userListener(); 
+                userListener = db.collection('users').doc(user.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        const userData = { id: doc.id, ...doc.data() };
+                        updateUI(userData);
+                    } else {
+                        console.error("Authenticated user has no Firestore document. Logging out.");
+                        auth.signOut();
+                    }
+                    elements.loadingOverlay.classList.add('hidden');
+                }, err => {
+                    console.error("Error fetching user data:", err);
+                    elements.loadingOverlay.classList.add('hidden');
+                });
+            }
+
+            function updateUI(userData) {
+                updateHeader(userData);
+                updateDashboard(userData);
+            }
+
+            function getInitials(name) {
+                if (!name || typeof name !== 'string') return 'U';
+                const parts = name.trim().split(' ').filter(p => p.length > 0);
+                if (parts.length === 0) return 'U';
+                return parts.length > 1 ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase() : parts[0][0].toUpperCase();
+            }
+
+            function updateHeader(userData) {
+                if (userData.profilePictureURL) {
+                    elements.userAvatar.innerHTML = `<img src="${userData.profilePictureURL}" alt="User Avatar">`;
+                } else {
+                    elements.userAvatar.innerHTML = `<span>${getInitials(userData.name)}</span>`;
+                }
+                elements.dropdownUserName.textContent = userData.name || 'User';
+                elements.dropdownUserEmail.textContent = userData.email || '';
+            }
+
+            function updateDashboard(userData) {
+                elements.welcomeUserName.textContent = userData.name || 'Explorer';
+                elements.statPoints.textContent = userData.points || 0;
+                elements.statCredits.textContent = userData.credits || 0;
+                elements.statBooksShared.textContent = userData.booksSharedCount || 0;
+                elements.statBatchesEnrolled.textContent = userData.enrolledBatches ? userData.enrolledBatches.length : 0;
+            }
+
+            // --- Navigation Logic ---
+            elements.mainNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    if (!pageId) return;
+
+                    elements.pageContents.forEach(page => page.classList.remove('active'));
+                    const targetPage = $(`#page-${pageId}`);
+                    if (targetPage) {
+                        targetPage.classList.add('active');
+                    }
+
+                    elements.mainNavLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+
+                    elements.headerTitle.textContent = link.querySelector('span').textContent;
+                    
+                    if (window.innerWidth <= 1024) {
+                        elements.sidebar.classList.remove('open');
+                    }
+                    AOS.refresh();
+                });
+            });
+
+            // --- General Event Listeners ---
+            elements.userAvatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.userMenuDropdown.classList.toggle('active');
+            });
+
+            elements.logoutBtnSidebar.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+            elements.logoutBtnDropdown.addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+
+            elements.mobileMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.sidebar.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!elements.userMenu.contains(e.target)) {
+                    elements.userMenuDropdown.classList.remove('active');
+                }
+                if (window.innerWidth <= 1024 && !elements.sidebar.contains(e.target) && e.target !== elements.mobileMenuToggle) {
+                    elements.sidebar.classList.remove('open');
+                }
+            });
+            
+            elements.copyrightYear.textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+</html>
