@@ -2,370 +2,347 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>EduSparK - Admin Account Deletion Tool</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choose Your Subject - EduSpark</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add Lemon Milk Font -->
-    <link href="https://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
-    <!-- Add INTEGRALCF Font -->
-    <link href="https://fonts.cdnfonts.com/css/integralcf" rel="stylesheet">
-    <!-- Add Oswald Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #00008b;
-            --accent-red: #ff0000;
-            --dark-bg: #0a0a0a;
-            --pure-white: #ffffff;
-            --box-bg: rgba(255, 255, 255, 0.95);
-            --tag-hot: #ff4757;
-            --tag-new: #2ed573;
-            --rating-star: #ffd700;
-            --price-green: #2ed573;
+            --bg-dark: #121212; --card-bg: #1e1e1e; --text-light: #f1f2f6; --text-muted: #a4b0be;
+            --primary: #ff3333; --primary-light: #ff6666; --danger: #e74c3c; --success: #27ae60;
+            --border-color: rgba(255, 255, 255, 0.1); --border-radius: 8px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(-45deg, var(--dark-bg), var(--accent-red), var(--dark-bg), var(--accent-red));
-            background-size: 400% 400%;
-            animation: gradientFlow 10s ease infinite;
-            overflow-x: hidden;
-            touch-action: manipulation;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark); color: var(--text-light); margin: 0; padding: 20px;
+            font-size: 16px; line-height: 1.6;
         }
-
-        @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .container { max-width: 900px; margin: 0 auto; background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color); }
+        h1, h2 { color: var(--primary-light); border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        input[type="email"], input[type="password"], input[type="text"], textarea {
+            width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;
+            background-color: var(--bg-dark); color: var(--text-light); box-sizing: border-box; font-size: 1rem;
         }
-
-        header {
-            padding: 1rem 2rem;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(255, 51, 51, 0.3); }
+        button {
+            padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;
+            font-size: 1rem; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: var(--pure-white);
-            gap: 0.8rem;
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-light); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #ff4757; }
+        button:disabled { background-color: #555; cursor: not-allowed; opacity: 0.7; }
+        .hidden { display: none !important; }
+        #logContainer {
+            margin-top: 20px; padding: 15px; background-color: var(--bg-dark); border-radius: 4px;
+            border: 1px solid var(--border-color); max-height: 300px; overflow-y: auto; white-space: pre-wrap;
+            font-family: "Courier New", Courier, monospace; font-size: 0.9rem;
         }
-
-        .logo-icon {
-            font-size: 2.2rem;
-            color: var(--accent-red);
-            filter: drop-shadow(0 2px 4px rgba(255, 0, 0, 0.3));
+        .log-error { color: var(--danger); }
+        .log-success { color: var(--success); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: rgba(255, 255, 255, 0.05); }
+        #resultsTableBody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
+        .spinner {
+            display: inline-block; width: 18px; height: 18px; border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite;
         }
-
-        .brand-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 12px;
-            z-index: 1001;
-            transition: transform 0.3s;
-        }
-
-        .menu-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .menu-btn span {
-            display: block;
-            width: 28px;
-            height: 3px;
-            background: var(--pure-white);
-            margin: 5px 0;
-            transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .menu-btn.active span:first-child {
-            transform: rotate(-45deg) translate(-6px, 7px);
-        }
-
-        .menu-btn.active span:nth-child(2) {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        .menu-btn.active span:last-child {
-            transform: rotate(45deg) translate(-6px, -7px);
-        }
-
-        .nav-menu {
-            position: fixed;
-            top: 70px;
-            right: -300px;
-            width: 300px;
-            height: calc(100vh - 70px);
-            background: rgba(0, 0, 0, 0.98);
-            padding: 2rem;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            z-index: 999;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-menu.active {
-            transform: translateX(-300px);
-        }
-
-        .nav-btn {
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease-out;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .nav-btn i {
-            transition: transform 0.3s;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent-red);
-            transform: translateX(10px);
-        }
-
-        .nav-btn:hover i {
-            transform: rotate(360deg);
-        }
-
-        /* Image Section */
-        .image-section {
-    width: 100%;
-    margin-top: 80px; /* Creates a one-line gap between the header and image */
-    padding: 1rem; /* Adds padding around the image */
-}
-
-
-        .image-section img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px; /* Optional: Adds slightly rounded corners */
-}
-
-        /* Live Classes Button Section */
-        .live-classes-section {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .live-classes-button {
-            padding: 1.2rem 2.5rem;
-            background: var(--primary-blue); /* Changed to blue */
-            color: var(--pure-white);
-            border: none;
-            border-radius: 12px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 24px rgba(0, 0, 139, 0.3); /* Adjusted shadow */
-        }
-
-        .live-classes-button:hover {
-            background: var(--accent-red); /* Changed to red on hover */
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(255, 0, 0, 0.3); /* Adjusted shadow */
-        }
-
-        /* Subject Selection Section */
-        .subject-selection {
-            padding: 2rem 0; /* Reduced padding */
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            margin: 2rem auto;
-            max-width: 100%; /* Full width */
-        }
-
-        .subject-selection h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--pure-white);
-            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .subject-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* Vertical layout */
-            gap: 1rem;
-            padding: 0; /* Remove padding to touch edges */
-        }
-
-        .subject-card {
-            background: var(--box-bg);
-            padding: 2rem; /* Increased padding */
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin: 0 1rem; /* Add margin to sides for spacing */
-        }
-
-        .subject-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-        }
-
-        .subject-card h2 {
-            font-size: 1.5rem; /* Larger font size */
-            margin-bottom: 1rem;
-            color: var(--primary-blue);
-        }
-
-        .subject-card button {
-            padding: 0.8rem 1.5rem; /* Increased padding */
-            background: var(--primary-blue);
-            color: var(--pure-white);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem; /* Larger font size */
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        .subject-card button:hover {
-            background: var(--accent-red);
-            transform: translateY(-3px);
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .info-box { padding: 15px; background-color: rgba(243, 156, 18, 0.1); border-left: 4px solid #f39c12; border-radius: 4px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <i class="fas fa-book-open logo-icon"></i>
-            <h1 class="brand-name">EduSpark</h1>
-        </div>
-        <!-- Hamburger Menu Button -->
-        <button class="menu-btn" aria-label="Navigation Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <!-- Navigation Menu -->
-        <nav class="nav-menu">
-            <button class="nav-btn" onclick="location.href='https://edusparkk.netlify.app'">
-                <i class="fas fa-home"></i>
-                Home
-            </button>
-            <button class="nav-btn" onclick="location.href='courses.html'">
-                <i class="fas fa-graduation-cap"></i>
-                Courses
-            </button>
-            <button class="nav-btn" onclick="location.href='about.html'">
-                <i class="fas fa-info-circle"></i>
-                About
-            </button>
-            <button class="nav-btn" onclick="location.href='contact.html'">
-                <i class="fas fa-envelope"></i>
-                Contact
-            </button>
-        </nav>
-    </header>
-    <p></p>
-    <spam></spam>
-    <button></button>
-    <button></button>
+    <div class="container">
+        <h1>EduSparK - Admin Account Deletion Tool</h1>
 
-    <!-- Image Section -->
-    <div class="image-section">
-        <img src="https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/a876e0a0-77e6-4b35-bc1d-e02949306f4f.jpg" alt="EduSpark Banner">
+        <!-- Login Section -->
+        <div id="loginSection">
+            <h2>Admin Login</h2>
+            <div class="info-box">
+                <strong>Important:</strong> You must first mark your account as an admin in the Firestore database.
+                <ol>
+                    <li>Go to your Firebase Console -> Firestore Database.</li>
+                    <li>Navigate to the `users` collection.</li>
+                    <li>Find your own user document (by your UID).</li>
+                    <li>Add a new field: `isAdmin` (Type: Boolean) and set it to `true`.</li>
+                </ol>
+            </div>
+            <div class="form-group">
+                <label for="adminEmail">Admin Email</label>
+                <input type="email" id="adminEmail" placeholder="your-admin-email@example.com">
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password</label>
+                <input type="password" id="adminPassword" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" id="loginBtn">Login</button>
+        </div>
+
+        <!-- Admin Tool Section -->
+        <div id="adminToolSection" class="hidden">
+            <h2>Find and Delete Spam Accounts</h2>
+            <div class="info-box" style="border-left-color: var(--danger); background-color: rgba(231, 76, 60, 0.1);">
+                <strong>DANGER ZONE:</strong> Deleting accounts is permanent and cannot be undone. This will remove the user from Authentication and delete their data from the `users` collection in Firestore. Double-check your selections.
+            </div>
+            <div class="form-group">
+                <label for="usernamePrefix">Search by Username Prefix</label>
+                <input type="text" id="usernamePrefix" placeholder="e.g., beastx">
+            </div>
+            <button class="btn-primary" id="searchBtn">Find Accounts</button>
+            <hr style="border-color: var(--border-color); margin: 25px 0;">
+
+            <div id="resultsSection" class="hidden">
+                <h3 id="resultsHeader">Found Accounts (0)</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button id="selectAllBtn">Select All</button>
+                    <button id="deselectAllBtn">Deselect All</button>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border-color);">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllCheckboxHeader"></th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>UID</th>
+                                <th>Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn-danger" id="deleteBtn" style="margin-top: 20px;" disabled>
+                    Delete Selected Accounts
+                </button>
+            </div>
+        </div>
+
+        <div id="logContainer">Welcome. Please log in as an administrator.</div>
     </div>
 
-    <!-- Live Classes Button Section -->
-    <section class="live-classes-section">
-        <button class="live-classes-button" onclick="location.href='/live-classes'">
-            Join Live Classes
-        </button>
-    </section>
-
-    <!-- Subject Selection Section -->
-    <section class="subject-selection">
-        <h1>Choose Your Subject</h1>
-        <div class="subject-grid">
-            
-            <div class="subject-card">
-                <h2>Notices</h2>
-                <button onclick="location.href='/demo-classes'">Select</button>
-            </div>
-            <!-- Science -->
-            <div class="subject-card">
-                <h2>MATHS</h2>
-                <button onclick="location.href='/maths-jee'">Select</button>
-            </div>
-            <!-- Social Science -->
-            <div class="subject-card">
-                <h2>PHYSICAL CHEMISTRY</h2>
-                <button onclick="location.href='/physical-jee'">Select</button>
-            </div>
-            <!-- Maths -->
-            <div class="subject-card">
-                <h2>ORGANIC CHEMISTRY</h2>
-                <button onclick="location.href='/organic-jee'">Select</button>
-            </div>
-            <!-- English -->
-            <div class="subject-card">
-                <h2>INORGANIC CHEMISTRY</h2>
-                <button onclick="location.href='/inorganic-jee'">Select</button>
-            </div>
-            <!-- Hindi -->
-            <div class="subject-card">
-                <h2>PHYSICS</h2>
-                <button onclick="location.href='/physics-jee'">Select</button>
-            </div>
-        </div>
-    </section>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
 
     <script>
-        // Toggle Navigation Menu
-        const menuBtn = document.querySelector('.menu-btn');
-        const navMenu = document.querySelector('.nav-menu');
+        const $ = (selector) => document.querySelector(selector);
 
-        menuBtn.addEventListener('click', () => {
-            menuBtn.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
+        // --- DOM Elements ---
+        const loginSection = $('#loginSection');
+        const adminToolSection = $('#adminToolSection');
+        const loginBtn = $('#loginBtn');
+        const searchBtn = $('#searchBtn');
+        const deleteBtn = $('#deleteBtn');
+        const selectAllBtn = $('#selectAllBtn');
+        const deselectAllBtn = $('#deselectAllBtn');
+        const selectAllCheckboxHeader = $('#selectAllCheckboxHeader');
+        const logContainer = $('#logContainer');
+        const resultsSection = $('#resultsSection');
+        const resultsTableBody = $('#resultsTableBody');
+        const resultsHeader = $('#resultsHeader');
 
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-menu') && !e.target.closest('.menu-btn')) {
-                menuBtn.classList.remove('active');
-                navMenu.classList.remove('active');
+        // --- Firebase Config ---
+        // IMPORTANT: Replace this with your actual Firebase project configuration.
+        // This is the same config from your books.html file.
+        const firebaseConfig = {
+          apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+          authDomain: "edusparkk.xyz",
+          projectId: "eduspark-new",
+          storageBucket: "eduspark-new.firebasestorage.app",
+          messagingSenderId: "564501033350",
+          appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+          measurementId: "G-NM2SE3DE7J"
+        };
+
+        // --- Firebase Services ---
+        let app, auth, db, functions, adminDeleteUsers;
+
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            if (type === 'error') entry.classList.add('log-error');
+            if (type === 'success') entry.classList.add('log-success');
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function toggleSpinner(btn, show = true) {
+            if (show) {
+                btn.disabled = true;
+                btn.dataset.originalText = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner"></span> Working...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.originalText || 'Action';
+            }
+        }
+
+        function initializeFirebase() {
+            try {
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                functions = firebase.functions();
+                adminDeleteUsers = functions.httpsCallable('adminDeleteUsers');
+                log("Firebase initialized successfully.", "success");
+            } catch (error) {
+                log(`Firebase initialization failed: ${error.message}`, "error");
+                console.error(error);
+            }
+        }
+        
+        async function handleLogin() {
+            const email = $('#adminEmail').value;
+            const password = $('#adminPassword').value;
+
+            if (!email || !password) {
+                log("Email and password are required.", "error");
+                return;
+            }
+
+            toggleSpinner(loginBtn, true);
+            log("Attempting to log in as admin...");
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                const user = auth.currentUser;
+                if (user) {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists && userDoc.data().isAdmin === true) {
+                        log(`Login successful. Welcome, admin ${user.email}.`, "success");
+                        loginSection.classList.add('hidden');
+                        adminToolSection.classList.remove('hidden');
+                    } else {
+                        log("Login failed: This account is not an administrator.", "error");
+                        await auth.signOut();
+                    }
+                }
+            } catch (error) {
+                log(`Login failed: ${error.message}`, "error");
+            } finally {
+                toggleSpinner(loginBtn, false);
+            }
+        }
+
+        async function findAccounts() {
+            const prefix = $('#usernamePrefix').value.trim();
+            if (prefix.length < 3) {
+                log("Please enter a username prefix of at least 3 characters.", "error");
+                return;
+            }
+
+            toggleSpinner(searchBtn, true);
+            log(`Searching for users with prefix: "${prefix}"...`);
+            resultsTableBody.innerHTML = '';
+            resultsSection.classList.add('hidden');
+            deleteBtn.disabled = true;
+
+            try {
+                const result = await adminDeleteUsers({ action: 'find', prefix: prefix });
+                const users = result.data.users;
+                
+                log(`Found ${users.length} matching accounts.`, "success");
+                resultsHeader.textContent = `Found Accounts (${users.length})`;
+                
+                if (users.length > 0) {
+                    populateResultsTable(users);
+                    resultsSection.classList.remove('hidden');
+                }
+            } catch (error) {
+                log(`Error finding accounts: ${error.message}`, "error");
+            } finally {
+                toggleSpinner(searchBtn, false);
+            }
+        }
+        
+        function populateResultsTable(users) {
+            resultsTableBody.innerHTML = '';
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="user-checkbox" data-uid="${user.uid}"></td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.uid}</td>
+                    <td>${new Date(user.createdAt).toLocaleString()}</td>
+                `;
+                resultsTableBody.appendChild(row);
+            });
+        }
+
+        async function deleteSelectedAccounts() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            const uidsToDelete = Array.from(checkboxes).map(cb => cb.dataset.uid);
+
+            if (uidsToDelete.length === 0) {
+                log("No accounts selected for deletion.", "error");
+                return;
+            }
+
+            const confirmation = confirm(`ARE YOU SURE?\n\nYou are about to permanently delete ${uidsToDelete.length} accounts. This action cannot be undone.`);
+            if (!confirmation) {
+                log("Deletion cancelled by user.");
+                return;
+            }
+            
+            toggleSpinner(deleteBtn, true);
+            log(`Starting deletion of ${uidsToDelete.length} accounts...`);
+            
+            try {
+                const result = await adminDeleteUsers({ action: 'delete', uids: uidsToDelete });
+                const { successCount, failureCount, errors } = result.data;
+                log(`Deletion complete. Success: ${successCount}, Failed: ${failureCount}.`, failureCount > 0 ? "error" : "success");
+                if (errors && errors.length > 0) {
+                    errors.forEach(err => log(`- Failure reason: ${err}`, "error"));
+                }
+                // Refresh the list
+                await findAccounts();
+            } catch (error) {
+                log(`A critical error occurred during deletion: ${error.message}`, "error");
+            } finally {
+                toggleSpinner(deleteBtn, false);
+            }
+        }
+        
+        function updateDeleteButtonState() {
+            const anyChecked = document.querySelectorAll('.user-checkbox:checked').length > 0;
+            deleteBtn.disabled = !anyChecked;
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+        loginBtn.addEventListener('click', handleLogin);
+        searchBtn.addEventListener('click', findAccounts);
+        deleteBtn.addEventListener('click', deleteSelectedAccounts);
+
+        resultsTableBody.addEventListener('change', (e) => {
+            if (e.target.classList.contains('user-checkbox')) {
+                updateDeleteButtonState();
             }
         });
+        
+        selectAllCheckboxHeader.addEventListener('click', (e) => {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = isChecked);
+            updateDeleteButtonState();
+        });
+        
+        selectAllBtn.addEventListener('click', () => {
+             document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = true);
+             selectAllCheckboxHeader.checked = true;
+             updateDeleteButtonState();
+        });
+        
+        deselectAllBtn.addEventListener('click', () => {
+             document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = false);
+             selectAllCheckboxHeader.checked = false;
+             updateDeleteButtonState();
+        });
+
     </script>
 </body>
 </html>
