@@ -20,23 +20,56 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     
+    <!-- Chart.js for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- 3D Model Viewer -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
     <style>
         :root {
-            --primary-color: #ff3333; --primary-light: #ff6666; --text-light: #f1f2f6; --text-dark: #f1f2f6; --text-muted: #a4b0be; --bg-dark: #121212; --bg-light: #1e1e1e; --card-bg: #212121; --border-color: rgba(255, 255, 255, 0.1); --gradient: linear-gradient(135deg, #ff3333, #cc0000); --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4); --border-radius-lg: 16px; --border-radius-md: 12px; --sidebar-width: 260px; --success: #2ecc71; --hp-color: #e74c3c; --xp-color: #3498db; --level-up-color: #f1c40f; --stat-bar-bg: rgba(255,255,255,0.1);
+            --primary-color: #ff3333;
+            --primary-light: #ff6666;
+            --text-light: #f1f2f6;
+            --text-dark: #f1f2f6; /* Adjusted for dark theme */
+            --text-muted: #a4b0be;
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --card-bg: #212121;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient: linear-gradient(135deg, #ff3333, #cc0000);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
+            --border-radius-lg: 16px;
+            --border-radius-md: 12px;
+            --sidebar-width: 260px;
+            --success: #2ecc71;
+            
+            /* --- NEW GAMING VIBE VARIABLES --- */
+            --hp-color: #e74c3c;
+            --xp-color: #3498db;
+            --level-up-color: #f1c40f;
+            --stat-bar-bg: rgba(255,255,255,0.1);
+            --mission-color: #9b59b6;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; opacity: 0; animation: fadeInBody 0.5s 0.5s forwards; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            display: flex;
+            opacity: 0;
+            animation: fadeInBody 0.5s 0.5s ease-out forwards;
+        }
         @keyframes fadeInBody { to { opacity: 1; } }
-        .d-none { display: none !important; }
 
-        /* General & Layout */
+        /* General UI Improvements */
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
         .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
         .sidebar { width: var(--sidebar-width); height: 100vh; background-color: var(--card-bg); position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 20px 0; border-right: 1px solid var(--border-color); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; }
         .sidebar-header { padding: 0 25px 20px 25px; display: flex; align-items: center; gap: 10px; }
         .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
@@ -48,83 +81,123 @@
         .sidebar-nav a.active { background-color: rgba(255, 51, 51, 0.1); color: var(--primary-light); font-weight: 600; }
         .sidebar-nav a.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background-color: var(--primary-color); border-radius: 0 4px 4px 0; }
         .sidebar-footer { padding: 20px 25px 0 25px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px;}
+
         .main-container { width: 100%; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
         .header { height: 70px; background-color: rgba(33, 33, 33, 0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border-color); }
+        #header-title { font-size: 1.5rem; font-weight: 600; color: var(--text-light); }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .user-menu { position: relative; }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; }
+        .user-menu-dropdown { display: none; position: absolute; top: calc(100% + 15px); right: 0; background-color: var(--card-bg); border-radius: var(--border-radius-md); box-shadow: var(--shadow-md); width: 240px; z-index: 1001; padding: 10px 0; animation: dropdown-fade-in 0.3s ease forwards; border: 1px solid var(--border-color); }
+        .user-menu-dropdown.active { display: block; }
+        @keyframes dropdown-fade-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); }}
+        .dropdown-header { padding: 10px 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
+        .dropdown-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; color: var(--text-dark); text-decoration: none; transition: background-color 0.2s ease; }
+        .dropdown-item:hover { background-color: var(--bg-light); color: var(--text-light); }
+        
         .main-content { padding: 30px; flex-grow: 1; }
         .page-content { display: none; animation: pageFadeIn 0.6s ease-out; }
         .page-content.active { display: block; }
         @keyframes pageFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
         .card { background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); transition: all 0.3s ease;}
         .card:hover { border-color: rgba(255, 51, 51, 0.4); transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .section-header { margin-bottom: 25px; }
+        .section-header h2 { font-size: 1.8rem; color: var(--text-light); }
+        .section-header p { color: var(--text-muted); }
         .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--gradient); color: white; }
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255,51,51,0.4); }
-        .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
-        .empty-state i { font-size: 2.5rem; margin-bottom: 15px; display: block; opacity: 0.5; }
+        .btn-secondary { background-color: var(--bg-light); color: var(--text-light); }
+        .btn-secondary:hover { background-color: #333; }
 
-        /* Gamification & Profile */
+        /* --- NEW GAMIFIED STATS & PROFILE --- */
         .stat-bar { width: 100%; height: 12px; background-color: var(--stat-bar-bg); border-radius: 6px; overflow: hidden; margin-top: 8px; }
         .stat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease-in-out; }
         #hpBarFill { background: linear-gradient(90deg, var(--hp-color), #c0392b); }
         #xpBarFill { background: linear-gradient(90deg, var(--xp-color), #2980b9); }
+
         .gamified-stats-card { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: center; background: linear-gradient(135deg, rgba(33,33,33,0.8), rgba(45,45,45,0.9)); padding: 30px; }
-        .stat-item { text-align: center; } .stat-item .icon { font-size: 2.5rem; margin-bottom: 10px; } .stat-item h4 { font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; } .stat-item .value { font-size: 1.8rem; font-weight: 700; color: var(--text-light); }
+        .stat-item { text-align: center; }
+        .stat-item .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .stat-item h4 { font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; }
+        .stat-item .value { font-size: 1.8rem; font-weight: 700; color: var(--text-light); }
         #levelValue { color: var(--level-up-color); text-shadow: 0 0 10px var(--level-up-color); }
-        #hpValue { color: var(--hp-color); } #xpValue { color: var(--xp-color); }
-        
-        /* Mission Card */
-        #mission-card { border-left: 5px solid var(--xp-color); }
-        #mission-card h3 { color: var(--xp-color); }
-        
-        /* Character Page */
+        #hpValue { color: var(--hp-color); }
+        #xpValue { color: var(--xp-color); }
+
         .profile-layout { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: flex-start; }
-        .character-viewer-card { padding: 0; overflow: hidden; position: relative; }
+        .character-viewer-card { padding: 0; overflow: hidden; }
         model-viewer { width: 100%; height: 400px; background-color: transparent; --progress-bar-color: var(--primary-color); }
-        .character-info-card .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;}
-        .character-info-card .name-details { display: flex; align-items: center; gap: 15px; }
-        .character-info-card .name-details img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
+        .character-info-card .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .character-info-card .card-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
         .character-info-card .name-level h3 { font-size: 1.8rem; color: var(--text-light); }
         .character-info-card .name-level p { color: var(--text-muted); }
         .character-stats .stat-row { margin-bottom: 15px; }
         .character-stats .stat-label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 5px; }
         .character-stats .stat-label .icon { margin-right: 8px; }
-        .analysis-card ul { list-style: none; padding-left: 5px; margin-top: 15px; }
-        .analysis-card li { margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
-        .analysis-card li i { color: var(--success); margin-top: 5px; }
+        .analysis-card { margin-top: 25px; }
+        .analysis-card h3 { color: var(--primary-light); margin-bottom: 15px; }
+        .analysis-card ul { list-style: none; padding-left: 5px; }
+        .analysis-card li { margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; }
+        .analysis-card li i { color: var(--success); margin-top: 4px; }
+        
+        /* --- NEW MISSION CARD --- */
+        .mission-card { border-left: 5px solid var(--mission-color); }
+        .mission-card .mission-icon { font-size: 2.5rem; color: var(--mission-color); margin-right: 20px; }
+        .mission-card-content { display: flex; align-items: center; }
+        .mission-details h4 { color: var(--text-light); margin-bottom: 5px; }
+        .mission-details p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
 
-        /* Modal Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.85); z-index: 5000; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(10px); padding:20px; }
-        .modal.active { display: flex; opacity: 1; }
-        .modal-content { background-color: var(--card-bg); border-radius: var(--border-radius-lg); width: 100%; max-width: 500px; padding: 30px; box-shadow: var(--shadow-md); transform: scale(0.95); transition: transform 0.3s ease; max-height: 90vh; overflow-y: auto;}
-        .modal.active .modal-content { transform: scale(1); }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .modal-title { font-size: 1.5rem; color: var(--primary-light); margin:0; }
-        .close-modal { background: none; border: none; font-size: 1.8rem; color: var(--text-muted); cursor: pointer; transition: color 0.3s, transform 0.3s; }
-        .close-modal:hover { color: var(--primary-color); transform: rotate(90deg); }
-        .form-group { margin-bottom: 20px; } .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
-        .form-input, .form-textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-light); color: var(--text-dark); font-size: 1rem; }
-        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(255,51,51,0.2); }
-        .profile-picture-upload { text-align: center; margin-bottom: 20px; }
-        #edit-profile-picture-preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); margin: 0 auto 15px; display: block; }
-        #profilePictureInput { display: none; }
-        .default-avatars { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
-        .default-avatars img { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, transform 0.2s; background-color: var(--bg-light);}
-        .default-avatars img:hover { transform: scale(1.1); }
-        .default-avatars img.active { border-color: var(--primary-color); transform: scale(1.1); }
+        /* --- EDIT PROFILE MODAL --- */
+        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal.active { display: flex; animation: fadeInBody 0.3s ease; }
+        .modal-content { background-color: var(--card-bg); margin: auto; padding: 30px; border: 1px solid var(--border-color); width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+        .close-btn { color: var(--text-muted); font-size: 1.8rem; font-weight: bold; cursor: pointer; transition: color 0.2s; }
+        .close-btn:hover { color: var(--primary-color); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); }
+        .form-group input, .form-group textarea { width: 100%; background-color: var(--bg-light); border: 1px solid var(--border-color); color: var(--text-light); padding: 12px; border-radius: 8px; font-family: 'Poppins', sans-serif; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .avatar-selection-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 10px; }
+        .avatar-option { width: 100%; aspect-ratio: 1/1; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: border-color 0.3s; }
+        .avatar-option:hover { border-color: var(--text-muted); }
+        .avatar-option.selected { border-color: var(--primary-color); }
+        .modal-footer { padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
 
-        /* Responsive */
+        /* Mobile responsive adjustments */
         .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1101; }
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
         .sidebar.open ~ .mobile-overlay { display: block; }
+        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-state i { font-size: 3rem; color: var(--primary-color); margin-bottom: 15px; }
+
+        /* Toast Notification */
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--card-bg); color: var(--text-light); text-align: center; border-radius: var(--border-radius-md); padding: 16px; position: fixed; z-index: 9999; left: 50%; transform: translateX(-50%); bottom: 30px; border-left: 5px solid var(--success); box-shadow: var(--shadow-md); }
+        #toast.show { visibility: visible; animation: toastfadein 0.5s, toastfadeout 0.5s 2.5s; }
+        #toast.error { border-left-color: var(--hp-color); }
+        @keyframes toastfadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+        @keyframes toastfadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+        
         @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); }
-            .main-container { margin-left: 0; } .mobile-menu-toggle { display: block; }
-            .profile-layout { grid-template-columns: 1fr; } model-viewer { height: 350px; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
+            .main-container { margin-left: 0; }
+            .mobile-menu-toggle { display: block; }
+            .profile-layout { grid-template-columns: 1fr; }
+            model-viewer { height: 350px; }
         }
         @media (max-width: 768px) {
-            .gamified-stats-card { grid-template-columns: 1fr 1fr; }
+            .header { padding: 0 20px; }
+            #header-title { font-size: 1.2rem; }
+            .grid-container, .profile-layout { grid-template-columns: 1fr; }
+            .main-content { padding: 20px; }
+            .gamified-stats-card { grid-template-columns: 1fr 1fr; text-align: left; }
+            .stat-item .icon { font-size: 2rem; }
+            .stat-item .value { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -133,15 +206,23 @@
     <div class="loading-overlay" id="loadingOverlay"><div class="spinner-large"></div></div>
 
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header"><i class="fas fa-brain logo-icon"></i><span class="logo-text">EduSparK</span></div>
+        <!-- Sidebar content remains the same -->
+        <div class="sidebar-header">
+            <i class="fas fa-brain logo-icon"></i>
+            <span class="logo-text">EduSparK</span>
+        </div>
         <nav class="sidebar-nav">
             <a href="#" data-page="home" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
             <a href="#" data-page="profile"><i class="fas fa-user-shield"></i><span>Character</span></a>
             <a href="#" data-page="live"><i class="fas fa-video"></i><span>Live Classes</span></a>
+            <a href="#" data-page="timetable"><i class="fas fa-calendar-alt"></i><span>Time Table</span></a>
+            <a href="#" data-page="tests"><i class="fas fa-vial"></i><span>Tests</span></a>
             <a href="#" data-page="enemies"><i class="fas fa-skull-crossbones"></i><span>Backlogs</span></a>
+            <a href="#" data-page="performance"><i class="fas fa-chart-line"></i><span>Performance</span></a>
             <a href="#" data-page="support"><i class="fas fa-headset"></i><span>Support</span></a>
         </nav>
         <div class="sidebar-footer">
+            <a href="#" class="btn" style="width: 100%; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);"><i class="fas fa-heart"></i> Donate</a>
             <a href="#" id="logoutBtnSidebar" class="btn" style="width: 100%; background: var(--bg-light); color: var(--text-light);"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </aside>
@@ -154,6 +235,15 @@
             <div class="header-actions">
                 <div class="user-menu">
                     <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-menu-dropdown" id="userMenuDropdown">
+                        <div class="dropdown-header">
+                            <h4 id="dropdownUserName"></h4>
+                            <p id="dropdownUserEmail" style="color:var(--text-muted); font-size:0.8rem;"></p>
+                        </div>
+                        <a href="#" data-page="profile" class="dropdown-item"><i class="fas fa-user-circle"></i><span>My Character</span></a>
+                        <a href="#" id="editProfileBtnDropdown" class="dropdown-item"><i class="fas fa-user-edit"></i><span>Edit Profile</span></a>
+                        <a href="#" id="logoutBtnDropdown" class="dropdown-item" style="color:var(--primary-light);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -163,25 +253,24 @@
             <div id="page-home" class="page-content active">
                 <div class="section-header">
                     <h2 data-aos="fade-right">Welcome Back, <span id="welcomeUserName" style="color:var(--primary-light);"></span>!</h2>
-                    <p data-aos="fade-right" data-aos-delay="100">Your learning adventure continues. Let's conquer today's goals!</p>
+                    <p data-aos="fade-right" data-aos-delay="100">Your learning adventure continues. Keep up the great work!</p>
                 </div>
 
-                <!-- NEW MISSION CARD (Dynamically shown) -->
-                <div class="card d-none" id="mission-card" data-aos="fade-up" style="margin-bottom: 25px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
-                        <div>
-                            <h3><i class="fas fa-bullseye"></i> Active Mission</h3>
-                            <p id="mission-description" style="color: var(--text-muted); margin-top: 5px;">Clear your pending backlogs to restore HP and earn a huge XP bonus!</p>
-                        </div>
-                        <a href="#" data-page="enemies" class="btn btn-primary mission-nav-btn">View Backlogs</a>
-                    </div>
-                </div>
-
-                <div class="card gamified-stats-card" data-aos="fade-up" data-aos-delay="100">
+                <!-- NEW GAMIFIED STATS CARD -->
+                <div class="card gamified-stats-card" data-aos="fade-up">
                     <div class="stat-item"><i class="fas fa-star icon" style="color: var(--level-up-color);"></i><h4>Level</h4><p class="value" id="levelValue">1</p></div>
                     <div class="stat-item"><i class="fas fa-heartbeat icon" style="color: var(--hp-color);"></i><h4>Health (HP)</h4><p class="value" id="hpValue">100 / 100</p></div>
                     <div class="stat-item"><i class="fas fa-bolt icon" style="color: var(--xp-color);"></i><h4>Stamina (XP)</h4><p class="value" id="xpValue">0 / 100</p></div>
                     <div class="stat-item"><i class="fas fa-coins icon" style="color: gold;"></i><h4>Credits</h4><p class="value" id="statCredits">0</p></div>
+                </div>
+
+                <div id="missionsContainer" style="margin-top: 25px;"></div>
+
+                <div class="grid-container" style="margin-top: 25px;">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100"><h3><i class="fas fa-book"></i> Books Shared</h3><p style="font-size:2rem; font-weight:700;" id="statBooksShared">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-graduation-cap"></i> Batches Enrolled</h3><p style="font-size:2rem; font-weight:700;" id="statBatchesEnrolled">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="300"><h3><i class="fas fa-calendar-check"></i> Classes Attended</h3><p style="font-size:2rem; font-weight:700;" id="statClassesAttended">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="400"><h3><i class="fas fa-skull-crossbones"></i> Backlogs Cleared</h3><p style="font-size:2rem; font-weight:700;" id="statBacklogsCleared">0</p></div>
                 </div>
             </div>
 
@@ -189,56 +278,56 @@
             <div id="page-profile" class="page-content">
                  <div class="section-header"><h2><i class="fas fa-user-shield"></i> My Character</h2><p>Your learning avatar. Level up by completing tasks and staying consistent.</p></div>
                  <div class="profile-layout">
-                    <div data-aos="fade-right">
-                        <div class="card character-viewer-card">
-                            <model-viewer id="characterModel" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Your Character" camera-controls auto-rotate disable-zoom shadow-intensity="1"></model-viewer>
-                        </div>
+                    <div class="card character-viewer-card" data-aos="fade-right">
+                        <model-viewer id="characterModel" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Your Character" camera-controls auto-rotate disable-zoom shadow-intensity="1"></model-viewer>
                     </div>
-                    <div class="profile-main-content" data-aos="fade-left" data-aos-delay="100">
-                        <div class="card character-info-card">
-                            <div class="card-header">
-                                <div class="name-details">
-                                    <img src="https://via.placeholder.com/150" alt="Profile Avatar" id="profile-avatar-display">
-                                    <div class="name-level">
-                                        <h3 id="profile-name-display"></h3>
-                                        <p id="profile-username-display" style="color:var(--text-muted)"></p>
-                                    </div>
-                                </div>
-                                <button class="btn" id="openEditProfileBtn" style="min-width: 44px; padding: 10px 12px;"><i class="fas fa-user-edit"></i></button>
-                            </div>
-                            <div class="character-stats">
-                                <div class="stat-row"><div class="stat-label"><span><i class="fas fa-star icon" style="color:var(--level-up-color)"></i>Level</span><span id="profile-level"></span></div></div>
-                                <div class="stat-row"><div class="stat-label"><span><i class="fas fa-heartbeat icon" style="color:var(--hp-color)"></i>Health (HP)</span><span id="profile-hp-value">100 / 100</span></div><div class="stat-bar"><div id="hpBarFill" class="stat-bar-fill"></div></div></div>
-                                <div class="stat-row"><div class="stat-label"><span><i class="fas fa-bolt icon" style="color:var(--xp-color)"></i>Stamina (XP)</span><span id="profile-xp-value">0 / 100</span></div><div class="stat-bar"><div id="xpBarFill" class="stat-bar-fill"></div></div></div>
+                    <div class="card character-info-card" data-aos="fade-left" data-aos-delay="100">
+                        <div class="card-header">
+                            <img src="https://via.placeholder.com/150" alt="Profile Avatar" id="profile-avatar-display">
+                            <div class="name-level">
+                                <h3 id="profile-name-display"></h3>
+                                <p id="profile-username-display" style="color:var(--text-muted)"></p>
                             </div>
                         </div>
-
-                        <!-- NEW LEVEL-UP GUIDE -->
-                        <div class="card analysis-card" style="margin-top: 25px;">
-                            <h3><i class="fas fa-compass" style="color: var(--primary-light);"></i> Your Level-Up Guide</h3>
-                            <div id="level-up-analysis" style="margin-top: 15px; color: var(--text-muted);"></div>
-                            <h4 style="margin-top: 20px;">Tips for Consistency:</h4>
-                            <ul>
-                                <li><i class="fas fa-check-circle"></i><div><strong>Daily Check-in:</strong> Just logging in daily gives you a small XP boost.</div></li>
-                                <li><i class="fas fa-check-circle"></i><div><strong>Attend Live Classes:</strong> This is the best way to earn consistent XP and avoid losing HP.</div></li>
-                                <li><i class="fas fa-check-circle"></i><div><strong>Clear Backlogs Quickly:</strong> Don't let backlogs pile up. Clearing them restores your HP and gives a big XP reward.</div></li>
-                                <li><i class="fas fa-check-circle"></i><div><strong>Ace Your Tests:</strong> Scoring well on tests provides a massive XP and Credit bonus.</div></li>
-                            </ul>
+                        <div class="character-stats">
+                           <div class="stat-row">
+                                <div class="stat-label"><span><i class="fas fa-star icon" style="color:var(--level-up-color)"></i>Level</span><span id="profile-level"></span></div>
+                                <div class="stat-bar"><div class="stat-bar-fill" style="background: var(--level-up-color); width: 100%;"></div></div>
+                           </div>
+                           <div class="stat-row">
+                                <div class="stat-label"><span><i class="fas fa-heartbeat icon" style="color:var(--hp-color)"></i>Health (HP)</span><span id="profile-hp-value">100 / 100</span></div>
+                                <div class="stat-bar"><div id="hpBarFill" class="stat-bar-fill"></div></div>
+                           </div>
+                           <div class="stat-row">
+                                <div class="stat-label"><span><i class="fas fa-bolt icon" style="color:var(--xp-color)"></i>Stamina (XP)</span><span id="profile-xp-value">0 / 100</span></div>
+                                <div class="stat-bar"><div id="xpBarFill" class="stat-bar-fill"></div></div>
+                           </div>
                         </div>
+                        <div style="margin-top: 25px;">
+                            <h4>About Me</h4>
+                            <p id="profile-bio-display" style="color:var(--text-muted); font-size: 0.9rem;"></p>
+                        </div>
+                        <button class="btn btn-primary" id="editProfileBtnInProfile" style="margin-top: 25px; width:100%;"><i class="fas fa-user-edit"></i> Edit Character</button>
                     </div>
                  </div>
+                 <div class="card analysis-card" id="character-analysis-container" data-aos="fade-up"></div>
             </div>
             
-            <!-- Other pages placeholders -->
-            <div id="page-enemies" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-shield-alt"></i><h3>All Clear!</h3><p>You have no backlogs. Keep up the excellent work!</p></div></div></div>
+            <div id="page-enemies" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-shield-alt"></i><h3>All Clear!</h3><p>You have no backlogs. This is your chance to get ahead! <br/> Clearing backlogs restores HP and gives bonus XP.</p></div></div></div>
             <div id="page-live" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>Live Classes are being upgraded.</p></div></div></div>
+            <div id="page-timetable" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Time Table is being upgraded.</p></div></div></div>
+            <div id="page-tests" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Tests section is being upgraded.</p></div></div></div>
+            <div id="page-performance" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Performance tracker is being upgraded.</p></div></div></div>
+            
+            <!-- SUPPORT PAGE -->
             <div id="page-support" class="page-content">
-                <div class="card">
+                <div class="card" data-aos="fade-up">
                     <div class="empty-state">
                         <i class="fas fa-headset"></i>
                         <h3>Need Help?</h3>
-                        <p>Our team is here to assist you. For any technical issues, feedback, or service requests, please don't hesitate to reach out.</p>
-                        <p style="margin-top: 20px;">Contact us at: <a href="mailto:edusparkkofficial@gmail.com" style="color: var(--primary-light); font-weight: 600;">edusparkkofficial@gmail.com</a></p>
+                        <p>Our support team is here for you. For any questions, technical issues, or feedback, please don't hesitate to reach out.</p>
+                        <p style="margin-top: 20px; font-weight: 600;">Contact us at:</p>
+                        <a href="mailto:edusparkkofficial@gmail.com" class="btn btn-primary" style="margin-top: 10px;"><i class="fas fa-envelope"></i> edusparkkofficial@gmail.com</a>
                     </div>
                 </div>
             </div>
@@ -249,26 +338,44 @@
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Edit Profile</h3>
-                <button class="close-modal" id="closeEditProfileModal" aria-label="Close">×</button>
+                <h2>Edit Character</h2>
+                <span class="close-btn" id="closeModalBtn">×</span>
             </div>
-            <form id="editProfileForm">
-                <div class="profile-picture-upload">
-                    <img src="https://via.placeholder.com/120" alt="Avatar Preview" id="edit-profile-picture-preview">
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 15px;">Choose a default avatar or upload your own.</p>
-                    <div class="default-avatars" id="defaultAvatarsContainer">
-                        <!-- Default avatars will be injected here by JS -->
-                    </div>
-                    <label for="profilePictureInput" class="btn" style="background-color: var(--bg-light); color: var(--text-light); margin-top:15px;"><i class="fas fa-camera"></i> Upload Custom Picture</label>
-                    <input type="file" id="profilePictureInput" accept="image/*">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" placeholder="Your full name">
                 </div>
-                <div class="form-group"><label for="editProfileName" class="form-label">Full Name</label><input type="text" id="editProfileName" class="form-input" required></div>
-                <div class="form-group"><label for="editProfileUsername" class="form-label">Username</label><input type="text" id="editProfileUsername" class="form-input" required></div>
-                <div class="form-group"><label for="editProfileBio" class="form-label">Bio</label><textarea id="editProfileBio" class="form-textarea" rows="3" placeholder="Tell us a bit about yourself..."></textarea></div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Save Changes</button>
-            </form>
+                <div class="form-group">
+                    <label for="editUsername">Username</label>
+                    <input type="text" id="editUsername" placeholder="Your unique username">
+                </div>
+                <div class="form-group">
+                    <label for="editBio">About Me / Bio</label>
+                    <textarea id="editBio" placeholder="Tell everyone a little about yourself..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -5px; margin-bottom: 15px;">Upload a new photo or select a default avatar.</p>
+                    <input type="file" id="editPFP" accept="image/*" style="display:none;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('editPFP').click();"><i class="fas fa-upload"></i> Upload Image</button>
+                    <img id="pfpPreview" src="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 15px; display: none;">
+                </div>
+                <div class="form-group">
+                    <label>Default Avatars</label>
+                    <div class="avatar-selection-grid" id="defaultAvatarsContainer">
+                        <!-- Default avatars will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveProfileBtn"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
         </div>
     </div>
+    
+    <div id="toast"></div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -289,46 +396,44 @@
             const storage = firebase.storage();
 
             const $ = (s) => document.querySelector(s);
-            const $$ = (s) => document.querySelectorAll(s);
             
             const elements = {
-                loadingOverlay: $('#loadingOverlay'), sidebar: $('#sidebar'), mobileOverlay: $('#mobileOverlay'), mainNavLinks: $$('.sidebar-nav a, .mission-nav-btn'), pageContents: $$('.page-content'), headerTitle: $('#header-title'), userAvatar: $('#userAvatar'), logoutBtnSidebar: $('#logoutBtnSidebar'), mobileMenuToggle: $('#mobileMenuToggle'), welcomeUserName: $('#welcomeUserName'),
-                
-                // GAMIFIED UI
-                levelValue: $('#levelValue'), hpValue: $('#hpValue'), xpValue: $('#xpValue'), hpBarFill: $('#hpBarFill'), xpBarFill: $('#xpBarFill'), characterModel: $('#characterModel'), statCredits: $('#statCredits'),
-                
-                // MISSION
-                missionCard: $('#mission-card'), missionDescription: $('#mission-description'),
-
-                // PROFILE PAGE
-                profileAvatarDisplay: $('#profile-avatar-display'), profileNameDisplay: $('#profile-name-display'), profileUsernameDisplay: $('#profile-username-display'), profileLevel: $('#profile-level'), profileHpValue: $('#profile-hp-value'), profileXpValue: $('#profile-xp-value'),
-                
-                // LEVEL UP GUIDE
-                levelUpAnalysis: $('#level-up-analysis'),
-                
-                // EDIT PROFILE MODAL
-                editProfileModal: $('#editProfileModal'), openEditProfileBtn: $('#openEditProfileBtn'), closeEditProfileModal: $('#closeEditProfileModal'), editProfileForm: $('#editProfileForm'), editProfilePicturePreview: $('#edit-profile-picture-preview'), defaultAvatarsContainer: $('#defaultAvatarsContainer'), profilePictureInput: $('#profilePictureInput'), editProfileName: $('#editProfileName'), editProfileUsername: $('#editProfileUsername'), editProfileBio: $('#editProfileBio'),
+                loadingOverlay: $('#loadingOverlay'), sidebar: $('#sidebar'), mobileOverlay: $('#mobileOverlay'),
+                mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item[data-page]'),
+                pageContents: document.querySelectorAll('.page-content'), headerTitle: $('#header-title'),
+                userMenu: $('.user-menu'), userAvatar: $('#userAvatar'), userMenuDropdown: $('#userMenuDropdown'),
+                logoutBtnSidebar: $('#logoutBtnSidebar'), logoutBtnDropdown: $('#logoutBtnDropdown'),
+                mobileMenuToggle: $('#mobileMenuToggle'), welcomeUserName: $('#welcomeUserName'),
+                dropdownUserName: $('#dropdownUserName'), dropdownUserEmail: $('#dropdownUserEmail'),
+                levelValue: $('#levelValue'), hpValue: $('#hpValue'), xpValue: $('#xpValue'), hpBarFill: $('#hpBarFill'),
+                xpBarFill: $('#xpBarFill'), characterModel: $('#characterModel'), statCredits: $('#statCredits'),
+                statBooksShared: $('#statBooksShared'), statBatchesEnrolled: $('#statBatchesEnrolled'),
+                statClassesAttended: $('#statClassesAttended'), statBacklogsCleared: $('#statBacklogsCleared'),
+                profileAvatarDisplay: $('#profile-avatar-display'), profileNameDisplay: $('#profile-name-display'),
+                profileUsernameDisplay: $('#profile-username-display'), profileBioDisplay: $('#profile-bio-display'),
+                profileLevel: $('#profile-level'), profileHpValue: $('#profile-hp-value'), profileXpValue: $('#profile-xp-value'),
+                characterAnalysisContainer: $('#character-analysis-container'), missionsContainer: $('#missionsContainer'),
+                editProfileBtnDropdown: $('#editProfileBtnDropdown'), editProfileBtnInProfile: $('#editProfileBtnInProfile'),
+                editProfileModal: $('#editProfileModal'), closeModalBtn: $('#closeModalBtn'), cancelEditBtn: $('#cancelEditBtn'),
+                saveProfileBtn: $('#saveProfileBtn'), editName: $('#editName'), editUsername: $('#editUsername'),
+                editBio: $('#editBio'), editPFP: $('#editPFP'), pfpPreview: $('#pfpPreview'),
+                defaultAvatarsContainer: $('#defaultAvatarsContainer'), toast: $('#toast'),
             };
 
-            let currentUser = null;
-            let userData = null;
-            let userListener = null;
-            let tempProfilePicFile = null;
-            let selectedDefaultAvatarURL = null;
+            let currentUser = null, userData = null, userListener = null, selectedAvatarUrl = null, newPfpFile = null;
 
-            // --- GAME & PROFILE CONFIG ---
-            const gameConfig = { xpPerLevel: 100, baseHp: 100, hpPenaltyPerBacklog: 15, xpRewardPerBacklog: 50 };
+            const gameConfig = {
+                xpToLevelUp: 100, baseHp: 100, hpPenaltyPerBacklog: 15, hpPenaltyPerLowScore: 10, xpPerMission: 30,
+            };
             const characterModels = [
                 "https://modelviewer.dev/shared-assets/models/Astronaut.glb", // Level 1-4
                 "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb", // Level 5-9
                 "https://cdn.glitch.global/e8a74a13-4340-49a3-a7c8-7010f3f26e3c/knight_character.glb?v=1700595305992" // Level 10+
             ];
             const defaultAvatars = [
-                'https://api.dicebear.com/8.x/adventurer/svg?seed=Mittens',
-                'https://api.dicebear.com/8.x/bottts/svg?seed=Sheba',
-                'https://api.dicebear.com/8.x/pixel-art/svg?seed=Cuddles',
-                'https://api.dicebear.com/8.x/miniavs/svg?seed=Zoe',
-                'https://api.dicebear.com/8.x/croodles/svg?seed=Leo'
+                'https://i.postimg.cc/Fs3m1D50/default-avatar-1.png', 'https://i.postimg.cc/W3kRk97C/default-avatar-2.png',
+                'https://i.postimg.cc/sXbC2g5P/default-avatar-3.png', 'https://i.postimg.cc/qR7y1f3Z/default-avatar-4.png',
+                'https://i.postimg.cc/tJ05RNDq/default-avatar-5.png'
             ];
 
             auth.onAuthStateChanged(user => {
@@ -337,7 +442,6 @@
             });
 
             function initializePage(user) {
-                populateDefaultAvatars();
                 if (userListener) userListener(); 
                 userListener = db.collection('users').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
@@ -352,141 +456,242 @@
             }
 
             function updateUI(data) {
-                const avatarURL = data.profilePictureURL || defaultAvatars[0];
-                elements.userAvatar.innerHTML = `<img src="${avatarURL}" alt="User Avatar">`;
-                elements.profileAvatarDisplay.src = avatarURL;
+                if (data.profilePictureURL) {
+                    elements.userAvatar.innerHTML = `<img src="${data.profilePictureURL}" alt="User Avatar">`;
+                    elements.profileAvatarDisplay.src = data.profilePictureURL;
+                } else {
+                    const initials = (data.name || 'U').charAt(0).toUpperCase();
+                    elements.userAvatar.innerHTML = `<span>${initials}</span>`;
+                    elements.profileAvatarDisplay.src = `https://via.placeholder.com/150/FF3333/FFFFFF?text=${initials}`;
+                }
+                elements.dropdownUserName.textContent = data.name || 'User';
+                elements.dropdownUserEmail.textContent = data.email || '';
                 elements.welcomeUserName.textContent = data.name || 'Explorer';
-                elements.statCredits.textContent = data.credits || 0;
-                elements.profileNameDisplay.textContent = data.name || "N/A";
-                elements.profileUsernameDisplay.textContent = `@${data.username || 'N/A'}`;
                 
                 updateCharacterStats(data);
+                updateMissions(data);
+                
+                elements.statCredits.textContent = data.credits || 0;
+                elements.statBooksShared.textContent = data.booksSharedCount || 0;
+                elements.statBatchesEnrolled.textContent = data.enrolledBatches ? data.enrolledBatches.length : 0;
+                
+                elements.profileNameDisplay.textContent = data.name || "N/A";
+                elements.profileUsernameDisplay.textContent = `@${data.username || 'n/a'}`;
+                elements.profileBioDisplay.textContent = data.bio || "No bio has been set. Edit your profile to add one!";
             }
 
             function updateCharacterStats(data) {
                 const totalPoints = data.points || 0;
-                // SIMULATED DATA: Replace with your actual Firestore data
-                const activeBacklogs = data.activeBacklogs || 0; 
+                const level = Math.floor(totalPoints / gameConfig.xpToLevelUp) + 1;
+                const xpForCurrentLevel = totalPoints % gameConfig.xpToLevelUp;
+                const xpPercentage = (xpForCurrentLevel / gameConfig.xpToLevelUp) * 100;
                 
-                // --- 1. CALCULATE LEVEL & XP ---
-                const level = Math.floor(totalPoints / gameConfig.xpPerLevel) + 1;
-                const xpForCurrentLevel = totalPoints % gameConfig.xpPerLevel;
-                const xpPercentage = (xpForCurrentLevel / gameConfig.xpPerLevel) * 100;
-                
-                // --- 2. CALCULATE HEALTH (HP) ---
-                const hpLost = activeBacklogs * gameConfig.hpPenaltyPerBacklog;
-                const currentHp = Math.max(0, gameConfig.baseHp - hpLost);
+                const activeBacklogs = data.activeBacklogs || 0;
+                const recentTestScores = data.recentTestScores || []; 
+                let lowScoreCount = recentTestScores.filter(score => score < 50).length;
+                let hpLost = (activeBacklogs * gameConfig.hpPenaltyPerBacklog) + (lowScoreCount * gameConfig.hpPenaltyPerLowScore);
+                let currentHp = Math.max(0, gameConfig.baseHp - hpLost);
                 const hpPercentage = (currentHp / gameConfig.baseHp) * 100;
 
-                // --- 3. UPDATE UI ---
-                [elements.levelValue, elements.profileLevel].forEach(el => el.textContent = `Level ${level}`);
-                [elements.hpValue, elements.profileHpValue].forEach(el => el.textContent = `${currentHp} / ${gameConfig.baseHp}`);
-                [elements.xpValue, elements.profileXpValue].forEach(el => el.textContent = `${xpForCurrentLevel} / ${gameConfig.xpPerLevel}`);
+                elements.statClassesAttended.textContent = data.classesAttended || 0;
+                elements.statBacklogsCleared.textContent = data.backlogsCleared || 0;
+
+                elements.levelValue.textContent = level;
+                elements.hpValue.textContent = `${currentHp} / ${gameConfig.baseHp}`;
+                elements.xpValue.textContent = `${xpForCurrentLevel} / ${gameConfig.xpToLevelUp}`;
+
+                elements.profileLevel.textContent = `Level ${level}`;
+                elements.profileHpValue.textContent = `${currentHp} / ${gameConfig.baseHp}`;
+                elements.profileXpValue.textContent = `${xpForCurrentLevel} / ${gameConfig.xpToLevelUp}`;
                 elements.hpBarFill.style.width = `${hpPercentage}%`;
                 elements.xpBarFill.style.width = `${xpPercentage}%`;
                 
-                let modelIndex = (level >= 10) ? 2 : (level >= 5) ? 1 : 0;
-                elements.characterModel.src = characterModels[modelIndex];
-
-                // --- 4. UPDATE MISSION CARD ---
-                if (activeBacklogs > 0) {
-                    const reward = activeBacklogs * gameConfig.xpRewardPerBacklog;
-                    elements.missionDescription.innerHTML = `You have <strong>${activeBacklogs}</strong> pending backlog(s). Clear them to restore HP and earn <strong>${reward} XP!</strong>`;
-                    elements.missionCard.classList.remove('d-none');
-                } else {
-                    elements.missionCard.classList.add('d-none');
+                let modelIndex = 0;
+                if (level >= 10) { modelIndex = 2; } else if (level >= 5) { modelIndex = 1; }
+                if(elements.characterModel.src !== characterModels[modelIndex]) {
+                    elements.characterModel.src = characterModels[modelIndex];
                 }
-
-                // --- 5. UPDATE LEVEL-UP ANALYSIS ---
-                const xpNeeded = gameConfig.xpPerLevel - xpForCurrentLevel;
-                elements.levelUpAnalysis.innerHTML = `<p>You are currently <strong>Level ${level}</strong>. You need <strong>${xpNeeded} more XP</strong> to reach Level ${level + 1}.</p>`;
+                updateCharacterAnalysis(data, level, currentHp);
             }
 
-            // --- Profile Editing Logic ---
-            function openEditModal() {
-                if (!userData) return;
-                elements.editProfilePicturePreview.src = userData.profilePictureURL || defaultAvatars[0];
-                elements.editProfileName.value = userData.name || '';
-                elements.editProfileUsername.value = userData.username || '';
-                elements.editProfileBio.value = userData.bio || '';
-                tempProfilePicFile = null; selectedDefaultAvatarURL = null;
-                $$('#defaultAvatarsContainer img').forEach(img => img.classList.remove('active'));
+            function updateCharacterAnalysis(data, level, hp) {
+                let analysisHTML = `<h3><i class="fas fa-chart-pie"></i> Your Character Analysis</h3><ul>`;
+                analysisHTML += `<li><i class="fas fa-check-circle"></i>Your current character is <strong>Level ${level}</strong>. You level up every time you earn ${gameConfig.xpToLevelUp} XP (Stamina points).</li>`;
+                analysisHTML += `<li><i class="fas fa-check-circle"></i><strong>To Level Up:</strong> Earn XP by completing missions, attending classes, and clearing tests. Each action brings you closer to the next level and a new character model!</li>`;
+                if(hp < gameConfig.baseHp) {
+                    analysisHTML += `<li><i class="fas fa-exclamation-triangle" style="color:var(--hp-color);"></i><strong>Health is low!</strong> Your HP decreases with active backlogs or low test scores. Clear your backlogs from the 'Enemies' page to restore HP.</li>`;
+                } else {
+                    analysisHTML += `<li><i class="fas fa-check-circle"></i><strong>Stay Consistent:</strong> Your Health is full! Keep it that way by staying on top of your coursework and avoiding backlogs. A healthy character is a successful learner.</li>`;
+                }
+                analysisHTML += `<li><i class="fas fa-check-circle"></i>Use the dashboard to track your stats. More features for character growth are coming soon!</li>`;
+                analysisHTML += `</ul>`;
+                elements.characterAnalysisContainer.innerHTML = analysisHTML;
+            }
+
+            function updateMissions(data) {
+                let missionHTML = '';
+                if(data.activeBacklogs > 0) {
+                    missionHTML = `
+                        <div class="card mission-card" data-aos="fade-up">
+                            <div class="mission-card-content">
+                                <i class="fas fa-dragon mission-icon"></i>
+                                <div class="mission-details">
+                                    <h4>Mission: Defeat the Backlog Beast!</h4>
+                                    <p>You have ${data.activeBacklogs} backlog(s) draining your HP. Clear one now to regain strength.</p>
+                                    <button class="btn" id="completeBacklogMission" style="background: var(--mission-color); color: white;">
+                                        <i class="fas fa-fire-alt"></i> Complete Mission (+${gameConfig.xpPerMission} XP)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                elements.missionsContainer.innerHTML = missionHTML;
+                if(data.activeBacklogs > 0) {
+                    $('#completeBacklogMission').addEventListener('click', handleCompleteBacklogMission);
+                }
+            }
+            
+            async function handleCompleteBacklogMission() {
+                this.disabled = true; this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        points: firebase.firestore.FieldValue.increment(gameConfig.xpPerMission),
+                        activeBacklogs: firebase.firestore.FieldValue.increment(-1),
+                        backlogsCleared: firebase.firestore.FieldValue.increment(1)
+                    });
+                    showToast('Mission Complete! +30 XP gained.', 'success');
+                } catch(error) {
+                    console.error("Error completing mission:", error);
+                    showToast('Failed to complete mission.', 'error');
+                    this.disabled = false; this.textContent = 'Complete Mission';
+                }
+            }
+            
+            // --- MODAL & PROFILE EDIT LOGIC ---
+            function openEditProfileModal() {
+                elements.editName.value = userData.name || '';
+                elements.editUsername.value = userData.username || '';
+                elements.editBio.value = userData.bio || '';
+                elements.pfpPreview.style.display = 'none';
+                newPfpFile = null;
+                selectedAvatarUrl = null;
+
+                let avatarHTML = '';
+                defaultAvatars.forEach(url => {
+                    avatarHTML += `<img src="${url}" class="avatar-option" data-url="${url}">`;
+                });
+                elements.defaultAvatarsContainer.innerHTML = avatarHTML;
+                
+                document.querySelectorAll('.avatar-option').forEach(img => {
+                    img.addEventListener('click', () => {
+                        document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
+                        img.classList.add('selected');
+                        selectedAvatarUrl = img.dataset.url;
+                        elements.pfpPreview.src = selectedAvatarUrl;
+                        elements.pfpPreview.style.display = 'inline-block';
+                        newPfpFile = null; // Unset file if default is chosen
+                        elements.editPFP.value = ''; // Clear file input
+                    });
+                });
                 elements.editProfileModal.classList.add('active');
             }
-            elements.openEditProfileBtn.addEventListener('click', openEditModal);
-            elements.closeEditProfileModal.addEventListener('click', () => elements.editProfileModal.classList.remove('active'));
-            
-            function populateDefaultAvatars() {
-                elements.defaultAvatarsContainer.innerHTML = defaultAvatars.map(url => `<img src="${url}" data-url="${url}" alt="Default Avatar">`).join('');
-            }
 
-            elements.defaultAvatarsContainer.addEventListener('click', (e) => {
-                if (e.target.tagName === 'IMG') {
-                    $$('#defaultAvatarsContainer img').forEach(img => img.classList.remove('active'));
-                    e.target.classList.add('active');
-                    selectedDefaultAvatarURL = e.target.dataset.url;
-                    elements.editProfilePicturePreview.src = selectedDefaultAvatarURL;
-                    tempProfilePicFile = null;
-                }
-            });
+            function closeEditProfileModal() { elements.editProfileModal.classList.remove('active'); }
 
-            elements.profilePictureInput.addEventListener('change', (e) => {
+            elements.editPFP.addEventListener('change', e => {
                 const file = e.target.files[0];
                 if (file) {
-                    if (file.size > 2 * 1024 * 1024) { alert("File is too large. Max 2MB."); return; }
-                    tempProfilePicFile = file;
-                    elements.editProfilePicturePreview.src = URL.createObjectURL(file);
-                    selectedDefaultAvatarURL = null;
-                    $$('#defaultAvatarsContainer img').forEach(img => img.classList.remove('active'));
+                    newPfpFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        elements.pfpPreview.src = event.target.result;
+                        elements.pfpPreview.style.display = 'inline-block';
+                        selectedAvatarUrl = null; // Unset default avatar if file is chosen
+                        document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
 
-            elements.editProfileForm.addEventListener('submit', async (e) => {
+            async function handleProfileSave(e) {
                 e.preventDefault();
-                // ... add spinner/disable button logic
+                elements.saveProfileBtn.disabled = true;
+                elements.saveProfileBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                const updates = {
+                    name: elements.editName.value.trim(),
+                    username: elements.editUsername.value.trim(),
+                    bio: elements.editBio.value.trim(),
+                };
+
                 try {
-                    let newProfilePictureURL = userData.profilePictureURL;
-                    if (tempProfilePicFile) {
-                        const storageRef = storage.ref(`profile_pictures/${currentUser.uid}/${Date.now()}_${tempProfilePicFile.name}`);
-                        const uploadTask = await storageRef.put(tempProfilePicFile);
-                        newProfilePictureURL = await uploadTask.ref.getDownloadURL();
-                    } else if (selectedDefaultAvatarURL) {
-                        newProfilePictureURL = selectedDefaultAvatarURL;
+                    if (newPfpFile) {
+                        const filePath = `profile_pictures/${currentUser.uid}/${newPfpFile.name}`;
+                        const fileSnapshot = await storage.ref(filePath).put(newPfpFile);
+                        updates.profilePictureURL = await fileSnapshot.ref.getDownloadURL();
+                    } else if (selectedAvatarUrl) {
+                        updates.profilePictureURL = selectedAvatarUrl;
                     }
 
-                    const updatedData = {
-                        name: elements.editProfileName.value.trim(),
-                        username: elements.editProfileUsername.value.trim(),
-                        bio: elements.editProfileBio.value.trim(),
-                        profilePictureURL: newProfilePictureURL
-                    };
-                    
-                    await db.collection('users').doc(currentUser.uid).update(updatedData);
-                    elements.editProfileModal.classList.remove('active');
-                } catch (error) { console.error("Error updating profile: ", error); alert("Failed to update profile."); } 
-                // ... remove spinner/enable button logic
-            });
+                    await db.collection('users').doc(currentUser.uid).update(updates);
+                    showToast('Profile updated successfully!', 'success');
+                    closeEditProfileModal();
 
-            // --- Navigation & Event Listeners ---
+                } catch (error) {
+                    console.error("Error updating profile: ", error);
+                    showToast('Error updating profile. Please try again.', 'error');
+                } finally {
+                    elements.saveProfileBtn.disabled = false;
+                    elements.saveProfileBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                }
+            }
+
+            elements.editProfileBtnDropdown.addEventListener('click', openEditProfileModal);
+            elements.editProfileBtnInProfile.addEventListener('click', openEditProfileModal);
+            elements.closeModalBtn.addEventListener('click', closeEditProfileModal);
+            elements.cancelEditBtn.addEventListener('click', closeEditProfileModal);
+            elements.saveProfileBtn.addEventListener('click', handleProfileSave);
+
+            function showToast(message, type = 'success') {
+                const toast = elements.toast;
+                toast.textContent = message;
+                toast.className = 'show';
+                toast.classList.add(type);
+                setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+            }
+
+            // --- Navigation & Other Listeners ---
             elements.mainNavLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const pageId = link.dataset.page; if (!pageId) return;
-                    $$('.page-content').forEach(page => page.classList.remove('active'));
-                    $(`#page-${pageId}`).classList.add('active');
-                    $$('.sidebar-nav a').forEach(l => l.classList.remove('active'));
-                    $$(`.sidebar-nav a[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
-                    const title = link.querySelector('span')?.textContent || 'Backlogs';
+                    const pageId = link.dataset.page;
+                    if (!pageId) return;
+                    
+                    elements.pageContents.forEach(page => page.classList.remove('active'));
+                    const targetPage = $(`#page-${pageId}`);
+                    if (targetPage) targetPage.classList.add('active');
+                    else $('#page-home').classList.add('active');
+
+                    elements.mainNavLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+                    
+                    let title = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+                    if (title === 'Timetable') title = 'Time Table';
                     elements.headerTitle.textContent = title;
+                    
                     if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
-                    window.scrollTo(0,0); AOS.refresh();
+                    window.scrollTo(0,0);
+                    AOS.refresh();
                 });
             });
             
+            elements.userAvatar.addEventListener('click', (e) => { e.stopPropagation(); elements.userMenuDropdown.classList.toggle('active'); });
             const handleLogout = (e) => { e.preventDefault(); auth.signOut(); };
             elements.logoutBtnSidebar.addEventListener('click', handleLogout);
+            elements.logoutBtnDropdown.addEventListener('click', handleLogout);
             elements.mobileMenuToggle.addEventListener('click', (e) => { e.stopPropagation(); elements.sidebar.classList.add('open'); elements.mobileOverlay.style.display = 'block'; });
             elements.mobileOverlay.addEventListener('click', () => { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; });
+            document.addEventListener('click', (e) => { if (!elements.userMenu.contains(e.target)) elements.userMenuDropdown.classList.remove('active'); });
         });
     </script>
 </body>
