@@ -2,301 +2,535 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>EduSparK - Admin Account Deletion Tool</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>EduSparK - Admin User Deletion Tool</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
-        :root {
-            --primary-color: #ff3333;
-            --secondary-color: #000000;
-            --text-light: #f1f2f6;
-            --text-dark: #dfe4ea;
-            --bg-dark: #121212;
-            --card-bg: #212121;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --border-radius: 12px;
-            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-            line-height: 1.7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
+            width: 100%;
             max-width: 900px;
-            margin: 20px auto;
-            padding: 25px;
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-        }
-        h1, h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-        h2 {
-            margin-top: 30px;
-        }
-        .warning-box {
-            background-color: #e74c3c20;
-            border: 1px solid #e74c3c;
-            padding: 20px;
+            background-color: #1e1e1e;
             border-radius: 8px;
-            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
-        .warning-box h3 {
-            margin-top: 0;
-            color: #ff6666;
-        }
-        pre {
-            background-color: #000;
-            color: #f1f2f6;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
+        .header {
             background-color: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
+            color: #ff3333;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        ol li {
-            margin-bottom: 15px;
+        .header button {
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
         }
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
+        .header button:hover { background-color: #cc0000; }
+        .content { padding: 20px; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #bbb;
+            font-weight: 500;
         }
-        a:hover {
-            text-decoration: underline;
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #e0e0e0;
+            box-sizing: border-box;
         }
-        strong {
-            color: #ffd700;
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+        .btn-primary { background-color: #ff3333; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #cc0000; }
+        .btn-secondary { background-color: #4CAF50; color: white; margin-bottom: 15px; }
+        .btn-secondary:hover:not(:disabled) { background-color: #45a049; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #c82333; }
+        .btn:disabled { background-color: #555; cursor: not-allowed; opacity: 0.6; }
+        .log-box {
+            background-color: #000;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 20px;
+        }
+        .log-box .log-info { color: #e0e0e0; }
+        .log-box .log-success { color: #28a745; }
+        .log-box .log-error { color: #ff4d4d; }
+        .log-box .log-warn { color: #ffc107; }
+        .user-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .user-table th, .user-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        .user-table th { background-color: #2a2a2a; }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid transparent;
+        }
+        .alert-danger { background-color: #dc3545; color: white; border-color: #c82333; }
+        .alert-warning { background-color: #ffc107; color: #121212; border-color: #e0a800; }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>EduSparK - Admin Account Deletion Tool</h1>
-
-        <div class="warning-box">
-            <h3><svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-alert" style="fill: #ff6666; vertical-align: text-top; margin-right: 5px;"><path d="M8.22 1.754a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368L8.22 1.754ZM8 13.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM7.5 4v5h1V4Z"></path></svg>CRITICAL WARNING</h3>
-            <p>This tool will <strong>permanently delete user accounts and their associated data</strong> from your Firebase project. This action is <strong>IRREVERSIBLE</strong>. There is no undo button.</p>
-            <p>Before proceeding, it is highly recommended to <strong><a href="https://firebase.google.com/docs/firestore/manage-data/export-import" target="_blank">create a backup of your Firestore data</a></strong>.</p>
+        <div class="header">
+            <span>Admin User Deletion Tool</span>
+            <button id="logoutBtn" style="display: none;">Logout</button>
         </div>
+        <div class="content">
 
-        <h2>Why This Tool is a Script (And Not a Webpage)</h2>
-        <p>Your website's code (JavaScript) runs on your users' browsers and has limited permissions for security. It can only manage the currently logged-in user. To delete other users, we need <strong>Admin Privileges</strong>. The only safe way to use these privileges is in a secure environment like your own computer, not a public webpage.</p>
-        <p>This guide provides you with a Node.js script that uses the official <strong>Firebase Admin SDK</strong> to safely and powerfully manage your users.</p>
+            <!-- Login View -->
+            <div id="loginView" class="view active">
+                <h2>Admin Login</h2>
+                <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="adminEmail">Admin Email</label>
+                        <input type="email" id="adminEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn btn-primary">Login</button>
+                </form>
+            </div>
 
-        <h2>Prerequisites</h2>
-        <ol>
-            <li><strong>Node.js:</strong> You must have Node.js installed on your computer. If you don't, <a href="https://nodejs.org/" target="_blank">download and install it from the official website</a>.</li>
-            <li><strong>Firebase Service Account Key:</strong> This is a special file that gives your script admin access.
-                <ul>
-                    <li>Go to your <a href="https://console.firebase.google.com/project/eduspark-new/settings/serviceaccounts/adminsdk" target="_blank">Firebase Project Settings -> Service Accounts</a>.</li>
-                    <li>Make sure you are in the <strong>eduspark-new</strong> project.</li>
-                    <li>Click the "Generate new private key" button.</li>
-                    <li>A JSON file will be downloaded. <strong>Keep this file safe and private!</strong> Do not share it or commit it to a public repository.</li>
-                </ul>
-            </li>
-        </ol>
+            <!-- Admin View -->
+            <div id="adminView" class="view">
+                <div id="adminInfo">Welcome, <span id="adminName"></span>!</div>
+                <hr style="border-color: #444; margin: 15px 0;">
 
-        <h2>Step-by-Step Instructions</h2>
-        <ol>
-            <li>
-                <strong>Create a Project Folder:</strong> On your computer, create a new folder. Let's call it <code>eduspark-deleter</code>.
-            </li>
-            <li>
-                <strong>Move the Service Account Key:</strong> Move the JSON file you downloaded into this new <code>eduspark-deleter</code> folder. For simplicity, rename it to <code>service-account-key.json</code>.
-            </li>
-            <li>
-                <strong>Create `package.json`:</strong> Inside the <code>eduspark-deleter</code> folder, create a new file named <code>package.json</code> and paste the following content into it:
-<pre>{
-  "name": "eduspark-deleter",
-  "version": "1.0.0",
-  "description": "A script to delete spam accounts from EduSparK.",
-  "main": "delete_accounts.js",
-  "type": "module",
-  "scripts": {
-    "start": "node delete_accounts.js"
-  },
-  "dependencies": {
-    "firebase-admin": "^11.11.1"
-  }
-}
-</pre>
-            </li>
-            <li>
-                <strong>Create the Deletion Script:</strong> In the same folder, create another new file named <code>delete_accounts.js</code> and paste the full script from the code block below.
-            </li>
-            <li>
-                <strong>Install Dependencies:</strong> Open a terminal or command prompt, navigate into your <code>eduspark-deleter</code> folder, and run this command. It will download the necessary Firebase Admin library.
-<pre>npm install</pre>
-            </li>
-            <li>
-                <strong>Configure the Script:</strong> Open the <code>delete_accounts.js</code> file in a text editor. At the top of the file, you will see a configuration section. <strong>Change the values for <code>USERNAME_BASE</code>, <code>START_INDEX</code>, and <code>END_INDEX</code> to match the accounts you want to delete.</strong> For example, to delete `beastx1` through `beastx250`, set `USERNAME_BASE` to `'beastx'`, `START_INDEX` to `1`, and `END_INDEX` to `250`.
-            </li>
-            <li>
-                <strong>Dry Run (Safety Check):</strong> First, run the script in "Dry Run" mode to see which accounts will be deleted without actually deleting them. The `DRY_RUN` flag is set to `true` by default. Run the script with:
-<pre>node delete_accounts.js</pre>
-                The script will print a list of all the user accounts it found that match your pattern. Review this list carefully!
-            </li>
-            <li>
-                <strong>Execute Deletion:</strong> Once you are absolutely sure the list from the dry run is correct, open <code>delete_accounts.js</code> again and change the <code>DRY_RUN</code> flag to <code>false</code>.
-<pre>// SET TO false TO ACTUALLY DELETE USERS
-const DRY_RUN = false;</pre>
-                Save the file, and run the script again in your terminal:
-<pre>node delete_accounts.js</pre>
-                The script will now proceed with permanently deleting the user authentication entries and their corresponding documents in the 'users' collection.
-            </li>
-             <li>
-                <strong>Clean Up:</strong> After you are finished, <strong>delete the entire <code>eduspark-deleter</code> folder</strong> to ensure your service account key is no longer on your machine.
-            </li>
-        </ol>
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> This tool performs irreversible actions. Always perform a "Dry Run" first. This tool deletes Firestore documents but **cannot** delete Firebase Auth user records.
+                </div>
 
-        <h2>The Deletion Script Code (`delete_accounts.js`)</h2>
-        <p>Copy this entire block into your <code>delete_accounts.js</code> file.</p>
-<pre>
-import admin from 'firebase-admin';
+                <div class="form-group">
+                    <label for="usernamePrefix">Username Prefix to Delete</label>
+                    <input type="text" id="usernamePrefix" placeholder="e.g., beastx">
+                </div>
+                
+                <button id="fetchUsersBtn" class="btn btn-secondary">Fetch Users (Dry Run)</button>
+                <button id="deleteUsersBtn" class="btn btn-danger" disabled>DELETE <span id="userCount">0</span> FETCHED USERS</button>
 
-// =================================================================================
-// ========================== CONFIGURATION ========================================
-// =================================================================================
+                <div id="spinner" class="spinner"></div>
 
-// 1. UPDATE THE PATH TO YOUR SERVICE ACCOUNT KEY FILE
-const SERVICE_ACCOUNT_PATH = './service-account-key.json';
+                <div class="user-table-container" id="userTableContainer" style="display: none;">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>UID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
 
-// 2. SET THE USERNAME PATTERN AND RANGE OF ACCOUNTS TO DELETE
-const USERNAME_BASE = 'beastx'; // The base part of the username, e.g., 'beastx'
-const START_INDEX = 1;         // The starting number, e.g., 1 for 'beastx1'
-const END_INDEX = 250;         // The ending number, e.g., 250 for 'beastx250'
-
-// 3. DRY RUN FLAG - IMPORTANT!
-//    - Set to `true` to list users that would be deleted without actually deleting them.
-//    - Set to `false` ONLY when you are ready to permanently delete the users.
-const DRY_RUN = true;
-
-// =================================================================================
-// ========================= DO NOT EDIT BELOW THIS LINE ===========================
-// =================================================================================
-
-// Import the service account key
-import serviceAccount from './service-account-key.json' assert { type: "json" };
-
-// Initialize the Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  // Make sure this matches your project's databaseURL, found in your Firebase console or config
-  databaseURL: 'https://eduspark-new.firebaseio.com' 
-});
-
-const db = admin.firestore();
-const auth = admin.auth();
-
-async function deleteSpamAccounts() {
-  console.log('============================================');
-  console.log('   EduSparK Admin Account Deletion Tool   ');
-  console.log('============================================\n');
-
-  if (DRY_RUN) {
-    console.log('⚠️  RUNNING IN DRY RUN MODE. NO USERS WILL BE DELETED. ⚠️\n');
-  } else {
-    console.log('🔥🔥🔥 LIVE DELETION MODE ENABLED. ACCOUNTS WILL BE PERMANENTLY DELETED. 🔥🔥🔥\n');
-  }
-
-  console.log(`Searching for users with base name: "${USERNAME_BASE}" from index ${START_INDEX} to ${END_INDEX}.\n`);
-
-  const usersToDelete = [];
-
-  for (let i = START_INDEX; i <= END_INDEX; i++) {
-    const username = `${USERNAME_BASE}${i}`;
-    try {
-      const userQuerySnapshot = await db.collection('users').where('username', '==', username).get();
-
-      if (!userQuerySnapshot.empty) {
-        userQuerySnapshot.forEach(doc => {
-          const userData = doc.data();
-          // The `uid` is the key for the Auth user, `doc.id` is for the Firestore document. They should be the same.
-          const uid = userData.uid || doc.id; 
-          console.log(`[FOUND] Username: ${username} | UID: ${uid} | Email: ${userData.email}`);
-          usersToDelete.push({
-            uid: uid,
-            username: username,
-            docId: doc.id
-          });
-        });
-      }
-    } catch (error) {
-      console.error(`Error querying for username: ${username}`, error);
-    }
-  }
-
-  if (usersToDelete.length === 0) {
-    console.log('\n✅ No matching users found. Exiting.');
-    return;
-  }
-
-  console.log(`\nFound a total of ${usersToDelete.length} user(s) to delete.`);
-
-  if (DRY_RUN) {
-    console.log('\nDry run complete. To delete these users, set DRY_RUN to false in the script and run again.');
-    return;
-  }
-
-  console.log('\nStarting deletion process in 5 seconds... Press CTRL+C to abort.');
-  await new Promise(resolve => setTimeout(resolve, 5000));
-
-  // Batch delete Auth users (max 1000 at a time)
-  const uidsToDelete = usersToDelete.map(user => user.uid);
-  try {
-    console.log(`\nDeleting ${uidsToDelete.length} Firebase Auth entries...`);
-    const deleteResult = await auth.deleteUsers(uidsToDelete);
-    console.log(`Successfully deleted ${deleteResult.successCount} Auth users.`);
-    if (deleteResult.failureCount > 0) {
-      console.error(`Failed to delete ${deleteResult.failureCount} Auth users.`);
-      deleteResult.errors.forEach(err => {
-        console.error(`- Error for UID ${err.uid}: ${err.error.message}`);
-      });
-    }
-  } catch (error) {
-    console.error('A critical error occurred during Auth user deletion:', error);
-  }
-
-  // Batch delete Firestore documents (max 500 at a time)
-  try {
-    console.log(`\nDeleting ${usersToDelete.length} Firestore user documents...`);
-    const batch = db.batch();
-    usersToDelete.forEach(user => {
-      const userRef = db.collection('users').doc(user.docId);
-      batch.delete(userRef);
-    });
-    await batch.commit();
-    console.log('Successfully deleted all corresponding Firestore documents.');
-  } catch (error) {
-    console.error('A critical error occurred during Firestore document deletion:', error);
-  }
-
-  console.log('\n✅ Deletion process complete.');
-}
-
-deleteSpamAccounts().catch(error => {
-  console.error("An unexpected error occurred:", error);
-});
-
-</pre>
+                <h3>Action Log</h3>
+                <div id="logBox" class="log-box"></div>
+            </div>
+        </div>
     </div>
+
+<script>
+    // IMPORTANT: Replace this with your project's actual Firebase configuration object.
+    const firebaseConfig = {
+        apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+        authDomain: "edusparkk.xyz",
+        projectId: "eduspark-new",
+        storageBucket: "eduspark-new.firebasestorage.app",
+        messagingSenderId: "564501033350",
+        appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+        measurementId: "G-NM2SE3DE7J"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // DOM Elements
+    const loginView = document.getElementById('loginView');
+    const adminView = document.getElementById('adminView');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminNameSpan = document.getElementById('adminName');
+    const fetchUsersBtn = document.getElementById('fetchUsersBtn');
+    const deleteUsersBtn = document.getElementById('deleteUsersBtn');
+    const usernamePrefixInput = document.getElementById('usernamePrefix');
+    const logBox = document.getElementById('logBox');
+    const usersTableBody = document.getElementById('usersTableBody');
+    const userTableContainer = document.getElementById('userTableContainer');
+    const userCountSpan = document.getElementById('userCount');
+    const spinner = document.getElementById('spinner');
+
+    let usersToDelete = [];
+
+    // --- Utility Functions ---
+    function logMessage(message, type = 'info') {
+        const p = document.createElement('p');
+        p.className = `log-${type}`;
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logBox.appendChild(p);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function toggleLoading(isLoading) {
+        if (isLoading) {
+            spinner.style.display = 'block';
+            fetchUsersBtn.disabled = true;
+            deleteUsersBtn.disabled = true;
+        } else {
+            spinner.style.display = 'none';
+            fetchUsersBtn.disabled = false;
+            // deleteUsersBtn will be re-enabled only if there are users to delete
+            deleteUsersBtn.disabled = usersToDelete.length === 0;
+        }
+    }
+
+    // --- Authentication ---
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    // User is an admin
+                    adminNameSpan.textContent = userDoc.data().name || user.email;
+                    loginView.classList.remove('active');
+                    adminView.classList.add('active');
+                    logoutBtn.style.display = 'block';
+                    logMessage('Admin authenticated successfully.', 'success');
+                } else {
+                    // User is not an admin
+                    logMessage('User is not an admin. Access denied.', 'error');
+                    await auth.signOut();
+                }
+            } catch (error) {
+                logMessage(`Error verifying admin role: ${error.message}`, 'error');
+                await auth.signOut();
+            }
+        } else {
+            // User is signed out
+            adminView.classList.remove('active');
+            loginView.classList.add('active');
+            logoutBtn.style.display = 'none';
+            usersToDelete = [];
+            usersTableBody.innerHTML = '';
+            userTableContainer.style.display = 'none';
+        }
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        loginError.style.display = 'none';
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            // onAuthStateChanged will handle the rest
+        } catch (error) {
+            loginError.textContent = error.message;
+            loginError.style.display = 'block';
+            logMessage(`Login failed: ${error.message}`, 'error');
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+        }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut();
+        logMessage('Admin logged out.');
+    });
+
+    // --- Core Functionality ---
+    fetchUsersBtn.addEventListener('click', async () => {
+        const prefix = usernamePrefixInput.value.trim();
+        if (prefix.length < 3) {
+            logMessage('Please enter a prefix of at least 3 characters.', 'warn');
+            return;
+        }
+
+        toggleLoading(true);
+        usersToDelete = [];
+        usersTableBody.innerHTML = '';
+        userTableContainer.style.display = 'none';
+        logMessage(`Fetching users with username prefix: "${prefix}"...`);
+
+        try {
+            // Firestore 'starts-with' query
+            const querySnapshot = await db.collection('users')
+                .where('username', '>=', prefix)
+                .where('username', '<', prefix + '\uf8ff')
+                .get();
+            
+            querySnapshot.forEach(doc => {
+                usersToDelete.push({ uid: doc.id, ...doc.data() });
+            });
+
+            if (usersToDelete.length > 0) {
+                logMessage(`Found ${usersToDelete.length} users. Displaying for review.`, 'success');
+                usersToDelete.forEach(user => {
+                    const row = usersTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${user.username || 'N/A'}</td>
+                        <td>${user.name || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${user.uid}</td>
+                    `;
+                });
+                userTableContainer.style.display = 'block';
+                userCountSpan.textContent = usersToDelete.length;
+            } else {
+                logMessage('No users found with that prefix.', 'info');
+            }
+        } catch (error) {
+            logMessage(`Error fetching users: ${error.message}`, 'error');
+        } finally {
+            toggleLoading(false);
+        }
+    });
+
+    deleteUsersBtn.addEventListener('click', async () => {
+        if (usersToDelete.length === 0) {
+            logMessage('No users fetched to delete.', 'warn');
+            return;
+        }
+
+        const confirmation = prompt(`Are you absolutely sure you want to delete the Firestore data for ${usersToDelete.length} users? This cannot be undone. Type "DELETE" to confirm.`);
+        if (confirmation !== 'DELETE') {
+            logMessage('Deletion cancelled by admin.', 'info');
+            return;
+        }
+        
+        toggleLoading(true);
+        logMessage('Starting deletion process...', 'warn');
+        logMessage('IMPORTANT: This will only delete Firestore user documents. It CANNOT delete the Firebase Authentication records.', 'warn');
+
+        let successCount = 0;
+        let errorCount = 0;
+
+        // Use batch writes for efficiency, up to 500 operations per batch
+        const batchSize = 499;
+        for (let i = 0; i < usersToDelete.length; i += batchSize) {
+            const batch = db.batch();
+            const chunk = usersToDelete.slice(i, i + batchSize);
+            logMessage(`Processing batch ${i / batchSize + 1} of ${Math.ceil(usersToDelete.length / batchSize)}...`);
+
+            chunk.forEach(user => {
+                logMessage(`Queueing deletion of Firestore doc for user: ${user.username} (UID: ${user.uid})`);
+                const userDocRef = db.collection('users').doc(user.uid);
+                batch.delete(userDocRef);
+            });
+
+            try {
+                await batch.commit();
+                successCount += chunk.length;
+                logMessage(`Batch committed successfully. ${chunk.length} user documents deleted.`, 'success');
+            } catch (error) {
+                errorCount += chunk.length;
+                logMessage(`Error committing batch: ${error.message}`, 'error');
+            }
+        }
+
+        logMessage('------------------------------------', 'info');
+        logMessage('DELETION PROCESS COMPLETE.', 'info');
+        logMessage(`Successfully deleted ${successCount} user documents from Firestore.`, 'success');
+        if (errorCount > 0) {
+            logMessage(`Failed to delete ${errorCount} user documents.`, 'error');
+        }
+        logMessage('REMINDER: Manually delete the corresponding users from the Firebase Authentication console if required.', 'warn');
+        
+        usersToDelete = [];
+        usersTableBody.innerHTML = '';
+        userTableContainer.style.display = 'none';
+        userCountSpan.textContent = 0;
+        toggleLoading(false);
+    });
+
+    /*
+    ================================================================================================
+    THE CORRECT WAY: USING A CLOUD FUNCTION
+    ================================================================================================
+
+    To fully delete users (both Firestore data AND Auth records), you would need to deploy an
+    HTTP-triggered Cloud Function. This tool could then call that function.
+
+    Here's what the Cloud Function code (`index.js`) would look like:
+
+    ```javascript
+    // functions/index.js
+    const functions = require("firebase-functions");
+    const admin = require("firebase-admin");
+    admin.initializeApp();
+
+    const db = admin.firestore();
+
+    // Use CORS to allow your admin tool's domain to call this function
+    const cors = require("cors")({ origin: true });
+
+    exports.deleteSpamUsers = functions.https.onCall(async (data, context) => {
+        // 1. Authentication Check: Ensure the caller is an admin
+        if (!context.auth) {
+            throw new functions.https.HttpsError(
+                "unauthenticated",
+                "The function must be called while authenticated."
+            );
+        }
+
+        const adminUserDoc = await db.collection("users").doc(context.auth.uid).get();
+        if (!adminUserDoc.exists || adminUserDoc.data().role !== "admin") {
+            throw new functions.https.HttpsError(
+                "permission-denied",
+                "Caller is not an administrator."
+            );
+        }
+
+        // 2. Input validation
+        const uidsToDelete = data.uids;
+        if (!Array.isArray(uidsToDelete) || uidsToDelete.length === 0) {
+            throw new functions.https.HttpsError(
+                "invalid-argument",
+                "The function must be called with an array of UIDs."
+            );
+        }
+        
+        // Max 1000 users per call to avoid timeout
+        if (uidsToDelete.length > 1000) {
+            throw new functions.https.HttpsError(
+                "invalid-argument",
+                "Cannot delete more than 1000 users at a time."
+            );
+        }
+
+        try {
+            // 3. Delete from Firebase Authentication
+            const deleteResult = await admin.auth().deleteUsers(uidsToDelete);
+            
+            const successfulDeletes = deleteResult.successCount;
+            const failedDeletes = deleteResult.failureCount;
+            console.log(`Successfully deleted ${successfulDeletes} auth users.`);
+            console.log(`Failed to delete ${failedDeletes} auth users.`);
+
+            // 4. Delete from Firestore
+            const batch = db.batch();
+            uidsToDelete.forEach(uid => {
+                const userDocRef = db.collection("users").doc(uid);
+                batch.delete(userDocRef);
+            });
+            await batch.commit();
+            console.log(`Successfully deleted ${uidsToDelete.length} user documents from Firestore.`);
+
+            return {
+                status: "success",
+                message: `Processed ${uidsToDelete.length} users. Auth deletes: ${successfulDeletes} success, ${failedDeletes} failed. Firestore deletes: ${uidsToDelete.length} success.`,
+                successCount: successfulDeletes,
+                failureCount: failedDeletes,
+            };
+        } catch (error) {
+            console.error("Error deleting users:", error);
+            throw new functions.https.HttpsError("internal", "An error occurred while deleting users.");
+        }
+    });
+    ```
+    
+    You would then modify the `deleteUsersBtn` event listener in this HTML file to call this function:
+    
+    ```javascript
+    // In deleteUsersBtn click handler:
+    const deleteSpamUsers = firebase.functions().httpsCallable('deleteSpamUsers');
+    const uids = usersToDelete.map(user => user.uid);
+    try {
+        const result = await deleteSpamUsers({ uids: uids });
+        logMessage(result.data.message, 'success');
+    } catch (error) {
+        logMessage(`Cloud Function error: ${error.message}`, 'error');
+    }
+    ```
+    ================================================================================================
+    */
+
+</script>
 
 </body>
 </html>
