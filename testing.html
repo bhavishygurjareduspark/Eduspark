@@ -20,9 +20,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     
-    <!-- Chart.js for Graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <!-- 3D Model Viewer -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
@@ -31,7 +28,7 @@
             --primary-color: #ff3333;
             --primary-light: #ff6666;
             --text-light: #f1f2f6;
-            --text-dark: #f1f2f6; /* Adjusted for dark theme */
+            --text-dark: #f1f2f6;
             --text-muted: #a4b0be;
             --bg-dark: #121212;
             --bg-light: #1e1e1e;
@@ -44,12 +41,15 @@
             --sidebar-width: 260px;
             --success: #2ecc71;
             
-            /* --- NEW GAMING VIBE VARIABLES --- */
             --hp-color: #e74c3c;
             --xp-color: #3498db;
             --level-up-color: #f1c40f;
             --stat-bar-bg: rgba(255,255,255,0.1);
             --mission-color: #9b59b6;
+
+            --rank-gold: #ffd700;
+            --rank-silver: #c0c0c0;
+            --rank-bronze: #cd7f32;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -64,18 +64,23 @@
         }
         @keyframes fadeInBody { to { opacity: 1; } }
 
-        /* General UI Improvements */
+        /* General UI & Responsive Text */
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
         .loading-overlay.hidden { opacity: 0; pointer-events: none; }
         .spinner-large { width: 48px; height: 48px; border: 5px solid rgba(255, 255, 255, 0.2); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        h2 { font-size: clamp(1.5rem, 4vw, 1.8rem); color: var(--text-light); }
+        h3 { font-size: clamp(1.1rem, 3vw, 1.25rem); }
+        h4 { font-size: clamp(0.95rem, 2.5vw, 1rem); }
+        p, span, li, a { font-size: clamp(0.9rem, 2.2vw, 0.95rem); }
 
         .sidebar { width: var(--sidebar-width); height: 100vh; background-color: var(--card-bg); position: fixed; top: 0; left: 0; display: flex; flex-direction: column; padding: 20px 0; border-right: 1px solid var(--border-color); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1100; }
         .sidebar-header { padding: 0 25px 20px 25px; display: flex; align-items: center; gap: 10px; }
         .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
         .sidebar-header .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--text-light); }
         .sidebar-nav { flex-grow: 1; overflow-y: auto; }
-        .sidebar-nav a { display: flex; align-items: center; gap: 15px; padding: 14px 25px; color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; position: relative; transition: background-color 0.3s, color 0.3s; }
+        .sidebar-nav a { display: flex; align-items: center; gap: 15px; padding: 14px 25px; color: var(--text-muted); text-decoration: none; font-weight: 500; position: relative; transition: background-color 0.3s, color 0.3s; }
         .sidebar-nav a i { font-size: 1.1rem; width: 20px; text-align: center; }
         .sidebar-nav a:hover { background-color: var(--bg-light); color: var(--text-light); }
         .sidebar-nav a.active { background-color: rgba(255, 51, 51, 0.1); color: var(--primary-light); font-weight: 600; }
@@ -84,7 +89,7 @@
 
         .main-container { width: 100%; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
         .header { height: 70px; background-color: rgba(33, 33, 33, 0.85); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border-color); }
-        #header-title { font-size: 1.5rem; font-weight: 600; color: var(--text-light); }
+        #header-title { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; color: var(--text-light); }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .user-menu { position: relative; }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; overflow: hidden; }
@@ -103,55 +108,37 @@
 
         .card { background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); transition: all 0.3s ease;}
         .card:hover { border-color: rgba(255, 51, 51, 0.4); transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
         .section-header { margin-bottom: 25px; }
-        .section-header h2 { font-size: 1.8rem; color: var(--text-light); }
-        .section-header p { color: var(--text-muted); }
         .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--gradient); color: white; }
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255,51,51,0.4); }
         .btn-secondary { background-color: var(--bg-light); color: var(--text-light); }
         .btn-secondary:hover { background-color: #333; }
 
-        /* --- NEW GAMIFIED STATS & PROFILE --- */
         .stat-bar { width: 100%; height: 12px; background-color: var(--stat-bar-bg); border-radius: 6px; overflow: hidden; margin-top: 8px; }
         .stat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease-in-out; }
-        #hpBarFill { background: linear-gradient(90deg, var(--hp-color), #c0392b); }
-        #xpBarFill { background: linear-gradient(90deg, var(--xp-color), #2980b9); }
-
-        .gamified-stats-card { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; align-items: center; background: linear-gradient(135deg, rgba(33,33,33,0.8), rgba(45,45,45,0.9)); padding: 30px; }
-        .stat-item { text-align: center; }
-        .stat-item .icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .stat-item h4 { font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; }
-        .stat-item .value { font-size: 1.8rem; font-weight: 700; color: var(--text-light); }
-        #levelValue { color: var(--level-up-color); text-shadow: 0 0 10px var(--level-up-color); }
-        #hpValue { color: var(--hp-color); }
-        #xpValue { color: var(--xp-color); }
-
         .profile-layout { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: flex-start; }
         .character-viewer-card { padding: 0; overflow: hidden; }
         model-viewer { width: 100%; height: 400px; background-color: transparent; --progress-bar-color: var(--primary-color); }
-        .character-info-card .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .character-info-card .card-header img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
-        .character-info-card .name-level h3 { font-size: 1.8rem; color: var(--text-light); }
-        .character-info-card .name-level p { color: var(--text-muted); }
-        .character-stats .stat-row { margin-bottom: 15px; }
-        .character-stats .stat-label { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 5px; }
-        .character-stats .stat-label .icon { margin-right: 8px; }
-        .analysis-card { margin-top: 25px; }
-        .analysis-card h3 { color: var(--primary-light); margin-bottom: 15px; }
-        .analysis-card ul { list-style: none; padding-left: 5px; }
-        .analysis-card li { margin-bottom: 12px; display: flex; align-items: flex-start; gap: 10px; }
-        .analysis-card li i { color: var(--success); margin-top: 4px; }
         
-        /* --- NEW MISSION CARD --- */
-        .mission-card { border-left: 5px solid var(--mission-color); }
-        .mission-card .mission-icon { font-size: 2.5rem; color: var(--mission-color); margin-right: 20px; }
-        .mission-card-content { display: flex; align-items: center; }
-        .mission-details h4 { color: var(--text-light); margin-bottom: 5px; }
-        .mission-details p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
-
-        /* --- EDIT PROFILE MODAL --- */
+        /* Leaderboard Styling */
+        #leaderboardList { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+        .leaderboard-item { display: flex; align-items: center; background: var(--bg-light); padding: 15px; border-radius: var(--border-radius-md); gap: 15px; border: 1px solid transparent; transition: all 0.3s ease; }
+        .leaderboard-item:hover { border-color: var(--primary-color); transform: scale(1.02); }
+        .leaderboard-item .rank { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 700; color: var(--text-muted); width: 40px; text-align: center; flex-shrink: 0; }
+        .leaderboard-item .leaderboard-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+        .leaderboard-item .leaderboard-user-info { flex-grow: 1; }
+        .leaderboard-item .leaderboard-user-info p { color: var(--text-muted); font-size: 0.8rem; }
+        .leaderboard-item .leaderboard-points { text-align: right; }
+        .leaderboard-item .leaderboard-points .points-value { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 700; color: var(--xp-color); }
+        .leaderboard-item .leaderboard-points .level-value { font-size: 0.8rem; color: var(--level-up-color); }
+        .leaderboard-item.rank-1 .rank { color: var(--rank-gold); }
+        .leaderboard-item.rank-2 .rank { color: var(--rank-silver); }
+        .leaderboard-item.rank-3 .rank { color: var(--rank-bronze); }
+        .leaderboard-item.rank-1 { box-shadow: 0 0 15px var(--rank-gold); border-color: var(--rank-gold); }
+        
+        /* Modal & Other styles are largely unchanged */
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; animation: fadeInBody 0.3s ease; }
         .modal-content { background-color: var(--card-bg); margin: auto; padding: 30px; border: 1px solid var(--border-color); width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); position: relative; }
@@ -162,16 +149,11 @@
         .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-muted); }
         .form-group input, .form-group textarea { width: 100%; background-color: var(--bg-light); border: 1px solid var(--border-color); color: var(--text-light); padding: 12px; border-radius: 8px; font-family: 'Poppins', sans-serif; }
         .form-group textarea { resize: vertical; min-height: 80px; }
-        .avatar-selection-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 10px; }
+        .avatar-selection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 15px; margin-top: 10px; }
         .avatar-option { width: 100%; aspect-ratio: 1/1; border-radius: 50%; object-fit: cover; cursor: pointer; border: 3px solid transparent; transition: border-color 0.3s; }
         .avatar-option:hover { border-color: var(--text-muted); }
         .avatar-option.selected { border-color: var(--primary-color); }
         .modal-footer { padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
-
-        /* Mobile responsive adjustments */
-        .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1101; }
-        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
-        .sidebar.open ~ .mobile-overlay { display: block; }
         .empty-state { text-align: center; padding: 40px 20px; }
         .empty-state i { font-size: 3rem; color: var(--primary-color); margin-bottom: 15px; }
 
@@ -181,7 +163,12 @@
         #toast.error { border-left-color: var(--hp-color); }
         @keyframes toastfadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
         @keyframes toastfadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
-        
+
+        /* Mobile responsive adjustments */
+        .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1101; }
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
+        .sidebar.open ~ .mobile-overlay { display: block; }
+
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
@@ -192,12 +179,8 @@
         }
         @media (max-width: 768px) {
             .header { padding: 0 20px; }
-            #header-title { font-size: 1.2rem; }
-            .grid-container, .profile-layout { grid-template-columns: 1fr; }
             .main-content { padding: 20px; }
-            .gamified-stats-card { grid-template-columns: 1fr 1fr; text-align: left; }
-            .stat-item .icon { font-size: 2rem; }
-            .stat-item .value { font-size: 1.5rem; }
+            .grid-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -206,7 +189,6 @@
     <div class="loading-overlay" id="loadingOverlay"><div class="spinner-large"></div></div>
 
     <aside class="sidebar" id="sidebar">
-        <!-- Sidebar content remains the same -->
         <div class="sidebar-header">
             <i class="fas fa-brain logo-icon"></i>
             <span class="logo-text">EduSparK</span>
@@ -214,16 +196,15 @@
         <nav class="sidebar-nav">
             <a href="#" data-page="home" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
             <a href="#" data-page="profile"><i class="fas fa-user-shield"></i><span>Character</span></a>
+            <a href="#" data-page="leaderboard"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
             <a href="#" data-page="live"><i class="fas fa-video"></i><span>Live Classes</span></a>
             <a href="#" data-page="timetable"><i class="fas fa-calendar-alt"></i><span>Time Table</span></a>
             <a href="#" data-page="tests"><i class="fas fa-vial"></i><span>Tests</span></a>
             <a href="#" data-page="enemies"><i class="fas fa-skull-crossbones"></i><span>Backlogs</span></a>
-            <a href="#" data-page="performance"><i class="fas fa-chart-line"></i><span>Performance</span></a>
             <a href="#" data-page="support"><i class="fas fa-headset"></i><span>Support</span></a>
         </nav>
         <div class="sidebar-footer">
-            <a href="#" class="btn" style="width: 100%; background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);"><i class="fas fa-heart"></i> Donate</a>
-            <a href="#" id="logoutBtnSidebar" class="btn" style="width: 100%; background: var(--bg-light); color: var(--text-light);"><i class="fas fa-sign-out-alt"></i> Logout</a>
+             <a href="#" id="logoutBtnSidebar" class="btn btn-secondary" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </aside>
     <div class="mobile-overlay" id="mobileOverlay"></div>
@@ -253,24 +234,26 @@
             <div id="page-home" class="page-content active">
                 <div class="section-header">
                     <h2 data-aos="fade-right">Welcome Back, <span id="welcomeUserName" style="color:var(--primary-light);"></span>!</h2>
-                    <p data-aos="fade-right" data-aos-delay="100">Your learning adventure continues. Keep up the great work!</p>
+                    <p data-aos="fade-right" data-aos-delay="100">Your learning adventure continues. Here's how to level up!</p>
+                </div>
+                
+                <!-- SIMULATION CONTROLS CARD -->
+                <div class="card" data-aos="fade-up" style="margin-bottom: 25px;">
+                    <h3><i class="fas fa-gamepad"></i> Simulation Controls</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Use these buttons to simulate student actions and see the point system work.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                         <button id="simAttendClassBtn" class="btn btn-secondary"><i class="fas fa-chalkboard-teacher"></i> Attend 1hr Class</button>
+                         <button id="simTakeTestBtn" class="btn btn-secondary"><i class="fas fa-vial"></i> Take a Test</button>
+                         <button id="simLeaveEarlyBtn" class="btn btn-secondary" style="background-color: #444;"><i class="fas fa-door-open"></i> Leave Class Early</button>
+                    </div>
                 </div>
 
-                <!-- NEW GAMIFIED STATS CARD -->
-                <div class="card gamified-stats-card" data-aos="fade-up">
-                    <div class="stat-item"><i class="fas fa-star icon" style="color: var(--level-up-color);"></i><h4>Level</h4><p class="value" id="levelValue">1</p></div>
-                    <div class="stat-item"><i class="fas fa-heartbeat icon" style="color: var(--hp-color);"></i><h4>Health (HP)</h4><p class="value" id="hpValue">100 / 100</p></div>
-                    <div class="stat-item"><i class="fas fa-bolt icon" style="color: var(--xp-color);"></i><h4>Stamina (XP)</h4><p class="value" id="xpValue">0 / 100</p></div>
-                    <div class="stat-item"><i class="fas fa-coins icon" style="color: gold;"></i><h4>Credits</h4><p class="value" id="statCredits">0</p></div>
-                </div>
 
-                <div id="missionsContainer" style="margin-top: 25px;"></div>
-
-                <div class="grid-container" style="margin-top: 25px;">
-                    <div class="card" data-aos="fade-up" data-aos-delay="100"><h3><i class="fas fa-book"></i> Books Shared</h3><p style="font-size:2rem; font-weight:700;" id="statBooksShared">0</p></div>
-                    <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-graduation-cap"></i> Batches Enrolled</h3><p style="font-size:2rem; font-weight:700;" id="statBatchesEnrolled">0</p></div>
-                    <div class="card" data-aos="fade-up" data-aos-delay="300"><h3><i class="fas fa-calendar-check"></i> Classes Attended</h3><p style="font-size:2rem; font-weight:700;" id="statClassesAttended">0</p></div>
-                    <div class="card" data-aos="fade-up" data-aos-delay="400"><h3><i class="fas fa-skull-crossbones"></i> Backlogs Cleared</h3><p style="font-size:2rem; font-weight:700;" id="statBacklogsCleared">0</p></div>
+                <div class="grid-container">
+                    <div class="card" data-aos="fade-up" data-aos-delay="100"><h3><i class="fas fa-star" style="color:var(--level-up-color)"></i> Level</h3><p style="font-size:2rem; font-weight:700;" id="statLevel">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-bolt" style="color:var(--xp-color)"></i> Total XP</h3><p style="font-size:2rem; font-weight:700;" id="statPoints">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="300"><h3><i class="fas fa-clock" style="color:var(--text-muted)"></i> Backlog Hours</h3><p style="font-size:2rem; font-weight:700;" id="statBacklogHours">0</p></div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="400"><h3><i class="fas fa-calendar-check" style="color:var(--success)"></i> Classes Attended</h3><p style="font-size:2rem; font-weight:700;" id="statClassesAttended">0</p></div>
                 </div>
             </div>
 
@@ -281,28 +264,26 @@
                     <div class="card character-viewer-card" data-aos="fade-right">
                         <model-viewer id="characterModel" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Your Character" camera-controls auto-rotate disable-zoom shadow-intensity="1"></model-viewer>
                     </div>
-                    <div class="card character-info-card" data-aos="fade-left" data-aos-delay="100">
-                        <div class="card-header">
-                            <img src="https://via.placeholder.com/150" alt="Profile Avatar" id="profile-avatar-display">
-                            <div class="name-level">
+                    <div class="card" data-aos="fade-left" data-aos-delay="100">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <img src="https://via.placeholder.com/150" alt="Profile Avatar" id="profile-avatar-display" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color);">
+                            <div>
                                 <h3 id="profile-name-display"></h3>
                                 <p id="profile-username-display" style="color:var(--text-muted)"></p>
                             </div>
                         </div>
-                        <div class="character-stats">
-                           <div class="stat-row">
-                                <div class="stat-label"><span><i class="fas fa-star icon" style="color:var(--level-up-color)"></i>Level</span><span id="profile-level"></span></div>
-                                <div class="stat-bar"><div class="stat-bar-fill" style="background: var(--level-up-color); width: 100%;"></div></div>
-                           </div>
-                           <div class="stat-row">
-                                <div class="stat-label"><span><i class="fas fa-heartbeat icon" style="color:var(--hp-color)"></i>Health (HP)</span><span id="profile-hp-value">100 / 100</span></div>
-                                <div class="stat-bar"><div id="hpBarFill" class="stat-bar-fill"></div></div>
-                           </div>
-                           <div class="stat-row">
-                                <div class="stat-label"><span><i class="fas fa-bolt icon" style="color:var(--xp-color)"></i>Stamina (XP)</span><span id="profile-xp-value">0 / 100</span></div>
-                                <div class="stat-bar"><div id="xpBarFill" class="stat-bar-fill"></div></div>
-                           </div>
-                        </div>
+                        <div class="stat-row" style="margin-bottom: 15px;">
+                            <div style="display:flex; justify-content:space-between; font-weight:600; margin-bottom:5px;"><span><i class="fas fa-star" style="color:var(--level-up-color); margin-right:8px;"></i>Level</span><span id="profile-level"></span></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="background: var(--level-up-color); width: 100%;"></div></div>
+                       </div>
+                       <div class="stat-row" style="margin-bottom: 15px;">
+                            <div style="display:flex; justify-content:space-between; font-weight:600; margin-bottom:5px;"><span><i class="fas fa-heartbeat" style="color:var(--hp-color); margin-right:8px;"></i>Health (HP)</span><span id="profile-hp-value">100 / 100</span></div>
+                            <div class="stat-bar"><div id="hpBarFill" class="stat-bar-fill" style="background: linear-gradient(90deg, var(--hp-color), #c0392b);"></div></div>
+                       </div>
+                       <div class="stat-row" style="margin-bottom: 15px;">
+                            <div style="display:flex; justify-content:space-between; font-weight:600; margin-bottom:5px;"><span><i class="fas fa-bolt" style="color:var(--xp-color); margin-right:8px;"></i>Stamina (XP)</span><span id="profile-xp-value">0 / 100</span></div>
+                            <div class="stat-bar"><div id="xpBarFill" class="stat-bar-fill" style="background: linear-gradient(90deg, var(--xp-color), #2980b9);"></div></div>
+                       </div>
                         <div style="margin-top: 25px;">
                             <h4>About Me</h4>
                             <p id="profile-bio-display" style="color:var(--text-muted); font-size: 0.9rem;"></p>
@@ -310,68 +291,47 @@
                         <button class="btn btn-primary" id="editProfileBtnInProfile" style="margin-top: 25px; width:100%;"><i class="fas fa-user-edit"></i> Edit Character</button>
                     </div>
                  </div>
-                 <div class="card analysis-card" id="character-analysis-container" data-aos="fade-up"></div>
             </div>
-            
-            <div id="page-enemies" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-shield-alt"></i><h3>All Clear!</h3><p>You have no backlogs. This is your chance to get ahead! <br/> Clearing backlogs restores HP and gives bonus XP.</p></div></div></div>
-            <div id="page-live" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>Live Classes are being upgraded.</p></div></div></div>
-            <div id="page-timetable" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Time Table is being upgraded.</p></div></div></div>
-            <div id="page-tests" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Tests section is being upgraded.</p></div></div></div>
-            <div id="page-performance" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Performance tracker is being upgraded.</p></div></div></div>
-            
-            <!-- SUPPORT PAGE -->
-            <div id="page-support" class="page-content">
+
+            <!-- LEADERBOARD PAGE -->
+            <div id="page-leaderboard" class="page-content">
+                <div class="section-header">
+                    <h2 data-aos="fade-right"><i class="fas fa-trophy"></i> Top 100 Champions</h2>
+                    <p data-aos="fade-right" data-aos-delay="100">See how you stack up against other learners. Keep earning XP to climb the ranks!</p>
+                </div>
                 <div class="card" data-aos="fade-up">
-                    <div class="empty-state">
-                        <i class="fas fa-headset"></i>
-                        <h3>Need Help?</h3>
-                        <p>Our support team is here for you. For any questions, technical issues, or feedback, please don't hesitate to reach out.</p>
-                        <p style="margin-top: 20px; font-weight: 600;">Contact us at:</p>
-                        <a href="mailto:edusparkkofficial@gmail.com" class="btn btn-primary" style="margin-top: 10px;"><i class="fas fa-envelope"></i> edusparkkofficial@gmail.com</a>
-                    </div>
+                    <ol id="leaderboardList">
+                        <div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>
+                    </ol>
                 </div>
             </div>
+            
+            <!-- Other Pages -->
+            <div id="page-live" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
+            <div id="page-timetable" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
+            <div id="page-tests" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
+            <div id="page-enemies" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-shield-alt"></i><h3>All Clear!</h3><p>You have no backlogs.</p></div></div></div>
+            <div id="page-support" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-headset"></i><h3>Need Help?</h3><p>Contact our team at <a href="mailto:edusparkkofficial@gmail.com" style="color:var(--primary-light)">edusparkkofficial@gmail.com</a></p></div></div></div>
         </main>
     </div>
 
-    <!-- Edit Profile Modal -->
+    <!-- Edit Profile Modal (Unchanged) -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Character</h2>
-                <span class="close-btn" id="closeModalBtn">×</span>
-            </div>
+            <div class="modal-header"><h2>Edit Character</h2><span class="close-btn" id="closeModalBtn">×</span></div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="editName">Name</label>
-                    <input type="text" id="editName" placeholder="Your full name">
-                </div>
-                <div class="form-group">
-                    <label for="editUsername">Username</label>
-                    <input type="text" id="editUsername" placeholder="Your unique username">
-                </div>
-                <div class="form-group">
-                    <label for="editBio">About Me / Bio</label>
-                    <textarea id="editBio" placeholder="Tell everyone a little about yourself..."></textarea>
-                </div>
+                <div class="form-group"><label for="editName">Name</label><input type="text" id="editName"></div>
+                <div class="form-group"><label for="editUsername">Username</label><input type="text" id="editUsername"></div>
+                <div class="form-group"><label for="editBio">About Me / Bio</label><textarea id="editBio"></textarea></div>
                 <div class="form-group">
                     <label>Profile Picture</label>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -5px; margin-bottom: 15px;">Upload a new photo or select a default avatar.</p>
                     <input type="file" id="editPFP" accept="image/*" style="display:none;">
-                    <button class="btn btn-secondary" onclick="document.getElementById('editPFP').click();"><i class="fas fa-upload"></i> Upload Image</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('editPFP').click();"><i class="fas fa-upload"></i> Upload</button>
                     <img id="pfpPreview" src="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 15px; display: none;">
                 </div>
-                <div class="form-group">
-                    <label>Default Avatars</label>
-                    <div class="avatar-selection-grid" id="defaultAvatarsContainer">
-                        <!-- Default avatars will be injected by JS -->
-                    </div>
-                </div>
+                <div class="form-group"><label>Default Avatars</label><div class="avatar-selection-grid" id="defaultAvatarsContainer"></div></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
-                <button class="btn btn-primary" id="saveProfileBtn"><i class="fas fa-save"></i> Save Changes</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" id="cancelEditBtn">Cancel</button><button class="btn btn-primary" id="saveProfileBtn"><i class="fas fa-save"></i> Save</button></div>
         </div>
     </div>
     
@@ -394,46 +354,46 @@
             const auth = firebase.auth();
             const db = firebase.firestore();
             const storage = firebase.storage();
+            const increment = firebase.firestore.FieldValue.increment;
 
             const $ = (s) => document.querySelector(s);
-            
             const elements = {
                 loadingOverlay: $('#loadingOverlay'), sidebar: $('#sidebar'), mobileOverlay: $('#mobileOverlay'),
                 mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item[data-page]'),
                 pageContents: document.querySelectorAll('.page-content'), headerTitle: $('#header-title'),
-                userMenu: $('.user-menu'), userAvatar: $('#userAvatar'), userMenuDropdown: $('#userMenuDropdown'),
+                userAvatar: $('#userAvatar'), userMenuDropdown: $('#userMenuDropdown'),
                 logoutBtnSidebar: $('#logoutBtnSidebar'), logoutBtnDropdown: $('#logoutBtnDropdown'),
                 mobileMenuToggle: $('#mobileMenuToggle'), welcomeUserName: $('#welcomeUserName'),
                 dropdownUserName: $('#dropdownUserName'), dropdownUserEmail: $('#dropdownUserEmail'),
-                levelValue: $('#levelValue'), hpValue: $('#hpValue'), xpValue: $('#xpValue'), hpBarFill: $('#hpBarFill'),
-                xpBarFill: $('#xpBarFill'), characterModel: $('#characterModel'), statCredits: $('#statCredits'),
-                statBooksShared: $('#statBooksShared'), statBatchesEnrolled: $('#statBatchesEnrolled'),
-                statClassesAttended: $('#statClassesAttended'), statBacklogsCleared: $('#statBacklogsCleared'),
+                characterModel: $('#characterModel'), 
                 profileAvatarDisplay: $('#profile-avatar-display'), profileNameDisplay: $('#profile-name-display'),
                 profileUsernameDisplay: $('#profile-username-display'), profileBioDisplay: $('#profile-bio-display'),
-                profileLevel: $('#profile-level'), profileHpValue: $('#profile-hp-value'), profileXpValue: $('#profile-xp-value'),
-                characterAnalysisContainer: $('#character-analysis-container'), missionsContainer: $('#missionsContainer'),
+                profileLevel: $('#profile-level'), profileHpValue: $('#profile-hp-value'), hpBarFill: $('#hpBarFill'),
+                profileXpValue: $('#profile-xp-value'), xpBarFill: $('#xpBarFill'),
                 editProfileBtnDropdown: $('#editProfileBtnDropdown'), editProfileBtnInProfile: $('#editProfileBtnInProfile'),
                 editProfileModal: $('#editProfileModal'), closeModalBtn: $('#closeModalBtn'), cancelEditBtn: $('#cancelEditBtn'),
                 saveProfileBtn: $('#saveProfileBtn'), editName: $('#editName'), editUsername: $('#editUsername'),
                 editBio: $('#editBio'), editPFP: $('#editPFP'), pfpPreview: $('#pfpPreview'),
                 defaultAvatarsContainer: $('#defaultAvatarsContainer'), toast: $('#toast'),
+                // Dashboard Stats
+                statLevel: $('#statLevel'), statPoints: $('#statPoints'), statBacklogHours: $('#statBacklogHours'), statClassesAttended: $('#statClassesAttended'),
+                // Simulation Buttons
+                simAttendClassBtn: $('#simAttendClassBtn'), simTakeTestBtn: $('#simTakeTestBtn'), simLeaveEarlyBtn: $('#simLeaveEarlyBtn'),
+                // Leaderboard
+                leaderboardList: $('#leaderboardList')
             };
 
-            let currentUser = null, userData = null, userListener = null, selectedAvatarUrl = null, newPfpFile = null;
+            let currentUser = null, userData = null, userListener = null, leaderboardFetched = false;
 
             const gameConfig = {
-                xpToLevelUp: 100, baseHp: 100, hpPenaltyPerBacklog: 15, hpPenaltyPerLowScore: 10, xpPerMission: 30,
+                xpToLevelUp: 100, baseHp: 100,
+                hpPenaltyPerBacklogHour: 2, // Lose 2 HP per backlog hour
+                xpForClass: 10, xpForTest: 10, xpPenaltyForBacklog: -10
             };
             const characterModels = [
-                "https://modelviewer.dev/shared-assets/models/Astronaut.glb", // Level 1-4
-                "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb", // Level 5-9
-                "https://cdn.glitch.global/e8a74a13-4340-49a3-a7c8-7010f3f26e3c/knight_character.glb?v=1700595305992" // Level 10+
-            ];
-            const defaultAvatars = [
-                'https://i.postimg.cc/Fs3m1D50/default-avatar-1.png', 'https://i.postimg.cc/W3kRk97C/default-avatar-2.png',
-                'https://i.postimg.cc/sXbC2g5P/default-avatar-3.png', 'https://i.postimg.cc/qR7y1f3Z/default-avatar-4.png',
-                'https://i.postimg.cc/tJ05RNDq/default-avatar-5.png'
+                "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+                "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
+                "https://cdn.glitch.global/e8a74a13-4340-49a3-a7c8-7010f3f26e3c/knight_character.glb?v=1700595305992"
             ];
 
             auth.onAuthStateChanged(user => {
@@ -445,61 +405,43 @@
                 if (userListener) userListener(); 
                 userListener = db.collection('users').doc(user.uid).onSnapshot(doc => {
                     if (doc.exists) {
+                        const previousPoints = userData ? userData.points : null;
                         userData = { id: doc.id, ...doc.data() };
                         updateUI(userData);
+                        checkBacklogPenalty(previousPoints);
                     } else { auth.signOut(); }
                     elements.loadingOverlay.classList.add('hidden');
-                }, err => {
-                    console.error("Error fetching user data:", err);
-                    elements.loadingOverlay.classList.add('hidden');
-                });
+                }, err => console.error("Error fetching user data:", err));
             }
 
             function updateUI(data) {
-                if (data.profilePictureURL) {
-                    elements.userAvatar.innerHTML = `<img src="${data.profilePictureURL}" alt="User Avatar">`;
-                    elements.profileAvatarDisplay.src = data.profilePictureURL;
-                } else {
-                    const initials = (data.name || 'U').charAt(0).toUpperCase();
-                    elements.userAvatar.innerHTML = `<span>${initials}</span>`;
-                    elements.profileAvatarDisplay.src = `https://via.placeholder.com/150/FF3333/FFFFFF?text=${initials}`;
-                }
-                elements.dropdownUserName.textContent = data.name || 'User';
-                elements.dropdownUserEmail.textContent = data.email || '';
-                elements.welcomeUserName.textContent = data.name || 'Explorer';
-                
-                updateCharacterStats(data);
-                updateMissions(data);
-                
-                elements.statCredits.textContent = data.credits || 0;
-                elements.statBooksShared.textContent = data.booksSharedCount || 0;
-                elements.statBatchesEnrolled.textContent = data.enrolledBatches ? data.enrolledBatches.length : 0;
-                
-                elements.profileNameDisplay.textContent = data.name || "N/A";
-                elements.profileUsernameDisplay.textContent = `@${data.username || 'n/a'}`;
-                elements.profileBioDisplay.textContent = data.bio || "No bio has been set. Edit your profile to add one!";
-            }
-
-            function updateCharacterStats(data) {
                 const totalPoints = data.points || 0;
                 const level = Math.floor(totalPoints / gameConfig.xpToLevelUp) + 1;
                 const xpForCurrentLevel = totalPoints % gameConfig.xpToLevelUp;
                 const xpPercentage = (xpForCurrentLevel / gameConfig.xpToLevelUp) * 100;
                 
-                const activeBacklogs = data.activeBacklogs || 0;
-                const recentTestScores = data.recentTestScores || []; 
-                let lowScoreCount = recentTestScores.filter(score => score < 50).length;
-                let hpLost = (activeBacklogs * gameConfig.hpPenaltyPerBacklog) + (lowScoreCount * gameConfig.hpPenaltyPerLowScore);
+                const backlogHours = data.backlogHours || 0;
+                let hpLost = (backlogHours * gameConfig.hpPenaltyPerBacklogHour);
                 let currentHp = Math.max(0, gameConfig.baseHp - hpLost);
                 const hpPercentage = (currentHp / gameConfig.baseHp) * 100;
 
-                elements.statClassesAttended.textContent = data.classesAttended || 0;
-                elements.statBacklogsCleared.textContent = data.backlogsCleared || 0;
+                // User Info
+                elements.userAvatar.innerHTML = data.profilePictureURL ? `<img src="${data.profilePictureURL}">` : `<span>${(data.name || 'U').charAt(0)}</span>`;
+                elements.dropdownUserName.textContent = data.name || 'User';
+                elements.dropdownUserEmail.textContent = data.email || '';
+                elements.welcomeUserName.textContent = data.name || 'Explorer';
 
-                elements.levelValue.textContent = level;
-                elements.hpValue.textContent = `${currentHp} / ${gameConfig.baseHp}`;
-                elements.xpValue.textContent = `${xpForCurrentLevel} / ${gameConfig.xpToLevelUp}`;
+                // Dashboard Stats
+                elements.statLevel.textContent = level;
+                elements.statPoints.textContent = totalPoints;
+                elements.statBacklogHours.textContent = backlogHours;
+                elements.statClassesAttended.textContent = data.liveHoursAttended || 0;
 
+                // Profile Page
+                elements.profileAvatarDisplay.src = data.profilePictureURL || `https://via.placeholder.com/150/FF3333/FFFFFF?text=${(data.name || 'U').charAt(0)}`;
+                elements.profileNameDisplay.textContent = data.name || "N/A";
+                elements.profileUsernameDisplay.textContent = `@${data.username || 'n/a'}`;
+                elements.profileBioDisplay.textContent = data.bio || "No bio set.";
                 elements.profileLevel.textContent = `Level ${level}`;
                 elements.profileHpValue.textContent = `${currentHp} / ${gameConfig.baseHp}`;
                 elements.profileXpValue.textContent = `${xpForCurrentLevel} / ${gameConfig.xpToLevelUp}`;
@@ -511,147 +453,113 @@
                 if(elements.characterModel.src !== characterModels[modelIndex]) {
                     elements.characterModel.src = characterModels[modelIndex];
                 }
-                updateCharacterAnalysis(data, level, currentHp);
             }
 
-            function updateCharacterAnalysis(data, level, hp) {
-                let analysisHTML = `<h3><i class="fas fa-chart-pie"></i> Your Character Analysis</h3><ul>`;
-                analysisHTML += `<li><i class="fas fa-check-circle"></i>Your current character is <strong>Level ${level}</strong>. You level up every time you earn ${gameConfig.xpToLevelUp} XP (Stamina points).</li>`;
-                analysisHTML += `<li><i class="fas fa-check-circle"></i><strong>To Level Up:</strong> Earn XP by completing missions, attending classes, and clearing tests. Each action brings you closer to the next level and a new character model!</li>`;
-                if(hp < gameConfig.baseHp) {
-                    analysisHTML += `<li><i class="fas fa-exclamation-triangle" style="color:var(--hp-color);"></i><strong>Health is low!</strong> Your HP decreases with active backlogs or low test scores. Clear your backlogs from the 'Enemies' page to restore HP.</li>`;
-                } else {
-                    analysisHTML += `<li><i class="fas fa-check-circle"></i><strong>Stay Consistent:</strong> Your Health is full! Keep it that way by staying on top of your coursework and avoiding backlogs. A healthy character is a successful learner.</li>`;
+            async function checkBacklogPenalty(previousPoints) {
+                if (userData.backlogHours >= 5 && (previousPoints === null || userData.points === previousPoints)) {
+                     // Only apply penalty if points haven't just been changed by another operation.
+                     // This prevents double penalties. A better system would use cloud functions.
+                    if(!userData.penaltyAppliedFor5Hours) {
+                        await db.collection('users').doc(currentUser.uid).update({
+                            points: increment(gameConfig.xpPenaltyForBacklog),
+                            penaltyAppliedFor5Hours: true // flag to prevent re-applying penalty
+                        });
+                        showToast(`-10 XP Penalty for having 5+ backlog hours!`, 'error');
+                    }
+                } else if (userData.backlogHours < 5 && userData.penaltyAppliedFor5Hours) {
+                    // Reset flag when backlogs are cleared
+                     await db.collection('users').doc(currentUser.uid).update({ penaltyAppliedFor5Hours: false });
                 }
-                analysisHTML += `<li><i class="fas fa-check-circle"></i>Use the dashboard to track your stats. More features for character growth are coming soon!</li>`;
-                analysisHTML += `</ul>`;
-                elements.characterAnalysisContainer.innerHTML = analysisHTML;
             }
 
-            function updateMissions(data) {
-                let missionHTML = '';
-                if(data.activeBacklogs > 0) {
-                    missionHTML = `
-                        <div class="card mission-card" data-aos="fade-up">
-                            <div class="mission-card-content">
-                                <i class="fas fa-dragon mission-icon"></i>
-                                <div class="mission-details">
-                                    <h4>Mission: Defeat the Backlog Beast!</h4>
-                                    <p>You have ${data.activeBacklogs} backlog(s) draining your HP. Clear one now to regain strength.</p>
-                                    <button class="btn" id="completeBacklogMission" style="background: var(--mission-color); color: white;">
-                                        <i class="fas fa-fire-alt"></i> Complete Mission (+${gameConfig.xpPerMission} XP)
-                                    </button>
-                                </div>
-                            </div>
-                        </div>`;
-                }
-                elements.missionsContainer.innerHTML = missionHTML;
-                if(data.activeBacklogs > 0) {
-                    $('#completeBacklogMission').addEventListener('click', handleCompleteBacklogMission);
-                }
-            }
-            
-            async function handleCompleteBacklogMission() {
-                this.disabled = true; this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                try {
-                    await db.collection('users').doc(currentUser.uid).update({
-                        points: firebase.firestore.FieldValue.increment(gameConfig.xpPerMission),
-                        activeBacklogs: firebase.firestore.FieldValue.increment(-1),
-                        backlogsCleared: firebase.firestore.FieldValue.increment(1)
-                    });
-                    showToast('Mission Complete! +30 XP gained.', 'success');
-                } catch(error) {
-                    console.error("Error completing mission:", error);
-                    showToast('Failed to complete mission.', 'error');
-                    this.disabled = false; this.textContent = 'Complete Mission';
-                }
-            }
-            
-            // --- MODAL & PROFILE EDIT LOGIC ---
-            function openEditProfileModal() {
-                elements.editName.value = userData.name || '';
-                elements.editUsername.value = userData.username || '';
-                elements.editBio.value = userData.bio || '';
-                elements.pfpPreview.style.display = 'none';
-                newPfpFile = null;
-                selectedAvatarUrl = null;
-
-                let avatarHTML = '';
-                defaultAvatars.forEach(url => {
-                    avatarHTML += `<img src="${url}" class="avatar-option" data-url="${url}">`;
+            // --- Simulation Logic ---
+            elements.simAttendClassBtn.addEventListener('click', async () => {
+                await db.collection('users').doc(currentUser.uid).update({
+                    points: increment(gameConfig.xpForClass),
+                    liveHoursAttended: increment(1)
                 });
-                elements.defaultAvatarsContainer.innerHTML = avatarHTML;
-                
-                document.querySelectorAll('.avatar-option').forEach(img => {
-                    img.addEventListener('click', () => {
-                        document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
-                        img.classList.add('selected');
-                        selectedAvatarUrl = img.dataset.url;
-                        elements.pfpPreview.src = selectedAvatarUrl;
-                        elements.pfpPreview.style.display = 'inline-block';
-                        newPfpFile = null; // Unset file if default is chosen
-                        elements.editPFP.value = ''; // Clear file input
-                    });
-                });
-                elements.editProfileModal.classList.add('active');
-            }
-
-            function closeEditProfileModal() { elements.editProfileModal.classList.remove('active'); }
-
-            elements.editPFP.addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (file) {
-                    newPfpFile = file;
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        elements.pfpPreview.src = event.target.result;
-                        elements.pfpPreview.style.display = 'inline-block';
-                        selectedAvatarUrl = null; // Unset default avatar if file is chosen
-                        document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
-                    };
-                    reader.readAsDataURL(file);
-                }
+                showToast(`+${gameConfig.xpForClass} XP for attending class!`, 'success');
+            });
+            
+            elements.simLeaveEarlyBtn.addEventListener('click', async () => {
+                await db.collection('users').doc(currentUser.uid).update({ backlogHours: increment(1) });
+                showToast(`Class moved to backlogs. Your HP will be affected.`, 'error');
             });
 
-            async function handleProfileSave(e) {
-                e.preventDefault();
-                elements.saveProfileBtn.disabled = true;
-                elements.saveProfileBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                
-                const updates = {
-                    name: elements.editName.value.trim(),
-                    username: elements.editUsername.value.trim(),
-                    bio: elements.editBio.value.trim(),
-                };
+            elements.simTakeTestBtn.addEventListener('click', async () => {
+                const scoreStr = prompt("Simulate Test: Enter your score (0-100):", "85");
+                if (scoreStr === null) return;
+                const score = parseInt(scoreStr, 10);
+                if (isNaN(score) || score < 0 || score > 100) {
+                    showToast('Invalid score. Please enter a number between 0 and 100.', 'error');
+                    return;
+                }
+                const bonusPoints = Math.floor(score / 10); // e.g., 85 score = 8 bonus points
+                const totalPoints = gameConfig.xpForTest + bonusPoints;
+                await db.collection('users').doc(currentUser.uid).update({ points: increment(totalPoints) });
+                showToast(`Test submitted! +${totalPoints} XP earned. (+${gameConfig.xpForTest} for trying, +${bonusPoints} bonus)`, 'success');
+            });
+
+            // --- Leaderboard Logic ---
+            async function renderLeaderboard() {
+                if (leaderboardFetched) return;
+                leaderboardFetched = true;
+                elements.leaderboardList.innerHTML = `<div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>`;
 
                 try {
-                    if (newPfpFile) {
-                        const filePath = `profile_pictures/${currentUser.uid}/${newPfpFile.name}`;
-                        const fileSnapshot = await storage.ref(filePath).put(newPfpFile);
-                        updates.profilePictureURL = await fileSnapshot.ref.getDownloadURL();
-                    } else if (selectedAvatarUrl) {
-                        updates.profilePictureURL = selectedAvatarUrl;
-                    }
-
-                    await db.collection('users').doc(currentUser.uid).update(updates);
-                    showToast('Profile updated successfully!', 'success');
-                    closeEditProfileModal();
-
+                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(100).get();
+                    let leaderboardHTML = '';
+                    let rank = 1;
+                    snapshot.forEach(doc => {
+                        const user = doc.data();
+                        const points = user.points || 0;
+                        const level = Math.floor(points / gameConfig.xpToLevelUp) + 1;
+                        const avatar = user.profilePictureURL || `https://via.placeholder.com/150/FFFFFF/121212?text=${(user.name || 'U').charAt(0)}`;
+                        leaderboardHTML += `
+                            <li class="leaderboard-item rank-${rank}">
+                                <span class="rank">${rank}</span>
+                                <img src="${avatar}" class="leaderboard-avatar">
+                                <div class="leaderboard-user-info">
+                                    <h4>${user.name || 'Anonymous'}</h4>
+                                    <p>@${user.username || 'n/a'}</p>
+                                </div>
+                                <div class="leaderboard-points">
+                                    <div class="points-value">${points} XP</div>
+                                    <div class="level-value">Level ${level}</div>
+                                </div>
+                            </li>`;
+                        rank++;
+                    });
+                    elements.leaderboardList.innerHTML = leaderboardHTML || `<div class="empty-state"><i class="fas fa-ghost"></i><p>The leaderboard is empty. Be the first champion!</p></div>`;
                 } catch (error) {
-                    console.error("Error updating profile: ", error);
-                    showToast('Error updating profile. Please try again.', 'error');
-                } finally {
-                    elements.saveProfileBtn.disabled = false;
-                    elements.saveProfileBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                    console.error("Error fetching leaderboard: ", error);
+                    elements.leaderboardList.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Could not load the leaderboard.</p></div>`;
                 }
             }
 
-            elements.editProfileBtnDropdown.addEventListener('click', openEditProfileModal);
-            elements.editProfileBtnInProfile.addEventListener('click', openEditProfileModal);
-            elements.closeModalBtn.addEventListener('click', closeEditProfileModal);
-            elements.cancelEditBtn.addEventListener('click', closeEditProfileModal);
-            elements.saveProfileBtn.addEventListener('click', handleProfileSave);
+            // --- Navigation Logic ---
+            elements.mainNavLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.dataset.page;
+                    if (!pageId) return;
 
+                    elements.pageContents.forEach(page => page.classList.remove('active'));
+                    $(`#page-${pageId}`).classList.add('active');
+
+                    elements.mainNavLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+                    
+                    elements.headerTitle.textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+                    if (pageId === 'leaderboard') renderLeaderboard();
+                    
+                    if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
+                    window.scrollTo(0,0);
+                    AOS.refresh();
+                });
+            });
+            
+            // --- Other Event Listeners (User Menu, Logout, Mobile, Modal) ---
             function showToast(message, type = 'success') {
                 const toast = elements.toast;
                 toast.textContent = message;
@@ -660,38 +568,65 @@
                 setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
             }
 
-            // --- Navigation & Other Listeners ---
-            elements.mainNavLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const pageId = link.dataset.page;
-                    if (!pageId) return;
-                    
-                    elements.pageContents.forEach(page => page.classList.remove('active'));
-                    const targetPage = $(`#page-${pageId}`);
-                    if (targetPage) targetPage.classList.add('active');
-                    else $('#page-home').classList.add('active');
-
-                    elements.mainNavLinks.forEach(l => l.classList.remove('active'));
-                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
-                    
-                    let title = pageId.charAt(0).toUpperCase() + pageId.slice(1);
-                    if (title === 'Timetable') title = 'Time Table';
-                    elements.headerTitle.textContent = title;
-                    
-                    if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
-                    window.scrollTo(0,0);
-                    AOS.refresh();
-                });
-            });
-            
             elements.userAvatar.addEventListener('click', (e) => { e.stopPropagation(); elements.userMenuDropdown.classList.toggle('active'); });
             const handleLogout = (e) => { e.preventDefault(); auth.signOut(); };
             elements.logoutBtnSidebar.addEventListener('click', handleLogout);
             elements.logoutBtnDropdown.addEventListener('click', handleLogout);
             elements.mobileMenuToggle.addEventListener('click', (e) => { e.stopPropagation(); elements.sidebar.classList.add('open'); elements.mobileOverlay.style.display = 'block'; });
             elements.mobileOverlay.addEventListener('click', () => { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; });
-            document.addEventListener('click', (e) => { if (!elements.userMenu.contains(e.target)) elements.userMenuDropdown.classList.remove('active'); });
+            document.addEventListener('click', (e) => { if (elements.userMenuDropdown.classList.contains('active') && !elements.userMenuDropdown.parentElement.contains(e.target)) elements.userMenuDropdown.classList.remove('active'); });
+
+            // Profile Edit Modal (unchanged from previous version)
+            // It is included here to make the code complete.
+            const defaultAvatars = [
+                'https://i.postimg.cc/Fs3m1D50/default-avatar-1.png', 'https://i.postimg.cc/W3kRk97C/default-avatar-2.png',
+                'https://i.postimg.cc/sXbC2g5P/default-avatar-3.png', 'https://i.postimg.cc/qR7y1f3Z/default-avatar-4.png',
+                'https://i.postimg.cc/tJ05RNDq/default-avatar-5.png'
+            ];
+            let selectedAvatarUrl = null, newPfpFile = null;
+            function openEditProfileModal() {
+                elements.editName.value = userData.name || '';
+                elements.editUsername.value = userData.username || '';
+                elements.editBio.value = userData.bio || '';
+                elements.pfpPreview.style.display = 'none'; newPfpFile = null; selectedAvatarUrl = null;
+                elements.defaultAvatarsContainer.innerHTML = defaultAvatars.map(url => `<img src="${url}" class="avatar-option" data-url="${url}">`).join('');
+                document.querySelectorAll('.avatar-option').forEach(img => img.addEventListener('click', () => {
+                    document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
+                    img.classList.add('selected'); selectedAvatarUrl = img.dataset.url;
+                    elements.pfpPreview.src = selectedAvatarUrl; elements.pfpPreview.style.display = 'inline-block';
+                    newPfpFile = null; elements.editPFP.value = '';
+                }));
+                elements.editProfileModal.classList.add('active');
+            }
+            elements.editPFP.addEventListener('change', e => {
+                const file = e.target.files[0]; if (!file) return; newPfpFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    elements.pfpPreview.src = event.target.result; elements.pfpPreview.style.display = 'inline-block';
+                    selectedAvatarUrl = null; document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
+                };
+                reader.readAsDataURL(file);
+            });
+            async function handleProfileSave(e) {
+                e.preventDefault();
+                elements.saveProfileBtn.disabled = true; elements.saveProfileBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                const updates = { name: elements.editName.value.trim(), username: elements.editUsername.value.trim(), bio: elements.editBio.value.trim() };
+                try {
+                    if (newPfpFile) {
+                        const filePath = `profile_pictures/${currentUser.uid}/${newPfpFile.name}`;
+                        const fileSnapshot = await storage.ref(filePath).put(newPfpFile);
+                        updates.profilePictureURL = await fileSnapshot.ref.getDownloadURL();
+                    } else if (selectedAvatarUrl) { updates.profilePictureURL = selectedAvatarUrl; }
+                    await db.collection('users').doc(currentUser.uid).update(updates);
+                    showToast('Profile updated!', 'success'); elements.editProfileModal.classList.remove('active');
+                } catch (error) { showToast('Error updating profile.', 'error'); } 
+                finally { elements.saveProfileBtn.disabled = false; elements.saveProfileBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
+            }
+            elements.editProfileBtnDropdown.addEventListener('click', openEditProfileModal);
+            elements.editProfileBtnInProfile.addEventListener('click', openEditProfileModal);
+            elements.closeModalBtn.addEventListener('click', () => elements.editProfileModal.classList.remove('active'));
+            elements.cancelEditBtn.addEventListener('click', () => elements.editProfileModal.classList.remove('active'));
+            elements.saveProfileBtn.addEventListener('click', handleProfileSave);
         });
     </script>
 </body>
