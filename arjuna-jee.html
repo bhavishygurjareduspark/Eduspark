@@ -395,7 +395,7 @@
         for (let i = 0; i < usersToDelete.length; i += batchSize) {
             const batch = db.batch();
             const chunk = usersToDelete.slice(i, i + batchSize);
-            logMessage(`Processing batch ${i / batchSize + 1} of ${Math.ceil(usersToDelete.length / batchSize)}...`);
+            logMessage(`Processing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(usersToDelete.length / batchSize)}...`);
 
             chunk.forEach(user => {
                 logMessage(`Queueing deletion of Firestore doc for user: ${user.username} (UID: ${user.uid})`);
@@ -427,108 +427,6 @@
         userCountSpan.textContent = 0;
         toggleLoading(false);
     });
-
-    /*
-    ================================================================================================
-    THE CORRECT WAY: USING A CLOUD FUNCTION
-    ================================================================================================
-
-    To fully delete users (both Firestore data AND Auth records), you would need to deploy an
-    HTTP-triggered Cloud Function. This tool could then call that function.
-
-    Here's what the Cloud Function code (`index.js`) would look like:
-
-    ```javascript
-    // functions/index.js
-    const functions = require("firebase-functions");
-    const admin = require("firebase-admin");
-    admin.initializeApp();
-
-    const db = admin.firestore();
-
-    // Use CORS to allow your admin tool's domain to call this function
-    const cors = require("cors")({ origin: true });
-
-    exports.deleteSpamUsers = functions.https.onCall(async (data, context) => {
-        // 1. Authentication Check: Ensure the caller is an admin
-        if (!context.auth) {
-            throw new functions.https.HttpsError(
-                "unauthenticated",
-                "The function must be called while authenticated."
-            );
-        }
-
-        const adminUserDoc = await db.collection("users").doc(context.auth.uid).get();
-        if (!adminUserDoc.exists || adminUserDoc.data().role !== "admin") {
-            throw new functions.https.HttpsError(
-                "permission-denied",
-                "Caller is not an administrator."
-            );
-        }
-
-        // 2. Input validation
-        const uidsToDelete = data.uids;
-        if (!Array.isArray(uidsToDelete) || uidsToDelete.length === 0) {
-            throw new functions.https.HttpsError(
-                "invalid-argument",
-                "The function must be called with an array of UIDs."
-            );
-        }
-        
-        // Max 1000 users per call to avoid timeout
-        if (uidsToDelete.length > 1000) {
-            throw new functions.https.HttpsError(
-                "invalid-argument",
-                "Cannot delete more than 1000 users at a time."
-            );
-        }
-
-        try {
-            // 3. Delete from Firebase Authentication
-            const deleteResult = await admin.auth().deleteUsers(uidsToDelete);
-            
-            const successfulDeletes = deleteResult.successCount;
-            const failedDeletes = deleteResult.failureCount;
-            console.log(`Successfully deleted ${successfulDeletes} auth users.`);
-            console.log(`Failed to delete ${failedDeletes} auth users.`);
-
-            // 4. Delete from Firestore
-            const batch = db.batch();
-            uidsToDelete.forEach(uid => {
-                const userDocRef = db.collection("users").doc(uid);
-                batch.delete(userDocRef);
-            });
-            await batch.commit();
-            console.log(`Successfully deleted ${uidsToDelete.length} user documents from Firestore.`);
-
-            return {
-                status: "success",
-                message: `Processed ${uidsToDelete.length} users. Auth deletes: ${successfulDeletes} success, ${failedDeletes} failed. Firestore deletes: ${uidsToDelete.length} success.`,
-                successCount: successfulDeletes,
-                failureCount: failedDeletes,
-            };
-        } catch (error) {
-            console.error("Error deleting users:", error);
-            throw new functions.https.HttpsError("internal", "An error occurred while deleting users.");
-        }
-    });
-    ```
-    
-    You would then modify the `deleteUsersBtn` event listener in this HTML file to call this function:
-    
-    ```javascript
-    // In deleteUsersBtn click handler:
-    const deleteSpamUsers = firebase.functions().httpsCallable('deleteSpamUsers');
-    const uids = usersToDelete.map(user => user.uid);
-    try {
-        const result = await deleteSpamUsers({ uids: uids });
-        logMessage(result.data.message, 'success');
-    } catch (error) {
-        logMessage(`Cloud Function error: ${error.message}`, 'error');
-    }
-    ```
-    ================================================================================================
-    */
 
 </script>
 
