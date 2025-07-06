@@ -17,6 +17,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Chart.js for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
@@ -30,8 +33,12 @@
             --border-color: rgba(255, 255, 255, 0.1);
             --gradient: linear-gradient(135deg, #ff3333, #cc0000);
             --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.4);
-            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-md: 12px;
             --sidebar-width: 260px;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --info: #3498db;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -62,13 +69,15 @@
         .sidebar-header { padding: 0 25px 20px 25px; display: flex; align-items: center; gap: 10px; }
         .sidebar-header .logo-icon { font-size: 2rem; color: var(--primary-color); }
         .sidebar-header .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--text-light); }
+
         .sidebar-nav { flex-grow: 1; overflow-y: auto; }
         .sidebar-nav a { display: flex; align-items: center; gap: 15px; padding: 14px 25px; color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; position: relative; transition: background-color 0.3s, color 0.3s; }
         .sidebar-nav a i { font-size: 1.1rem; width: 20px; text-align: center; }
         .sidebar-nav a:hover { background-color: var(--bg-light); color: var(--text-light); }
         .sidebar-nav a.active { background-color: rgba(255, 51, 51, 0.1); color: var(--primary-light); font-weight: 600; }
-        .sidebar-nav a.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background-color: var(--primary-color); }
-        .sidebar-footer { padding: 20px 25px 0 25px; border-top: 1px solid var(--border-color); }
+        .sidebar-nav a.active::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background-color: var(--primary-color); border-radius: 0 4px 4px 0; }
+        
+        .sidebar-footer { padding: 20px 25px 0 25px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px;}
 
         .main-container { width: 100%; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
         .header {
@@ -82,7 +91,7 @@
         .user-menu { position: relative; }
         .user-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; background: var(--gradient); color: white; font-weight: 600; overflow: hidden; }
         .user-avatar img { width: 100%; height: 100%; }
-        .user-menu-dropdown { display: none; position: absolute; top: calc(100% + 15px); right: 0; background-color: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 240px; z-index: 1001; padding: 10px 0; animation: dropdown-fade-in 0.3s ease forwards; }
+        .user-menu-dropdown { display: none; position: absolute; top: calc(100% + 15px); right: 0; background-color: var(--card-bg); border-radius: var(--border-radius-md); box-shadow: var(--shadow-md); width: 240px; z-index: 1001; padding: 10px 0; animation: dropdown-fade-in 0.3s ease forwards; border: 1px solid var(--border-color); }
         .user-menu-dropdown.active { display: block; }
         @keyframes dropdown-fade-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); }}
         .dropdown-header { padding: 10px 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; }
@@ -94,47 +103,47 @@
         .page-content.active { display: block; }
         @keyframes pageFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color); }
+        .card { background-color: var(--card-bg); padding: 25px; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); transition: all 0.3s ease;}
+        .card:hover { border-color: rgba(255, 51, 51, 0.4); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
         .section-header { margin-bottom: 25px; }
         .section-header h2 { font-size: 1.8rem; color: var(--text-light); }
         .section-header p { color: var(--text-muted); }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--gradient); color: white; }
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255,51,51,0.4); }
         .btn-secondary { background-color: var(--secondary-light); color: var(--text-light); }
         .btn-secondary:hover { background-color: var(--primary-color); }
+        .btn-donation { background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); }
+        .btn-donation:hover { background: var(--primary-color); color: white; }
         .empty-state { padding: 40px; text-align: center; color: var(--text-muted); }
         .empty-state i { font-size: 2.5rem; margin-bottom: 15px; display: block; opacity: 0.5; }
         
         /* Live Classes Section */
-        .live-class-card { background: var(--secondary-light); padding: 20px; border-radius: var(--border-radius); display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden;}
-        .live-indicator {
-            position: absolute; top: 15px; right: 15px;
-            background-color: var(--primary-dark); color: white;
-            font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 50px;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .live-indicator::before {
-            content: ''; width: 8px; height: 8px; background-color: var(--primary-light); border-radius: 50%;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
+        .live-class-card { background: var(--secondary-light); padding: 20px; border-radius: var(--border-radius-md); display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden;}
+        .live-indicator { position: absolute; top: 15px; right: 15px; background-color: var(--primary-dark); color: white; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 50px; display: flex; align-items: center; gap: 6px; }
+        .live-indicator::before { content: ''; width: 8px; height: 8px; background-color: var(--primary-light); border-radius: 50%; animation: pulse 1.5s infinite ease-in-out; }
         @keyframes pulse { 0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 102, 102, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(255, 102, 102, 0); } }
         .live-class-icon { font-size: 2rem; color: var(--primary-light); }
         .live-class-details h4 { font-size: 1.2rem; color: var(--text-light); }
         .live-class-details p { color: var(--text-muted); font-size: 0.9rem; }
         .live-class-card .btn { margin-left: auto; }
-        
         .upcoming-class-card { background-color: var(--card-bg); }
-
+        
+        /* Form Styles */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-light); color: var(--text-dark); font-size: 1rem; }
+        .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(255,51,51,0.2); }
+        
+        /* Mobile responsive adjustments */
         .mobile-menu-toggle { display: none; background: none; border: none; color: var(--text-light); font-size: 1.5rem; cursor: pointer; z-index: 1101; }
         .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
         .sidebar.open ~ .mobile-overlay { display: block; }
         
-        /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
+            .sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
             .main-container { margin-left: 0; }
             .mobile-menu-toggle { display: block; }
         }
@@ -143,6 +152,8 @@
             #header-title { font-size: 1.2rem; }
             .grid-container { grid-template-columns: 1fr; }
             .main-content { padding: 20px; }
+            .live-class-card { flex-direction: column; align-items: flex-start; text-align: left; }
+            .live-class-card .btn { margin-left: 0; margin-top: 15px; width: 100%; }
         }
     </style>
 </head>
@@ -171,6 +182,7 @@
             <a href="#" data-page="about"><i class="fas fa-info-circle"></i><span>About Us</span></a>
         </nav>
         <div class="sidebar-footer">
+            <a href="#" class="btn btn-donation" style="width: 100%;"><i class="fas fa-heart"></i> Donate</a>
             <a href="#" id="logoutBtnSidebar" class="btn btn-secondary" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </aside>
@@ -181,7 +193,6 @@
             <button class="mobile-menu-toggle" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
             <h1 id="header-title">Dashboard</h1>
             <div class="header-actions">
-                <a href="#" class="btn btn-primary" id="donationBtn" style="background: var(--primary-dark);"><i class="fas fa-heart"></i> Donate</a>
                 <div class="user-menu">
                     <div class="user-avatar" id="userAvatar"></div>
                     <div class="user-menu-dropdown" id="userMenuDropdown">
@@ -191,6 +202,7 @@
                         </div>
                         <a href="#" data-page="profile" class="dropdown-item"><i class="fas fa-user-circle"></i><span>My Profile</span></a>
                         <a href="books.html" class="dropdown-item"><i class="fas fa-book"></i><span>Book Library</span></a>
+                        <a href="batches.html" class="dropdown-item"><i class="fas fa-chalkboard"></i><span>Batches</span></a>
                         <a href="#" id="logoutBtnDropdown" class="dropdown-item" style="color:var(--primary-light);"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
                     </div>
                 </div>
@@ -217,14 +229,25 @@
                 <div class="section-header"><h2><i class="fas fa-video"></i> Live Classes</h2><p>Join ongoing classes or check the schedule for upcoming ones.</p></div>
                 <div data-aos="fade-up">
                     <h3 style="margin-bottom: 15px;">Ongoing Live Classes</h3>
-                    <div id="live-classes-container" class="grid-container" style="gap: 15px;">
-                        <!-- Live class cards will be injected here -->
-                    </div>
+                    <div id="live-classes-container" class="grid-container" style="gap: 15px;"></div>
                 </div>
                 <div data-aos="fade-up" style="margin-top: 40px;">
                     <h3 style="margin-bottom: 15px;">Upcoming Classes</h3>
-                    <div id="upcoming-classes-container" class="grid-container" style="gap: 15px;">
-                        <!-- Upcoming class cards will be injected here -->
+                    <div id="upcoming-classes-container" class="grid-container" style="gap: 15px;"></div>
+                </div>
+            </div>
+
+            <!-- Test Performance Page -->
+            <div id="page-performance" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-chart-line"></i> Test Performance</h2><p>Analyze your progress and identify areas for improvement.</p></div>
+                <div class="grid-container" style="grid-template-columns: 1fr 2fr; align-items: flex-start;">
+                    <div class="card" data-aos="fade-up">
+                        <h3>Attendance Ratio</h3>
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                    <div class="card" data-aos="fade-up" data-aos-delay="100">
+                        <h3>Test Score Analysis (Last 5)</h3>
+                        <canvas id="scoreChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -234,7 +257,6 @@
             <div id="page-tests" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The Tests & Quizzes section is under construction.</p></div></div></div>
             <div id="page-doubt" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>Our doubt-solving platform is under construction.</p></div></div></div>
             <div id="page-profile" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>A detailed profile management page is under construction. For now, see your profile details in the Books & Batches sections.</p></div></div></div>
-            <div id="page-performance" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>Detailed test performance analytics are under construction.</p></div></div></div>
             <div id="page-bookmarks" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>The bookmarks feature is under construction.</p></div></div></div>
             <div id="page-request" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>A dedicated service request portal is under construction.</p></div></div></div>
             <div id="page-support" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3><p>A comprehensive support center is under construction.</p></div></div></div>
@@ -263,29 +285,24 @@
             
             const elements = {
                 loadingOverlay: $('#loadingOverlay'),
-                sidebar: $('#sidebar'),
-                mobileOverlay: $('#mobileOverlay'),
-                mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item'),
+                sidebar: $('#sidebar'), mobileOverlay: $('#mobileOverlay'),
+                mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item[data-page]'),
                 pageContents: document.querySelectorAll('.page-content'),
                 headerTitle: $('#header-title'),
-                userMenu: $('.user-menu'),
-                userAvatar: $('#userAvatar'),
-                userMenuDropdown: $('#userMenuDropdown'),
-                logoutBtnSidebar: $('#logoutBtnSidebar'),
-                logoutBtnDropdown: $('#logoutBtnDropdown'),
+                userMenu: $('.user-menu'), userAvatar: $('#userAvatar'), userMenuDropdown: $('#userMenuDropdown'),
+                logoutBtnSidebar: $('#logoutBtnSidebar'), logoutBtnDropdown: $('#logoutBtnDropdown'),
                 mobileMenuToggle: $('#mobileMenuToggle'),
                 welcomeUserName: $('#welcomeUserName'),
-                statPoints: $('#statPoints'),
-                statCredits: $('#statCredits'),
-                statBooksShared: $('#statBooksShared'),
-                statBatchesEnrolled: $('#statBatchesEnrolled'),
-                dropdownUserName: $('#dropdownUserName'),
-                dropdownUserEmail: $('#dropdownUserEmail'),
+                statPoints: $('#statPoints'), statCredits: $('#statCredits'),
+                statBooksShared: $('#statBooksShared'), statBatchesEnrolled: $('#statBatchesEnrolled'),
+                dropdownUserName: $('#dropdownUserName'), dropdownUserEmail: $('#dropdownUserEmail'),
                 liveClassesContainer: $('#live-classes-container'),
                 upcomingClassesContainer: $('#upcoming-classes-container'),
             };
 
             let userListener = null;
+            let attendanceChart = null;
+            let scoreChart = null;
 
             auth.onAuthStateChanged(user => {
                 if (!user) { window.location.replace('index.html'); } 
@@ -308,6 +325,7 @@
                     elements.loadingOverlay.classList.add('hidden');
                 });
                 fetchLiveClasses();
+                initializeCharts();
             }
 
             function updateUI(userData) {
@@ -342,15 +360,11 @@
 
             async function fetchLiveClasses() {
                 try {
-                    const now = new Date();
                     const liveQuery = db.collection('liveClasses').where('status', '==', 'live').orderBy('startTime', 'desc');
                     const upcomingQuery = db.collection('liveClasses').where('status', '==', 'upcoming').orderBy('startTime', 'asc');
-
                     const [liveSnapshot, upcomingSnapshot] = await Promise.all([liveQuery.get(), upcomingQuery.get()]);
-
-                    renderClasses(elements.liveClassesContainer, liveSnapshot);
-                    renderClasses(elements.upcomingClassesContainer, upcomingSnapshot);
-
+                    renderClasses(elements.liveClassesContainer, liveSnapshot, true);
+                    renderClasses(elements.upcomingClassesContainer, upcomingSnapshot, false);
                 } catch (error) {
                     console.error("Error fetching live classes:", error);
                     elements.liveClassesContainer.innerHTML = `<div class="empty-state">Could not load classes.</div>`;
@@ -358,9 +372,9 @@
                 }
             }
 
-            function renderClasses(container, snapshot) {
+            function renderClasses(container, snapshot, isLive) {
                 if (snapshot.empty) {
-                    container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><i class="fas fa-broadcast-tower"></i><p>No classes at the moment.</p></div>`;
+                    container.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><i class="fas fa-broadcast-tower"></i><p>No ${isLive ? 'ongoing' : 'upcoming'} classes at the moment.</p></div>`;
                     return;
                 }
                 container.innerHTML = '';
@@ -374,7 +388,6 @@
                 const cardClass = isLive ? 'live-class-card' : 'live-class-card upcoming-class-card';
                 const buttonText = isLive ? 'Join Now' : 'Starts Soon';
                 const buttonAction = isLive ? `window.open('${classData.joinUrl}', '_blank')` : '';
-                
                 return `
                     <div class="${cardClass}" data-aos="fade-up">
                         ${isLive ? '<div class="live-indicator">LIVE</div>' : ''}
@@ -385,10 +398,52 @@
                             <p style="font-size:0.8rem;">By: ${classData.instructor || 'Instructor'}</p>
                         </div>
                         <button class="btn ${isLive ? 'btn-primary' : 'btn-secondary'}" ${isLive ? `onclick="${buttonAction}"` : 'disabled'}>${buttonText}</button>
-                    </div>
-                `;
+                    </div>`;
             }
+            
+            function initializeCharts() {
+                const chartFontColor = 'rgba(255, 255, 255, 0.7)';
+                // Placeholder Data
+                const attendanceData = {
+                    labels: ['Attended', 'Missed'],
+                    datasets: [{
+                        label: 'Class Attendance',
+                        data: [85, 15], // Example: 85% attended
+                        backgroundColor: [ 'rgba(46, 204, 113, 0.7)', 'rgba(255, 51, 51, 0.5)' ],
+                        borderColor: [ '#2ecc71', '#ff3333' ],
+                        borderWidth: 1
+                    }]
+                };
+                const scoreData = {
+                    labels: ['Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5'],
+                    datasets: [{
+                        label: 'Your Score (%)',
+                        data: [75, 82, 79, 91, 88],
+                        backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                };
+                
+                if (attendanceChart) attendanceChart.destroy();
+                const attCtx = document.getElementById('attendanceChart');
+                if (attCtx) {
+                    attendanceChart = new Chart(attCtx, {
+                        type: 'doughnut', data: attendanceData,
+                        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartFontColor } } } }
+                    });
+                }
 
+                if (scoreChart) scoreChart.destroy();
+                const scoreCtx = document.getElementById('scoreChart');
+                if (scoreCtx) {
+                    scoreChart = new Chart(scoreCtx, {
+                        type: 'bar', data: scoreData,
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { color: chartFontColor } }, x: { ticks: { color: chartFontColor } } } }
+                    });
+                }
+            }
 
             // --- Navigation Logic ---
             elements.mainNavLinks.forEach(link => {
@@ -399,50 +454,27 @@
 
                     elements.pageContents.forEach(page => page.classList.remove('active'));
                     const targetPage = $(`#page-${pageId}`);
-                    if (targetPage) {
-                        targetPage.classList.add('active');
-                    }
+                    if (targetPage) targetPage.classList.add('active');
 
                     elements.mainNavLinks.forEach(l => l.classList.remove('active'));
                     document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
 
                     elements.headerTitle.textContent = link.querySelector('span').textContent;
                     
-                    if (window.innerWidth <= 1024) {
-                        elements.sidebar.classList.remove('open');
-                        elements.mobileOverlay.style.display = 'none';
-                    }
+                    if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
                     window.scrollTo(0,0);
                     AOS.refresh();
                 });
             });
             
-            elements.userAvatar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                elements.userMenuDropdown.classList.toggle('active');
-            });
-            
+            elements.userAvatar.addEventListener('click', (e) => { e.stopPropagation(); elements.userMenuDropdown.classList.toggle('active'); });
             const handleLogout = (e) => { e.preventDefault(); auth.signOut(); };
             elements.logoutBtnSidebar.addEventListener('click', handleLogout);
             elements.logoutBtnDropdown.addEventListener('click', handleLogout);
-
-            elements.mobileMenuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                elements.sidebar.classList.add('open');
-                elements.mobileOverlay.style.display = 'block';
-            });
-            
-            const closeMobileSidebar = () => {
-                elements.sidebar.classList.remove('open');
-                elements.mobileOverlay.style.display = 'none';
-            };
-            
+            elements.mobileMenuToggle.addEventListener('click', (e) => { e.stopPropagation(); elements.sidebar.classList.add('open'); elements.mobileOverlay.style.display = 'block'; });
+            const closeMobileSidebar = () => { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; };
             elements.mobileOverlay.addEventListener('click', closeMobileSidebar);
-            document.addEventListener('click', (e) => {
-                if (!elements.userMenu.contains(e.target)) {
-                    elements.userMenuDropdown.classList.remove('active');
-                }
-            });
+            document.addEventListener('click', (e) => { if (!elements.userMenu.contains(e.target)) elements.userMenuDropdown.classList.remove('active'); });
         });
     </script>
 </body>
