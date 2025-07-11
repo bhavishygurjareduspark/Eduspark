@@ -111,70 +111,45 @@
         .btn-secondary { background-color: var(--bg-light); color: var(--text-light); }
         .btn-secondary:hover { background-color: #333; }
 
-        /* Book Card Styling */
-        .book-card {
+        /* Dashboard Book Card Styling */
+        #page-books .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .dashboard-book-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
+            border-radius: var(--border-radius-md);
             overflow: hidden;
+            text-align: center;
             display: flex;
             flex-direction: column;
             transition: all 0.3s ease;
         }
-        .book-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        .dashboard-book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
             border-color: var(--primary-light);
         }
-        .book-cover {
+        .dashboard-book-card .book-cover {
             width: 100%;
-            aspect-ratio: 2 / 3;
+            aspect-ratio: 4 / 5;
             object-fit: cover;
+            background-color: var(--bg-light);
         }
-        .book-info {
-            padding: 20px;
+        .dashboard-book-card .book-info {
+            padding: 15px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
-        .book-title {
-            font-size: 1.1rem;
+        .dashboard-book-card .book-title {
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-light);
-            margin-bottom: 5px;
-        }
-        .book-author {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-        }
-        .book-description {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
             flex-grow: 1;
             margin-bottom: 15px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        .book-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-        .book-downloads {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        .book-downloads i {
-            margin-right: 6px;
-            color: var(--primary-color);
+            line-height: 1.4;
         }
 
         .stat-bar { width: 100%; height: 12px; background-color: var(--stat-bar-bg); border-radius: 6px; overflow: hidden; margin-top: 8px; }
@@ -183,7 +158,6 @@
         .character-viewer-card { padding: 0; overflow: hidden; }
         model-viewer { width: 100%; height: 400px; background-color: transparent; --progress-bar-color: var(--primary-color); }
         
-        /* Modal & Other styles */
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; animation: fadeInBody 0.3s ease; }
         .modal-content { background-color: var(--card-bg); margin: auto; padding: 30px; border: 1px solid var(--border-color); width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); position: relative; }
@@ -204,7 +178,6 @@
         .empty-state h3 { margin-bottom: 10px; }
         .empty-state p { color: var(--text-muted); max-width: 400px; margin: 0 auto; }
 
-        /* Toast Notification */
         #toast { visibility: hidden; min-width: 250px; background-color: var(--card-bg); color: var(--text-light); text-align: center; border-radius: var(--border-radius-md); padding: 16px; position: fixed; z-index: 9999; left: 50%; transform: translateX(-50%); bottom: 30px; border-left: 5px solid var(--success); box-shadow: var(--shadow-md); }
         #toast.show { visibility: visible; animation: toastfadein 0.5s, toastfadeout 0.5s 2.5s; }
         #toast.error { border-left-color: var(--hp-color); }
@@ -230,7 +203,9 @@
             .grid-container { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
-             #booksContainer { grid-template-columns: 1fr; }
+             #page-books .grid-container { 
+                grid-template-columns: 1fr; 
+             }
         }
 
     </style>
@@ -356,7 +331,7 @@
 
             <!-- ADMIN-READY DYNAMIC PAGES -->
             <div id="page-books" class="page-content">
-                <div class="section-header"><h2><i class="fas fa-book-open"></i> Bestselling Books</h2><p>Explore our curated collection of top-rated books to aid your learning.</p></div>
+                <div class="section-header"><h2><i class="fas fa-book-open"></i> Top Books</h2><p>Explore our curated collection of the most popular books.</p></div>
                 <div id="booksContainer" class="grid-container"></div>
             </div>
             <div id="page-batches" class="page-content">
@@ -499,7 +474,7 @@
                 let currentHp = Math.max(0, gameConfig.baseHp - (backlogHours * gameConfig.hpPenaltyPerBacklogHour));
                 const hpPercentage = (currentHp / gameConfig.baseHp) * 100;
 
-                elements.userAvatar.innerHTML = data.profilePictureURL ? `<img src="${data.profilePictureURL}">` : `<span>${(data.name || 'U').charAt(0)}</span>`;
+                elements.userAvatar.innerHTML = data.profilePictureURL ? `<img src="${data.profilePictureURL}" alt="User Avatar">` : `<span>${(data.name || 'U').charAt(0)}</span>`;
                 elements.dropdownUserName.textContent = data.name || 'User';
                 elements.dropdownUserEmail.textContent = data.email || '';
                 elements.welcomeUserName.textContent = data.name || 'Explorer';
@@ -567,14 +542,29 @@
             function renderGenericEmptyState(container, icon, title, message) {
                 container.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><div class="empty-state"><i class="${icon}"></i><h3>${title}</h3><p>${message}</p></div></div>`;
             }
+            
+            function createDashboardBookCardHTML(book) {
+                const coverURL = book.coverURL || 'https://via.placeholder.com/300x450/212121/f1f2f6?text=No+Cover';
+                const title = book.bookName || 'Untitled Book';
 
+                return `
+                    <div class="dashboard-book-card" data-aos="fade-up">
+                        <img src="${coverURL}" alt="Cover of ${title}" class="book-cover" loading="lazy">
+                        <div class="book-info">
+                            <h4 class="book-title">${title}</h4>
+                            <a href="/books" class="btn btn-primary" style="width: 100%;">View Book</a>
+                        </div>
+                    </div>
+                `;
+            }
+            
             async function renderBooks() {
-                if(pageDataFetched.books) return; 
+                if (pageDataFetched.books) return;
                 pageDataFetched.books = true;
-                elements.booksContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="spinner-large"></div><p style="margin-top:15px;">Loading Bestsellers...</p></div>`;
+                elements.booksContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="spinner-large"></div><p style="margin-top:15px;">Loading Top Books...</p></div>`;
 
                 try {
-                    const snapshot = await db.collection('books').orderBy('downloads', 'desc').limit(25).get();
+                    const snapshot = await db.collection('books').where('status', '==', 'approved').orderBy('downloads', 'desc').limit(25).get();
                     let booksHTML = '';
                     if (snapshot.empty) {
                         renderGenericEmptyState(elements.booksContainer, 'fas fa-book-open', 'No Books Available', 'Our digital library is currently being updated. Please check back later.');
@@ -582,30 +572,10 @@
                     }
 
                     snapshot.forEach(doc => {
-                        const book = doc.data();
-                        const coverURL = book.coverURL || 'https://via.placeholder.com/300x450/212121/f1f2f6?text=No+Cover';
-                        const title = book.title || 'Untitled Book';
-                        const author = book.author || 'Unknown Author';
-                        const description = book.description || 'No description available for this book.';
-                        const downloads = book.downloads || 0;
-
-                        booksHTML += `
-                            <div class="book-card" data-aos="fade-up">
-                                <img src="${coverURL}" alt="Cover of ${title}" class="book-cover">
-                                <div class="book-info">
-                                    <h4 class="book-title">${title}</h4>
-                                    <p class="book-author">by ${author}</p>
-                                    <p class="book-description">${description}</p>
-                                    <div class="book-footer">
-                                        <span class="book-downloads"><i class="fas fa-download"></i> ${downloads.toLocaleString()}</span>
-                                        <a href="/books" class="btn btn-primary btn-sm" style="padding: 8px 15px;">View Book</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                        booksHTML += createDashboardBookCardHTML(doc.data());
                     });
                     elements.booksContainer.innerHTML = booksHTML;
-                    AOS.refresh(); // Re-initialize AOS to animate the new cards
+                    AOS.refresh();
                 } catch (error) {
                     console.error("Error fetching books:", error);
                     renderGenericEmptyState(elements.booksContainer, 'fas fa-exclamation-triangle', 'Error Loading Books', 'We couldn\'t fetch the book collection. Please try again later.');
@@ -659,12 +629,9 @@
 
                     elements.pageContents.forEach(page => page.classList.remove('active'));
                     $(`#page-${pageId}`).classList.add('active');
-
-                    // Update active state for all nav links
-                    elements.navLinks.forEach(l => {
-                        if(l.dataset.page === pageId) l.classList.add('active');
-                        else l.classList.remove('active');
-                    });
+                    
+                    document.querySelectorAll('[data-page]').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
                     
                     const title = pageId.charAt(0).toUpperCase() + pageId.slice(1);
                     elements.headerTitle.textContent = title.replace('Enemies', 'Backlogs');
