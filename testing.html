@@ -111,6 +111,72 @@
         .btn-secondary { background-color: var(--bg-light); color: var(--text-light); }
         .btn-secondary:hover { background-color: #333; }
 
+        /* Book Card Styling */
+        .book-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border-color: var(--primary-light);
+        }
+        .book-cover {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+        }
+        .book-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        .book-author {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        .book-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-bottom: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        .book-downloads {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .book-downloads i {
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+
         .stat-bar { width: 100%; height: 12px; background-color: var(--stat-bar-bg); border-radius: 6px; overflow: hidden; margin-top: 8px; }
         .stat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease-in-out; }
         .profile-layout { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: flex-start; }
@@ -163,6 +229,10 @@
             .main-content { padding: 20px; }
             .grid-container { grid-template-columns: 1fr; }
         }
+        @media (max-width: 480px) {
+             #booksContainer { grid-template-columns: 1fr; }
+        }
+
     </style>
 </head>
 <body>
@@ -286,11 +356,11 @@
 
             <!-- ADMIN-READY DYNAMIC PAGES -->
             <div id="page-books" class="page-content">
-                <div class="section-header"><h2><i class="fas fa-book-open"></i> Books</h2></div>
+                <div class="section-header"><h2><i class="fas fa-book-open"></i> Bestselling Books</h2><p>Explore our curated collection of top-rated books to aid your learning.</p></div>
                 <div id="booksContainer" class="grid-container"></div>
             </div>
             <div id="page-batches" class="page-content">
-                <div class="section-header"><h2><i class="fas fa-users"></i> Batches</h2></div>
+                <div class="section-header"><h2><i class="fas fa-users"></i> My Batches</h2></div>
                 <div id="batchesContainer" class="grid-container"></div>
             </div>
             <div id="page-live" class="page-content">
@@ -499,14 +569,51 @@
             }
 
             async function renderBooks() {
-                if(pageDataFetched.books) return; pageDataFetched.books = true;
-                // FUTURE: Fetch data from db.collection('books')...
-                renderGenericEmptyState(elements.booksContainer, 'fas fa-book-open', 'No Books Available', 'Our digital library is currently being updated. Please check back later.');
+                if(pageDataFetched.books) return; 
+                pageDataFetched.books = true;
+                elements.booksContainer.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><div class="spinner-large"></div><p style="margin-top:15px;">Loading Bestsellers...</p></div>`;
+
+                try {
+                    const snapshot = await db.collection('books').orderBy('downloads', 'desc').limit(25).get();
+                    let booksHTML = '';
+                    if (snapshot.empty) {
+                        renderGenericEmptyState(elements.booksContainer, 'fas fa-book-open', 'No Books Available', 'Our digital library is currently being updated. Please check back later.');
+                        return;
+                    }
+
+                    snapshot.forEach(doc => {
+                        const book = doc.data();
+                        const coverURL = book.coverURL || 'https://via.placeholder.com/300x450/212121/f1f2f6?text=No+Cover';
+                        const title = book.title || 'Untitled Book';
+                        const author = book.author || 'Unknown Author';
+                        const description = book.description || 'No description available for this book.';
+                        const downloads = book.downloads || 0;
+
+                        booksHTML += `
+                            <div class="book-card" data-aos="fade-up">
+                                <img src="${coverURL}" alt="Cover of ${title}" class="book-cover">
+                                <div class="book-info">
+                                    <h4 class="book-title">${title}</h4>
+                                    <p class="book-author">by ${author}</p>
+                                    <p class="book-description">${description}</p>
+                                    <div class="book-footer">
+                                        <span class="book-downloads"><i class="fas fa-download"></i> ${downloads.toLocaleString()}</span>
+                                        <a href="/books" class="btn btn-primary btn-sm" style="padding: 8px 15px;">View Book</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    elements.booksContainer.innerHTML = booksHTML;
+                    AOS.refresh(); // Re-initialize AOS to animate the new cards
+                } catch (error) {
+                    console.error("Error fetching books:", error);
+                    renderGenericEmptyState(elements.booksContainer, 'fas fa-exclamation-triangle', 'Error Loading Books', 'We couldn\'t fetch the book collection. Please try again later.');
+                }
             }
             
             async function renderBatches() {
                 if(pageDataFetched.batches) return; pageDataFetched.batches = true;
-                // FUTURE: Fetch data from db.collection('batches')...
                 renderGenericEmptyState(elements.batchesContainer, 'fas fa-users', 'No Batches Found', 'You are not currently enrolled in any batches. Explore our available batches to join.');
             }
 
@@ -553,8 +660,8 @@
                     elements.pageContents.forEach(page => page.classList.remove('active'));
                     $(`#page-${pageId}`).classList.add('active');
 
-                    // Update active state for sidebar and dropdown links
-                    document.querySelectorAll('.sidebar-nav a, .dropdown-item').forEach(l => {
+                    // Update active state for all nav links
+                    elements.navLinks.forEach(l => {
                         if(l.dataset.page === pageId) l.classList.add('active');
                         else l.classList.remove('active');
                     });
@@ -566,7 +673,10 @@
                         pageRenderFunctions[pageId]();
                     }
                     
-                    if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
+                    if (window.innerWidth <= 1024 && elements.sidebar.classList.contains('open')) { 
+                        elements.sidebar.classList.remove('open'); 
+                        elements.mobileOverlay.style.display = 'none'; 
+                    }
                     window.scrollTo(0,0);
                     AOS.refresh();
                 });
