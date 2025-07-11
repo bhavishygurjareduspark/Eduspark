@@ -28,7 +28,7 @@
             --primary-color: #ff3333;
             --primary-light: #ff6666;
             --text-light: #f1f2f6;
-            --text-dark: #f1f2f6; /* Kept same for dark theme */
+            --text-dark: #f1f2f6;
             --text-muted: #a4b0be;
             --bg-dark: #121212;
             --bg-light: #1e1e1e;
@@ -45,12 +45,6 @@
             --xp-color: #3498db;
             --level-up-color: #f1c40f;
             --stat-bar-bg: rgba(255,255,255,0.1);
-            --mission-color: #9b59b6;
-
-            --rank-gold: #ffd700;
-            --rank-silver: #c0c0c0;
-            --rank-bronze: #cd7f32;
-            --current-user-highlight: #3498db;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -123,36 +117,6 @@
         .character-viewer-card { padding: 0; overflow: hidden; }
         model-viewer { width: 100%; height: 400px; background-color: transparent; --progress-bar-color: var(--primary-color); }
         
-        /* New Leaderboard Styling */
-        #leaderboardList { list-style: none; display: flex; flex-direction: column; gap: 15px; }
-        .leaderboard-item {
-            display: flex; align-items: center; background: var(--bg-light);
-            padding: 12px 15px; border-radius: var(--border-radius-md); gap: 15px;
-            border-left: 5px solid transparent; transition: all 0.3s ease;
-            opacity: 0; animation: itemFadeIn 0.5s ease-out forwards;
-        }
-        @keyframes itemFadeIn { to { opacity: 1; transform: translateX(0); } }
-        .leaderboard-item .rank { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 700; color: var(--text-muted); width: 45px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-        .leaderboard-item .leaderboard-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-        .leaderboard-item .leaderboard-user-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .leaderboard-user-info h4 { font-weight: 600; font-size: 1rem; color: var(--text-light); }
-        .leaderboard-user-info .level-info { font-size: 0.8rem; color: var(--text-muted); }
-        .leaderboard-item .leaderboard-progress { flex-grow: 1; max-width: 250px; }
-        .leaderboard-progress .xp-text { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-        .leaderboard-progress .xp-text .total-xp { font-weight: 700; color: var(--xp-color); }
-        .leaderboard-progress .progress-bar-bg { width: 100%; height: 8px; background-color: var(--stat-bar-bg); border-radius: 4px; overflow: hidden; }
-        .leaderboard-progress .progress-bar-fill { height: 100%; background: var(--xp-color); border-radius: 4px; transition: width 0.5s ease-out; }
-        
-        .leaderboard-item.rank-1, .leaderboard-item.rank-2, .leaderboard-item.rank-3 { background: linear-gradient(to right, rgba(30,30,30,1), var(--bg-light)); }
-        .leaderboard-item.rank-1 { border-left-color: var(--rank-gold); box-shadow: 0 0 15px -5px var(--rank-gold); }
-        .leaderboard-item.rank-2 { border-left-color: var(--rank-silver); }
-        .leaderboard-item.rank-3 { border-left-color: var(--rank-bronze); }
-        .leaderboard-item.rank-1 .rank { color: var(--rank-gold); font-size: 1.5rem; }
-        .leaderboard-item.rank-2 .rank { color: var(--rank-silver); }
-        .leaderboard-item.rank-3 .rank { color: var(--rank-bronze); }
-        .leaderboard-item.rank-1 .rank i { vertical-align: middle; }
-        .leaderboard-item.current-user { border: 2px solid var(--current-user-highlight); box-shadow: 0 0 20px -5px var(--current-user-highlight); }
-        
         /* Modal & Other styles */
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; animation: fadeInBody 0.3s ease; }
@@ -193,17 +157,11 @@
             .mobile-menu-toggle { display: block; }
             .profile-layout { grid-template-columns: 1fr; }
             model-viewer { height: 350px; }
-            .leaderboard-item { flex-wrap: wrap; }
-            .leaderboard-progress { max-width: none; width: 100%; margin-top: 10px; flex-basis: 100%; }
         }
         @media (max-width: 768px) {
             .header { padding: 0 20px; }
             .main-content { padding: 20px; }
             .grid-container { grid-template-columns: 1fr; }
-        }
-         @media (max-width: 480px) {
-            .leaderboard-item .leaderboard-user-info { min-width: 120px; }
-            .leaderboard-item { gap: 10px; }
         }
     </style>
 </head>
@@ -219,7 +177,8 @@
         <nav class="sidebar-nav">
             <a href="#" data-page="home" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
             <a href="#" data-page="profile"><i class="fas fa-user-shield"></i><span>Character</span></a>
-            <a href="#" data-page="leaderboard"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+            <a href="#" data-page="books"><i class="fas fa-book-open"></i><span>Books</span></a>
+            <a href="#" data-page="batches"><i class="fas fa-users"></i><span>Batches</span></a>
             <a href="#" data-page="live"><i class="fas fa-video"></i><span>Live Classes</span></a>
             <a href="#" data-page="timetable"><i class="fas fa-calendar-alt"></i><span>Time Table</span></a>
             <a href="#" data-page="tests"><i class="fas fa-vial"></i><span>Tests</span></a>
@@ -260,14 +219,13 @@
                     <p data-aos="fade-right" data-aos-delay="100">Your learning adventure continues. Here's how to level up!</p>
                 </div>
                 
-                <!-- SIMULATION CONTROLS CARD -->
+                <!-- PRIMARY PRODUCTS CARD -->
                 <div class="card" data-aos="fade-up" style="margin-bottom: 25px;">
-                    <h3><i class="fas fa-gamepad"></i> Simulation Controls</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Use these buttons to simulate student actions and see the point system work.</p>
+                    <h3><i class="fas fa-star"></i> Explore Our Core Features</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Jump right into our primary learning resources.</p>
                     <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                         <button id="simAttendClassBtn" class="btn btn-secondary"><i class="fas fa-chalkboard-teacher"></i> Attend 1hr Class</button>
-                         <button id="simTakeTestBtn" class="btn btn-secondary"><i class="fas fa-vial"></i> Take a Test</button>
-                         <button id="simLeaveEarlyBtn" class="btn btn-secondary" style="background-color: #444;"><i class="fas fa-door-open"></i> Leave Class Early</button>
+                         <button data-page="books" class="btn btn-primary"><i class="fas fa-book-open"></i> Browse Books</button>
+                         <button data-page="batches" class="btn btn-primary"><i class="fas fa-users"></i> View Batches</button>
                     </div>
                 </div>
 
@@ -276,6 +234,17 @@
                     <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-bolt" style="color:var(--xp-color)"></i> Total XP</h3><p style="font-size:2rem; font-weight:700;" id="statPoints">0</p></div>
                     <div class="card" data-aos="fade-up" data-aos-delay="300"><h3><i class="fas fa-clock" style="color:var(--text-muted)"></i> Backlog Hours</h3><p style="font-size:2rem; font-weight:700;" id="statBacklogHours">0</p></div>
                     <div class="card" data-aos="fade-up" data-aos-delay="400"><h3><i class="fas fa-calendar-check" style="color:var(--success)"></i> Classes Attended</h3><p style="font-size:2rem; font-weight:700;" id="statClassesAttended">0</p></div>
+                </div>
+                
+                <!-- SIMULATION CONTROLS CARD -->
+                <div class="card" data-aos="fade-up" style="margin-top: 25px;">
+                    <h3><i class="fas fa-gamepad"></i> Simulation Controls</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Use these buttons to simulate student actions and see the point system work.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                         <button id="simAttendClassBtn" class="btn btn-secondary"><i class="fas fa-chalkboard-teacher"></i> Attend 1hr Class</button>
+                         <button id="simTakeTestBtn" class="btn btn-secondary"><i class="fas fa-vial"></i> Take a Test</button>
+                         <button id="simLeaveEarlyBtn" class="btn btn-secondary" style="background-color: #444;"><i class="fas fa-door-open"></i> Leave Class Early</button>
+                    </div>
                 </div>
             </div>
 
@@ -315,20 +284,15 @@
                  </div>
             </div>
 
-            <!-- LEADERBOARD PAGE -->
-            <div id="page-leaderboard" class="page-content">
-                <div class="section-header">
-                    <h2 data-aos="fade-right"><i class="fas fa-trophy"></i> Top Champions</h2>
-                    <p data-aos="fade-right" data-aos-delay="100">See how you stack up against other learners. Keep earning XP to climb the ranks!</p>
-                </div>
-                <div class="card" data-aos="fade-up" style="padding: 20px;">
-                    <ol id="leaderboardList">
-                        <div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>
-                    </ol>
-                </div>
-            </div>
-            
             <!-- ADMIN-READY DYNAMIC PAGES -->
+            <div id="page-books" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-book-open"></i> Books</h2></div>
+                <div id="booksContainer" class="grid-container"></div>
+            </div>
+            <div id="page-batches" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-users"></i> Batches</h2></div>
+                <div id="batchesContainer" class="grid-container"></div>
+            </div>
             <div id="page-live" class="page-content">
                 <div class="section-header"><h2><i class="fas fa-video"></i> Live Classes</h2></div>
                 <div id="liveClassesContainer" class="grid-container"></div>
@@ -401,7 +365,7 @@
             const $ = (s) => document.querySelector(s);
             const elements = {
                 loadingOverlay: $('#loadingOverlay'), sidebar: $('#sidebar'), mobileOverlay: $('#mobileOverlay'),
-                mainNavLinks: document.querySelectorAll('.sidebar-nav a, .dropdown-item[data-page]'),
+                navLinks: document.querySelectorAll('[data-page]'),
                 pageContents: document.querySelectorAll('.page-content'), headerTitle: $('#header-title'),
                 userAvatar: $('#userAvatar'), userMenuDropdown: $('#userMenuDropdown'),
                 logoutBtnSidebar: $('#logoutBtnSidebar'), logoutBtnDropdown: $('#logoutBtnDropdown'),
@@ -419,14 +383,14 @@
                 defaultAvatarsContainer: $('#defaultAvatarsContainer'), toast: $('#toast'),
                 statLevel: $('#statLevel'), statPoints: $('#statPoints'), statBacklogHours: $('#statBacklogHours'), statClassesAttended: $('#statClassesAttended'),
                 simAttendClassBtn: $('#simAttendClassBtn'), simTakeTestBtn: $('#simTakeTestBtn'), simLeaveEarlyBtn: $('#simLeaveEarlyBtn'),
-                leaderboardList: $('#leaderboardList'),
                 // Dynamic Page Containers
+                booksContainer: $('#booksContainer'), batchesContainer: $('#batchesContainer'),
                 liveClassesContainer: $('#liveClassesContainer'), timeTableContainer: $('#timeTableContainer'),
                 testsContainer: $('#testsContainer'), backlogsContainer: $('#backlogsContainer')
             };
 
             let currentUser = null, userData = null, userListener = null;
-            let pageDataFetched = { leaderboard: false, live: false, timetable: false, tests: false, enemies: false };
+            let pageDataFetched = { books: false, batches: false, live: false, timetable: false, tests: false, enemies: false };
 
             const gameConfig = {
                 xpToLevelUp: 100, baseHp: 100,
@@ -530,95 +494,39 @@
             });
 
             // --- Content Rendering Functions ---
-            async function renderLeaderboard() {
-                if (pageDataFetched.leaderboard) return;
-                pageDataFetched.leaderboard = true;
-                elements.leaderboardList.innerHTML = `<div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>`;
-
-                try {
-                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(120).get(); // Fetch a bit more to compensate for filtering
-                    let leaderboardHTML = '';
-                    let rank = 1;
-                    const displayedUsers = [];
-
-                    snapshot.forEach(doc => {
-                        const user = doc.data();
-                        
-                        // Filter out bot/specific users and ensure we don't exceed 100 entries
-                        if (
-                            user.username === 'B34STXBOT' ||
-                            (user.name && user.name.startsWith('BeastX')) ||
-                            displayedUsers.length >= 100
-                        ) {
-                            return; // Skip this user and continue to the next one
-                        }
-                        
-                        displayedUsers.push({ id: doc.id, ...user });
-                    });
-
-                    displayedUsers.forEach(user => {
-                        const points = user.points || 0;
-                        const level = Math.floor(points / gameConfig.xpToLevelUp) + 1;
-                        const xpForCurrentLevel = points % gameConfig.xpToLevelUp;
-                        const xpPercentage = (xpForCurrentLevel / gameConfig.xpToLevelUp) * 100;
-                        const avatar = user.profilePictureURL || `https://via.placeholder.com/150/FFFFFF/121212?text=${(user.name || 'U').charAt(0)}`;
-                        
-                        const isCurrentUser = user.id === currentUser.uid;
-                        const rankClass = `rank-${rank}`;
-                        const currentUserClass = isCurrentUser ? 'current-user' : '';
-                        const rankIcon = rank === 1 ? '<i class="fas fa-crown"></i>' : rank;
-                        
-                        leaderboardHTML += `
-                            <li class="leaderboard-item ${rankClass} ${currentUserClass}" style="animation-delay: ${rank * 50}ms">
-                                <span class="rank">${rankIcon}</span>
-                                <img src="${avatar}" class="leaderboard-avatar">
-                                <div class="leaderboard-user-info">
-                                    <h4>${user.name || 'Anonymous'}</h4>
-                                    <span class="level-info">Level ${level}</span>
-                                </div>
-                                <div class="leaderboard-progress">
-                                    <div class="xp-text">
-                                        <span>${xpForCurrentLevel} / ${gameConfig.xpToLevelUp} XP</span>
-                                        <span class="total-xp">${points} Total XP</span>
-                                    </div>
-                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${xpPercentage}%"></div></div>
-                                </div>
-                            </li>`;
-                        rank++;
-                    });
-                    elements.leaderboardList.innerHTML = leaderboardHTML || `<div class="empty-state"><i class="fas fa-ghost"></i><h3>The leaderboard is empty.</h3><p>Be the first champion!</p></div>`;
-                } catch (error) {
-                    console.error("Error fetching leaderboard: ", error);
-                    elements.leaderboardList.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Could not load leaderboard.</h3><p>Please try again later.</p></div>`;
-                }
-            }
-
             function renderGenericEmptyState(container, icon, title, message) {
                 container.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><div class="empty-state"><i class="${icon}"></i><h3>${title}</h3><p>${message}</p></div></div>`;
             }
 
+            async function renderBooks() {
+                if(pageDataFetched.books) return; pageDataFetched.books = true;
+                // FUTURE: Fetch data from db.collection('books')...
+                renderGenericEmptyState(elements.booksContainer, 'fas fa-book-open', 'No Books Available', 'Our digital library is currently being updated. Please check back later.');
+            }
+            
+            async function renderBatches() {
+                if(pageDataFetched.batches) return; pageDataFetched.batches = true;
+                // FUTURE: Fetch data from db.collection('batches')...
+                renderGenericEmptyState(elements.batchesContainer, 'fas fa-users', 'No Batches Found', 'You are not currently enrolled in any batches. Explore our available batches to join.');
+            }
+
             async function renderLiveClasses() {
                 if(pageDataFetched.live) return; pageDataFetched.live = true;
-                // FUTURE: Fetch data from db.collection('live_classes')...
-                // For now, show an empty state. This structure is ready for an admin panel.
                 renderGenericEmptyState(elements.liveClassesContainer, 'fas fa-video-slash', 'No Active Classes', 'There are no live classes scheduled at the moment. Check back soon!');
             }
 
             async function renderTimeTable() {
                 if(pageDataFetched.timetable) return; pageDataFetched.timetable = true;
-                // FUTURE: Fetch timetable data and render it (e.g., as a table or a list).
                 renderGenericEmptyState(elements.timeTableContainer, 'fas fa-calendar-times', 'Timetable Not Available', 'The timetable has not been uploaded yet. Please contact support if you believe this is an error.');
             }
 
             async function renderTests() {
                 if(pageDataFetched.tests) return; pageDataFetched.tests = true;
-                // FUTURE: Fetch active tests from db.collection('tests')...
                 renderGenericEmptyState(elements.testsContainer, 'fas fa-file-alt', 'No Tests Available', 'You have no pending tests. Great job staying up to date!');
             }
             
             async function renderBacklogs() {
                 if(pageDataFetched.enemies) return; pageDataFetched.enemies = true;
-                // This can be enhanced in the future to show a list of specific backlogged classes
                 if (userData && userData.backlogHours > 0) {
                     renderGenericEmptyState(elements.backlogsContainer, 'fas fa-exclamation-triangle', `You have ${userData.backlogHours} backlog hour(s)`, 'Clear your backlogs by reviewing missed classes to restore your HP and avoid XP penalties.');
                 } else {
@@ -628,14 +536,15 @@
 
             // --- Navigation Logic ---
             const pageRenderFunctions = {
-                leaderboard: renderLeaderboard,
+                books: renderBooks,
+                batches: renderBatches,
                 live: renderLiveClasses,
                 timetable: renderTimeTable,
                 tests: renderTests,
                 enemies: renderBacklogs,
             };
 
-            elements.mainNavLinks.forEach(link => {
+            elements.navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const pageId = link.dataset.page;
@@ -644,8 +553,11 @@
                     elements.pageContents.forEach(page => page.classList.remove('active'));
                     $(`#page-${pageId}`).classList.add('active');
 
-                    elements.mainNavLinks.forEach(l => l.classList.remove('active'));
-                    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
+                    // Update active state for sidebar and dropdown links
+                    document.querySelectorAll('.sidebar-nav a, .dropdown-item').forEach(l => {
+                        if(l.dataset.page === pageId) l.classList.add('active');
+                        else l.classList.remove('active');
+                    });
                     
                     const title = pageId.charAt(0).toUpperCase() + pageId.slice(1);
                     elements.headerTitle.textContent = title.replace('Enemies', 'Backlogs');
