@@ -6,10 +6,6 @@
     <title>EduSparK - Dashboard</title>
     <link rel="icon" type="image/jpg" href="https://i.postimg.cc/5N5yCCGv/17176581-e101-4f8e-88d1-ef7c942d7b5b.jpg">
     <meta name="description" content="Your personal EduSparK dashboard. Level up your learning journey.">
-    <meta property="og:title" content="EduSparK Dashboard">
-    <meta property="og:description" content="Your personal EduSparK dashboard. Level up your learning journey.">
-    <meta property="og:image" content="https://i.postimg.cc/5N5yCCGv/17176581-e101-4f8e-88d1-ef7c942d7b5b.jpg">
-    <meta property="og:type" content="website">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -540,17 +536,24 @@
                 elements.leaderboardList.innerHTML = `<div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>`;
 
                 try {
-                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(110).get();
+                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(120).get(); // Fetch a bit more to compensate for filtering
                     let leaderboardHTML = '';
                     let rank = 1;
                     const displayedUsers = [];
 
                     snapshot.forEach(doc => {
-                        // Filter out specific user and limit to 100
-                        if (doc.data().username === 'B34STXBOT' || displayedUsers.length >= 100) {
-                            return;
+                        const user = doc.data();
+                        
+                        // Filter out bot/specific users and ensure we don't exceed 100 entries
+                        if (
+                            user.username === 'B34STXBOT' ||
+                            (user.name && user.name.startsWith('BeastX')) ||
+                            displayedUsers.length >= 100
+                        ) {
+                            return; // Skip this user and continue to the next one
                         }
-                        displayedUsers.push({ id: doc.id, ...doc.data() });
+                        
+                        displayedUsers.push({ id: doc.id, ...user });
                     });
 
                     displayedUsers.forEach(user => {
