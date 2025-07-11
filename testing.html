@@ -28,7 +28,7 @@
             --primary-color: #ff3333;
             --primary-light: #ff6666;
             --text-light: #f1f2f6;
-            --text-dark: #f1f2f6;
+            --text-dark: #f1f2f6; /* Kept same for dark theme */
             --text-muted: #a4b0be;
             --bg-dark: #121212;
             --bg-light: #1e1e1e;
@@ -50,6 +50,7 @@
             --rank-gold: #ffd700;
             --rank-silver: #c0c0c0;
             --rank-bronze: #cd7f32;
+            --current-user-highlight: #3498db;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -122,23 +123,37 @@
         .character-viewer-card { padding: 0; overflow: hidden; }
         model-viewer { width: 100%; height: 400px; background-color: transparent; --progress-bar-color: var(--primary-color); }
         
-        /* Leaderboard Styling */
+        /* New Leaderboard Styling */
         #leaderboardList { list-style: none; display: flex; flex-direction: column; gap: 15px; }
-        .leaderboard-item { display: flex; align-items: center; background: var(--bg-light); padding: 15px; border-radius: var(--border-radius-md); gap: 15px; border: 1px solid transparent; transition: all 0.3s ease; }
-        .leaderboard-item:hover { border-color: var(--primary-color); transform: scale(1.02); }
-        .leaderboard-item .rank { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 700; color: var(--text-muted); width: 40px; text-align: center; flex-shrink: 0; }
-        .leaderboard-item .leaderboard-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-        .leaderboard-item .leaderboard-user-info { flex-grow: 1; }
-        .leaderboard-item .leaderboard-user-info p { color: var(--text-muted); font-size: 0.8rem; }
-        .leaderboard-item .leaderboard-points { text-align: right; }
-        .leaderboard-item .leaderboard-points .points-value { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 700; color: var(--xp-color); }
-        .leaderboard-item .leaderboard-points .level-value { font-size: 0.8rem; color: var(--level-up-color); }
-        .leaderboard-item.rank-1 .rank { color: var(--rank-gold); }
+        .leaderboard-item {
+            display: flex; align-items: center; background: var(--bg-light);
+            padding: 12px 15px; border-radius: var(--border-radius-md); gap: 15px;
+            border-left: 5px solid transparent; transition: all 0.3s ease;
+            opacity: 0; animation: itemFadeIn 0.5s ease-out forwards;
+        }
+        @keyframes itemFadeIn { to { opacity: 1; transform: translateX(0); } }
+        .leaderboard-item .rank { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 700; color: var(--text-muted); width: 45px; text-align: center; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .leaderboard-item .leaderboard-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .leaderboard-item .leaderboard-user-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .leaderboard-user-info h4 { font-weight: 600; font-size: 1rem; color: var(--text-light); }
+        .leaderboard-user-info .level-info { font-size: 0.8rem; color: var(--text-muted); }
+        .leaderboard-item .leaderboard-progress { flex-grow: 1; max-width: 250px; }
+        .leaderboard-progress .xp-text { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+        .leaderboard-progress .xp-text .total-xp { font-weight: 700; color: var(--xp-color); }
+        .leaderboard-progress .progress-bar-bg { width: 100%; height: 8px; background-color: var(--stat-bar-bg); border-radius: 4px; overflow: hidden; }
+        .leaderboard-progress .progress-bar-fill { height: 100%; background: var(--xp-color); border-radius: 4px; transition: width 0.5s ease-out; }
+        
+        .leaderboard-item.rank-1, .leaderboard-item.rank-2, .leaderboard-item.rank-3 { background: linear-gradient(to right, rgba(30,30,30,1), var(--bg-light)); }
+        .leaderboard-item.rank-1 { border-left-color: var(--rank-gold); box-shadow: 0 0 15px -5px var(--rank-gold); }
+        .leaderboard-item.rank-2 { border-left-color: var(--rank-silver); }
+        .leaderboard-item.rank-3 { border-left-color: var(--rank-bronze); }
+        .leaderboard-item.rank-1 .rank { color: var(--rank-gold); font-size: 1.5rem; }
         .leaderboard-item.rank-2 .rank { color: var(--rank-silver); }
         .leaderboard-item.rank-3 .rank { color: var(--rank-bronze); }
-        .leaderboard-item.rank-1 { box-shadow: 0 0 15px var(--rank-gold); border-color: var(--rank-gold); }
+        .leaderboard-item.rank-1 .rank i { vertical-align: middle; }
+        .leaderboard-item.current-user { border: 2px solid var(--current-user-highlight); box-shadow: 0 0 20px -5px var(--current-user-highlight); }
         
-        /* Modal & Other styles are largely unchanged */
+        /* Modal & Other styles */
         .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal.active { display: flex; animation: fadeInBody 0.3s ease; }
         .modal-content { background-color: var(--card-bg); margin: auto; padding: 30px; border: 1px solid var(--border-color); width: 90%; max-width: 600px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); position: relative; }
@@ -154,8 +169,10 @@
         .avatar-option:hover { border-color: var(--text-muted); }
         .avatar-option.selected { border-color: var(--primary-color); }
         .modal-footer { padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
-        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-state { text-align: center; padding: 40px 20px; opacity: 0.7; }
         .empty-state i { font-size: 3rem; color: var(--primary-color); margin-bottom: 15px; }
+        .empty-state h3 { margin-bottom: 10px; }
+        .empty-state p { color: var(--text-muted); max-width: 400px; margin: 0 auto; }
 
         /* Toast Notification */
         #toast { visibility: hidden; min-width: 250px; background-color: var(--card-bg); color: var(--text-light); text-align: center; border-radius: var(--border-radius-md); padding: 16px; position: fixed; z-index: 9999; left: 50%; transform: translateX(-50%); bottom: 30px; border-left: 5px solid var(--success); box-shadow: var(--shadow-md); }
@@ -176,11 +193,17 @@
             .mobile-menu-toggle { display: block; }
             .profile-layout { grid-template-columns: 1fr; }
             model-viewer { height: 350px; }
+            .leaderboard-item { flex-wrap: wrap; }
+            .leaderboard-progress { max-width: none; width: 100%; margin-top: 10px; flex-basis: 100%; }
         }
         @media (max-width: 768px) {
             .header { padding: 0 20px; }
             .main-content { padding: 20px; }
             .grid-container { grid-template-columns: 1fr; }
+        }
+         @media (max-width: 480px) {
+            .leaderboard-item .leaderboard-user-info { min-width: 120px; }
+            .leaderboard-item { gap: 10px; }
         }
     </style>
 </head>
@@ -248,7 +271,6 @@
                     </div>
                 </div>
 
-
                 <div class="grid-container">
                     <div class="card" data-aos="fade-up" data-aos-delay="100"><h3><i class="fas fa-star" style="color:var(--level-up-color)"></i> Level</h3><p style="font-size:2rem; font-weight:700;" id="statLevel">0</p></div>
                     <div class="card" data-aos="fade-up" data-aos-delay="200"><h3><i class="fas fa-bolt" style="color:var(--xp-color)"></i> Total XP</h3><p style="font-size:2rem; font-weight:700;" id="statPoints">0</p></div>
@@ -296,26 +318,46 @@
             <!-- LEADERBOARD PAGE -->
             <div id="page-leaderboard" class="page-content">
                 <div class="section-header">
-                    <h2 data-aos="fade-right"><i class="fas fa-trophy"></i> Top 100 Champions</h2>
+                    <h2 data-aos="fade-right"><i class="fas fa-trophy"></i> Top Champions</h2>
                     <p data-aos="fade-right" data-aos-delay="100">See how you stack up against other learners. Keep earning XP to climb the ranks!</p>
                 </div>
-                <div class="card" data-aos="fade-up">
+                <div class="card" data-aos="fade-up" style="padding: 20px;">
                     <ol id="leaderboardList">
                         <div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>
                     </ol>
                 </div>
             </div>
             
-            <!-- Other Pages -->
-            <div id="page-live" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
-            <div id="page-timetable" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
-            <div id="page-tests" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-wrench"></i><h3>Coming Soon</h3></div></div></div>
-            <div id="page-enemies" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-shield-alt"></i><h3>All Clear!</h3><p>You have no backlogs.</p></div></div></div>
-            <div id="page-support" class="page-content"><div class="card"><div class="empty-state"><i class="fas fa-headset"></i><h3>Need Help?</h3><p>Contact our team at <a href="mailto:edusparkkofficial@gmail.com" style="color:var(--primary-light)">edusparkkofficial@gmail.com</a></p></div></div></div>
+            <!-- ADMIN-READY DYNAMIC PAGES -->
+            <div id="page-live" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-video"></i> Live Classes</h2></div>
+                <div id="liveClassesContainer" class="grid-container"></div>
+            </div>
+            <div id="page-timetable" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-calendar-alt"></i> Time Table</h2></div>
+                <div id="timeTableContainer"></div>
+            </div>
+            <div id="page-tests" class="page-content">
+                <div class="section-header"><h2><i class="fas fa-vial"></i> Tests</h2></div>
+                <div id="testsContainer" class="grid-container"></div>
+            </div>
+            <div id="page-enemies" class="page-content">
+                 <div class="section-header"><h2><i class="fas fa-skull-crossbones"></i> Backlogs</h2></div>
+                 <div id="backlogsContainer" class="grid-container"></div>
+            </div>
+            <div id="page-support" class="page-content">
+                <div class="card">
+                    <div class="empty-state">
+                        <i class="fas fa-headset"></i>
+                        <h3>Need Help?</h3>
+                        <p>Our support team is here for you. Contact us at <a href="mailto:edusparkkofficial@gmail.com" style="color:var(--primary-light)">edusparkkofficial@gmail.com</a> for any assistance.</p>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
-    <!-- Edit Profile Modal (Unchanged) -->
+    <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
             <div class="modal-header"><h2>Edit Character</h2><span class="close-btn" id="closeModalBtn">×</span></div>
@@ -343,7 +385,7 @@
             AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 50 });
 
             const firebaseConfig = {
-                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
+                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
                 authDomain: "eduspark-new.firebaseapp.com",
                 projectId: "eduspark-new",
                 storageBucket: "eduspark-new.appspot.com",
@@ -375,20 +417,20 @@
                 saveProfileBtn: $('#saveProfileBtn'), editName: $('#editName'), editUsername: $('#editUsername'),
                 editBio: $('#editBio'), editPFP: $('#editPFP'), pfpPreview: $('#pfpPreview'),
                 defaultAvatarsContainer: $('#defaultAvatarsContainer'), toast: $('#toast'),
-                // Dashboard Stats
                 statLevel: $('#statLevel'), statPoints: $('#statPoints'), statBacklogHours: $('#statBacklogHours'), statClassesAttended: $('#statClassesAttended'),
-                // Simulation Buttons
                 simAttendClassBtn: $('#simAttendClassBtn'), simTakeTestBtn: $('#simTakeTestBtn'), simLeaveEarlyBtn: $('#simLeaveEarlyBtn'),
-                // Leaderboard
-                leaderboardList: $('#leaderboardList')
+                leaderboardList: $('#leaderboardList'),
+                // Dynamic Page Containers
+                liveClassesContainer: $('#liveClassesContainer'), timeTableContainer: $('#timeTableContainer'),
+                testsContainer: $('#testsContainer'), backlogsContainer: $('#backlogsContainer')
             };
 
-            let currentUser = null, userData = null, userListener = null, leaderboardFetched = false;
+            let currentUser = null, userData = null, userListener = null;
+            let pageDataFetched = { leaderboard: false, live: false, timetable: false, tests: false, enemies: false };
 
             const gameConfig = {
                 xpToLevelUp: 100, baseHp: 100,
-                hpPenaltyPerBacklogHour: 2, // Lose 2 HP per backlog hour
-                xpForClass: 10, xpForTest: 10, xpPenaltyForBacklog: -10
+                hpPenaltyPerBacklogHour: 2, xpForClass: 10, xpForTest: 10, xpPenaltyForBacklog: -10
             };
             const characterModels = [
                 "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
@@ -419,25 +461,18 @@
                 const level = Math.floor(totalPoints / gameConfig.xpToLevelUp) + 1;
                 const xpForCurrentLevel = totalPoints % gameConfig.xpToLevelUp;
                 const xpPercentage = (xpForCurrentLevel / gameConfig.xpToLevelUp) * 100;
-                
                 const backlogHours = data.backlogHours || 0;
-                let hpLost = (backlogHours * gameConfig.hpPenaltyPerBacklogHour);
-                let currentHp = Math.max(0, gameConfig.baseHp - hpLost);
+                let currentHp = Math.max(0, gameConfig.baseHp - (backlogHours * gameConfig.hpPenaltyPerBacklogHour));
                 const hpPercentage = (currentHp / gameConfig.baseHp) * 100;
 
-                // User Info
                 elements.userAvatar.innerHTML = data.profilePictureURL ? `<img src="${data.profilePictureURL}">` : `<span>${(data.name || 'U').charAt(0)}</span>`;
                 elements.dropdownUserName.textContent = data.name || 'User';
                 elements.dropdownUserEmail.textContent = data.email || '';
                 elements.welcomeUserName.textContent = data.name || 'Explorer';
-
-                // Dashboard Stats
                 elements.statLevel.textContent = level;
                 elements.statPoints.textContent = totalPoints;
                 elements.statBacklogHours.textContent = backlogHours;
                 elements.statClassesAttended.textContent = data.liveHoursAttended || 0;
-
-                // Profile Page
                 elements.profileAvatarDisplay.src = data.profilePictureURL || `https://via.placeholder.com/150/FF3333/FFFFFF?text=${(data.name || 'U').charAt(0)}`;
                 elements.profileNameDisplay.textContent = data.name || "N/A";
                 elements.profileUsernameDisplay.textContent = `@${data.username || 'n/a'}`;
@@ -448,27 +483,22 @@
                 elements.hpBarFill.style.width = `${hpPercentage}%`;
                 elements.xpBarFill.style.width = `${xpPercentage}%`;
                 
-                let modelIndex = 0;
-                if (level >= 10) { modelIndex = 2; } else if (level >= 5) { modelIndex = 1; }
+                let modelIndex = (level >= 10) ? 2 : (level >= 5) ? 1 : 0;
                 if(elements.characterModel.src !== characterModels[modelIndex]) {
                     elements.characterModel.src = characterModels[modelIndex];
                 }
             }
 
             async function checkBacklogPenalty(previousPoints) {
-                if (userData.backlogHours >= 5 && (previousPoints === null || userData.points === previousPoints)) {
-                     // Only apply penalty if points haven't just been changed by another operation.
-                     // This prevents double penalties. A better system would use cloud functions.
-                    if(!userData.penaltyAppliedFor5Hours) {
-                        await db.collection('users').doc(currentUser.uid).update({
-                            points: increment(gameConfig.xpPenaltyForBacklog),
-                            penaltyAppliedFor5Hours: true // flag to prevent re-applying penalty
-                        });
-                        showToast(`-10 XP Penalty for having 5+ backlog hours!`, 'error');
-                    }
+                if (!userData || previousPoints === null || userData.points !== previousPoints) return;
+                if (userData.backlogHours >= 5 && !userData.penaltyAppliedFor5Hours) {
+                    await db.collection('users').doc(currentUser.uid).update({
+                        points: increment(gameConfig.xpPenaltyForBacklog),
+                        penaltyAppliedFor5Hours: true
+                    });
+                    showToast(`-10 XP Penalty for having 5+ backlog hours!`, 'error');
                 } else if (userData.backlogHours < 5 && userData.penaltyAppliedFor5Hours) {
-                    // Reset flag when backlogs are cleared
-                     await db.collection('users').doc(currentUser.uid).update({ penaltyAppliedFor5Hours: false });
+                    await db.collection('users').doc(currentUser.uid).update({ penaltyAppliedFor5Hours: false });
                 }
             }
 
@@ -491,53 +521,113 @@
                 if (scoreStr === null) return;
                 const score = parseInt(scoreStr, 10);
                 if (isNaN(score) || score < 0 || score > 100) {
-                    showToast('Invalid score. Please enter a number between 0 and 100.', 'error');
-                    return;
+                    showToast('Invalid score. Please enter a number between 0 and 100.', 'error'); return;
                 }
-                const bonusPoints = Math.floor(score / 10); // e.g., 85 score = 8 bonus points
+                const bonusPoints = Math.floor(score / 10);
                 const totalPoints = gameConfig.xpForTest + bonusPoints;
                 await db.collection('users').doc(currentUser.uid).update({ points: increment(totalPoints) });
-                showToast(`Test submitted! +${totalPoints} XP earned. (+${gameConfig.xpForTest} for trying, +${bonusPoints} bonus)`, 'success');
+                showToast(`Test submitted! +${totalPoints} XP earned. (+${gameConfig.xpForTest} base, +${bonusPoints} bonus)`, 'success');
             });
 
-            // --- Leaderboard Logic ---
+            // --- Content Rendering Functions ---
             async function renderLeaderboard() {
-                if (leaderboardFetched) return;
-                leaderboardFetched = true;
+                if (pageDataFetched.leaderboard) return;
+                pageDataFetched.leaderboard = true;
                 elements.leaderboardList.innerHTML = `<div class="empty-state"><div class="spinner-large"></div><p style="margin-top:15px;">Fetching the champions...</p></div>`;
 
                 try {
-                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(100).get();
+                    const snapshot = await db.collection('users').orderBy('points', 'desc').limit(110).get();
                     let leaderboardHTML = '';
                     let rank = 1;
+                    const displayedUsers = [];
+
                     snapshot.forEach(doc => {
-                        const user = doc.data();
+                        // Filter out specific user and limit to 100
+                        if (doc.data().username === 'B34STXBOT' || displayedUsers.length >= 100) {
+                            return;
+                        }
+                        displayedUsers.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    displayedUsers.forEach(user => {
                         const points = user.points || 0;
                         const level = Math.floor(points / gameConfig.xpToLevelUp) + 1;
+                        const xpForCurrentLevel = points % gameConfig.xpToLevelUp;
+                        const xpPercentage = (xpForCurrentLevel / gameConfig.xpToLevelUp) * 100;
                         const avatar = user.profilePictureURL || `https://via.placeholder.com/150/FFFFFF/121212?text=${(user.name || 'U').charAt(0)}`;
+                        
+                        const isCurrentUser = user.id === currentUser.uid;
+                        const rankClass = `rank-${rank}`;
+                        const currentUserClass = isCurrentUser ? 'current-user' : '';
+                        const rankIcon = rank === 1 ? '<i class="fas fa-crown"></i>' : rank;
+                        
                         leaderboardHTML += `
-                            <li class="leaderboard-item rank-${rank}">
-                                <span class="rank">${rank}</span>
+                            <li class="leaderboard-item ${rankClass} ${currentUserClass}" style="animation-delay: ${rank * 50}ms">
+                                <span class="rank">${rankIcon}</span>
                                 <img src="${avatar}" class="leaderboard-avatar">
                                 <div class="leaderboard-user-info">
                                     <h4>${user.name || 'Anonymous'}</h4>
-                                    <p>@${user.username || 'n/a'}</p>
+                                    <span class="level-info">Level ${level}</span>
                                 </div>
-                                <div class="leaderboard-points">
-                                    <div class="points-value">${points} XP</div>
-                                    <div class="level-value">Level ${level}</div>
+                                <div class="leaderboard-progress">
+                                    <div class="xp-text">
+                                        <span>${xpForCurrentLevel} / ${gameConfig.xpToLevelUp} XP</span>
+                                        <span class="total-xp">${points} Total XP</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${xpPercentage}%"></div></div>
                                 </div>
                             </li>`;
                         rank++;
                     });
-                    elements.leaderboardList.innerHTML = leaderboardHTML || `<div class="empty-state"><i class="fas fa-ghost"></i><p>The leaderboard is empty. Be the first champion!</p></div>`;
+                    elements.leaderboardList.innerHTML = leaderboardHTML || `<div class="empty-state"><i class="fas fa-ghost"></i><h3>The leaderboard is empty.</h3><p>Be the first champion!</p></div>`;
                 } catch (error) {
                     console.error("Error fetching leaderboard: ", error);
-                    elements.leaderboardList.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Could not load the leaderboard.</p></div>`;
+                    elements.leaderboardList.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Could not load leaderboard.</h3><p>Please try again later.</p></div>`;
+                }
+            }
+
+            function renderGenericEmptyState(container, icon, title, message) {
+                container.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><div class="empty-state"><i class="${icon}"></i><h3>${title}</h3><p>${message}</p></div></div>`;
+            }
+
+            async function renderLiveClasses() {
+                if(pageDataFetched.live) return; pageDataFetched.live = true;
+                // FUTURE: Fetch data from db.collection('live_classes')...
+                // For now, show an empty state. This structure is ready for an admin panel.
+                renderGenericEmptyState(elements.liveClassesContainer, 'fas fa-video-slash', 'No Active Classes', 'There are no live classes scheduled at the moment. Check back soon!');
+            }
+
+            async function renderTimeTable() {
+                if(pageDataFetched.timetable) return; pageDataFetched.timetable = true;
+                // FUTURE: Fetch timetable data and render it (e.g., as a table or a list).
+                renderGenericEmptyState(elements.timeTableContainer, 'fas fa-calendar-times', 'Timetable Not Available', 'The timetable has not been uploaded yet. Please contact support if you believe this is an error.');
+            }
+
+            async function renderTests() {
+                if(pageDataFetched.tests) return; pageDataFetched.tests = true;
+                // FUTURE: Fetch active tests from db.collection('tests')...
+                renderGenericEmptyState(elements.testsContainer, 'fas fa-file-alt', 'No Tests Available', 'You have no pending tests. Great job staying up to date!');
+            }
+            
+            async function renderBacklogs() {
+                if(pageDataFetched.enemies) return; pageDataFetched.enemies = true;
+                // This can be enhanced in the future to show a list of specific backlogged classes
+                if (userData && userData.backlogHours > 0) {
+                    renderGenericEmptyState(elements.backlogsContainer, 'fas fa-exclamation-triangle', `You have ${userData.backlogHours} backlog hour(s)`, 'Clear your backlogs by reviewing missed classes to restore your HP and avoid XP penalties.');
+                } else {
+                    renderGenericEmptyState(elements.backlogsContainer, 'fas fa-shield-alt', 'All Clear!', 'You have no backlogs. Keep up the great work!');
                 }
             }
 
             // --- Navigation Logic ---
+            const pageRenderFunctions = {
+                leaderboard: renderLeaderboard,
+                live: renderLiveClasses,
+                timetable: renderTimeTable,
+                tests: renderTests,
+                enemies: renderBacklogs,
+            };
+
             elements.mainNavLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -550,8 +640,12 @@
                     elements.mainNavLinks.forEach(l => l.classList.remove('active'));
                     document.querySelectorAll(`[data-page="${pageId}"]`).forEach(l => l.classList.add('active'));
                     
-                    elements.headerTitle.textContent = pageId.charAt(0).toUpperCase() + pageId.slice(1);
-                    if (pageId === 'leaderboard') renderLeaderboard();
+                    const title = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+                    elements.headerTitle.textContent = title.replace('Enemies', 'Backlogs');
+
+                    if (pageRenderFunctions[pageId]) {
+                        pageRenderFunctions[pageId]();
+                    }
                     
                     if (window.innerWidth <= 1024) { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; }
                     window.scrollTo(0,0);
@@ -576,8 +670,7 @@
             elements.mobileOverlay.addEventListener('click', () => { elements.sidebar.classList.remove('open'); elements.mobileOverlay.style.display = 'none'; });
             document.addEventListener('click', (e) => { if (elements.userMenuDropdown.classList.contains('active') && !elements.userMenuDropdown.parentElement.contains(e.target)) elements.userMenuDropdown.classList.remove('active'); });
 
-            // Profile Edit Modal (unchanged from previous version)
-            // It is included here to make the code complete.
+            // --- Edit Profile Modal Logic ---
             const defaultAvatars = [
                 'https://i.postimg.cc/Fs3m1D50/default-avatar-1.png', 'https://i.postimg.cc/W3kRk97C/default-avatar-2.png',
                 'https://i.postimg.cc/sXbC2g5P/default-avatar-3.png', 'https://i.postimg.cc/qR7y1f3Z/default-avatar-4.png',
@@ -585,6 +678,7 @@
             ];
             let selectedAvatarUrl = null, newPfpFile = null;
             function openEditProfileModal() {
+                if (!userData) return;
                 elements.editName.value = userData.name || '';
                 elements.editUsername.value = userData.username || '';
                 elements.editBio.value = userData.bio || '';
@@ -619,7 +713,7 @@
                     } else if (selectedAvatarUrl) { updates.profilePictureURL = selectedAvatarUrl; }
                     await db.collection('users').doc(currentUser.uid).update(updates);
                     showToast('Profile updated!', 'success'); elements.editProfileModal.classList.remove('active');
-                } catch (error) { showToast('Error updating profile.', 'error'); } 
+                } catch (error) { showToast('Error updating profile.', 'error'); console.error(error); } 
                 finally { elements.saveProfileBtn.disabled = false; elements.saveProfileBtn.innerHTML = '<i class="fas fa-save"></i> Save'; }
             }
             elements.editProfileBtnDropdown.addEventListener('click', openEditProfileModal);
