@@ -397,7 +397,16 @@
     <script>
         AOS.init({ duration: 600, easing: 'ease-out-cubic', once: true, offset: 50 });
 
-        const firebaseConfig = { /* YOUR FIREBASE CONFIG HERE */ };
+        const firebaseConfig = {
+  apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U",
+  authDomain: "eduspark-new.firebaseapp.com",
+  databaseURL: "https://eduspark-new-default-rtdb.firebaseio.com",
+  projectId: "eduspark-new",
+  storageBucket: "eduspark-new.firebasestorage.app",
+  messagingSenderId: "564501033350",
+  appId: "1:564501033350:web:70c0f9873f96e9bd74fc07",
+  measurementId: "G-NM2SE3DE7J"
+};
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
