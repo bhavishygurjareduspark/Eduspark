@@ -229,13 +229,14 @@
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+                // IMPORTANT: Replace with your actual Firebase project configuration.
+                apiKey: "AIzaSyBNi6BHTKNd62VAY7q1oHQmxjZ3r0MUA9U", 
+                authDomain: "edusparkk.xyz",
+                projectId: "eduspark-new",
+                storageBucket: "eduspark-new.appspot.com",
+                messagingSenderId: "564501033350",
+                appId: "1:564501033350:web:70c0f9873f96e9bd74fc07"
+            };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
